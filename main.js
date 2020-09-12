@@ -1,17 +1,17 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-const common = require(path.join(__dirname, 'common'));
-const config = require(path.join(__dirname, 'configLoader'));
+const common = require(path.join(__dirname, 'modules/common'));
+const config = require(path.join(__dirname, 'modules/configLoader'));
 const { prefix, token } = config.load(['prefix', 'token']);
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
-const commandFiles = fs.readdirSync(path.join(__dirname, 'commands')).filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(path.join(__dirname, 'modules/commands')).filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-    const command = require(path.join(__dirname, 'commands', file));
+    const command = require(path.join(__dirname, 'modules/commands', file));
     client.commands.set(command.name, command);
 }
 

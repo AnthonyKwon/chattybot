@@ -6,9 +6,9 @@ const logger = winston.createLogger({
     level: 'info',
     format: winston.format.json(),
     transports: [
-            new winston.transports.File({ filename: path.join(__dirname, 'logs/error.log'), level: 'error' }),
-            new winston.transports.File({ filename: path.join(__dirname, 'logs/verbose.log'), level: 'verbose' })
-        ]
+        new winston.transports.File({ filename: path.join(__dirname, '../logs/error.log'), level: 'error' }),
+        new winston.transports.File({ filename: path.join(__dirname, '../logs/verbose.log'), level: 'verbose' })
+    ]
 });
 
 if (process.env.NODE_ENV !== 'production') {
