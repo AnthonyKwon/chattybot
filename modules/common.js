@@ -2,6 +2,22 @@ const fs = require('fs');
 const path = require('path');
 const winston = require('winston');
 
+let ttsConnection = undefined;
+const getTtsConnection = () => {
+    return ttsConnection;
+}
+const setTtsConnection = args => {
+    ttsConnection = args;
+}
+
+let ytConnection = undefined;
+const getYtConnection = () => {
+    return ytConnection;
+}
+const setYtConnection = args => {
+    ytConnection = args;
+}
+
 const logger = winston.createLogger({
     level: 'info',
     format: winston.format.json(),
@@ -18,5 +34,9 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 module.exports = {
+    getTtsConnection,
+    setTtsConnection,
+    getYtConnection,
+    setYtConnection,
     logger
 }

@@ -10,7 +10,9 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@discordjs/opus": "github:discordjs/opus",
+    "@google-cloud/text-to-speech": "^3.1.0",
     "discord.js": "^12.3.1",
+    "ffmpeg-static": "^4.2.7",
     "winston": "^3.3.3"
   }
 }
