@@ -1,13 +1,13 @@
 {
   "name": "catty",
   "version": "1.0.0",
-  "description": "",
+  "description": "An Discord Text-To-Speech Bot.",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "UNLICENSED",
+  "author": "Anthony Kwon",
+  "license": "GPL-2.0-or-later",
   "dependencies": {
     "@discordjs/opus": "github:discordjs/opus",
     "@google-cloud/text-to-speech": "^3.1.0",

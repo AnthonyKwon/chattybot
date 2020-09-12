@@ -20,7 +20,7 @@ for (const file of commandFiles) {
 }
 
 client.once('ready', () => {
-    logger.log('info', 'Ready!');
+    logger.log('verbose', `[discord.js] Connected to ${client.user.username}!`);
 });
 
 client.on('message', async message => {

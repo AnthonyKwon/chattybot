@@ -1,4 +1,5 @@
 const TTS = require('@google-cloud/text-to-speech');
+const { getUsername } = require('./common');
 const string = require('./stringResolver');
 const { Readable } = require('stream');
 
@@ -27,19 +28,17 @@ const bufferToStream = (binary) => {
     return readableInstanceStream;
 }
 
-const getUsername = (message) => {
-    const username = message.client.guilds.cache.get(message.guild.id).member(message.author).displayName;
-    return username.split('_').join(' ');
-}
-
 const tts_speak = async (connection, message, text) => {
     let request = requestSample;
+    /* Replace all parameters */
     if ((message.author !== lastAuthor) || (connection.channel.id !== lastChannel)) {
         request.input = { ssml: '<speak>' + string.get('ttsPrefix').format(getUsername(message)) + '<break time="0.5s"/>' + text + '</speak>' };
     } else {
         request.input = { text: text }
     }
-    console.log(request); /* debug */
+    request.voice = { languageCode: string.get('ttsLocale'), ssmlGender: ssmlGender };
+    request.audioConfig = { audioEncoding: 'OGG_OPUS', speakingRate: speed, pitch: pitch, volumeGainDb: volumeGain };
+    console.log(request) /* Debug */
     lastAuthor = message.author;
     lastChannel = connection.channel.id;
     const [response] = await client.synthesizeSpeech(request);
@@ -47,6 +46,34 @@ const tts_speak = async (connection, message, text) => {
     connection.play(stream, { type: 'ogg/opus' });
 }
 
+const tts_config = (key, value) => {
+    switch (key) {
+        case 'ssmlGender':
+            if (ssmlGender === value) {
+                return false;
+            }
+            ssmlGender = value;
+            return true;
+            break;
+        case 'speakingRate':
+            speed = value;
+            return true;
+            break;
+        case 'pitch':
+            pitch = value;
+            return true;
+            break;
+        case 'volumeGainDb':
+            volumeGain = value;
+            return true;
+            break;
+        default:
+            return false;
+    }
+    return false;
+}
+
 module.exports = {
-    speak: tts_speak
+    speak: tts_speak,
+    config: tts_config
 }
