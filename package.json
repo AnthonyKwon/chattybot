@@ -9,6 +9,7 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
+    "discord.js": "^12.3.1",
     "winston": "^3.3.3"
   }
 }
