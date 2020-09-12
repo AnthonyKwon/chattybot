@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const common = require(path.join(__dirname, '../common'));
+const { logger } = require(path.join(__dirname, '../common'));
 const config = require(path.join(__dirname, '../configLoader'));
 const string = require(path.join(__dirname, '../stringResolver'));
 const { staff_roles } = config.load(['staff_roles']);
@@ -11,7 +11,7 @@ module.exports = {
     execute (message, args) {
         /* If user does not have staff role */
         if (!message.member.roles.cache.some((role) => role === staff_roles)) {
-            common.logger.log('error', `${message.author.tag} tried to reload without permission!`);
+            logger.log('error', `${message.author.tag} tried to reload without permission!`);
             message.channel.send(string.get('noPermissionError'));
             return;
         }
@@ -29,7 +29,7 @@ module.exports = {
                     return message.channel.send(string.get('reloadComplete').format(file));
                 } catch {
                     message.channel.send(string.get('reloadFailed').format(prefix, args[0].toLowerCase()));
-                    return common.logger.log('error', e.stack || e);
+                    return logger.log('error', e.stack || e);
                 }
             }
         });

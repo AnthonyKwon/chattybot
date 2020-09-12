@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-const common = require(path.join(__dirname, 'modules/common'));
+const { logger } = require(path.join(__dirname, 'modules/common'));
 const config = require(path.join(__dirname, 'modules/configLoader'));
 const string = require(path.join(__dirname, 'modules/stringResolver'));
 const { prefix, token } = config.load(['prefix', 'token']);
@@ -20,10 +20,11 @@ for (const file of commandFiles) {
 }
 
 client.once('ready', () => {
-    common.logger.log('info', 'Ready!');
+    logger.log('info', 'Ready!');
 });
 
-client.on('message', message => {
+client.on('message', async message => {
+    /* Command handler */
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
@@ -65,7 +66,7 @@ client.on('message', message => {
     try {
         command.execute(message, args);
     } catch (err) {
-        common.logger.log('error', `[discord.js] Failed to launch requested command: ${err}\n${err.body}`);
+        logger.log('error', `[discord.js] Failed to launch requested command: ${err}\n${err.body}`);
         message.channel.send(string.get('internalError'));
     }
 });

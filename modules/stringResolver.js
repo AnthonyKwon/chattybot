@@ -1,20 +1,19 @@
 const fs = require('fs');
 const path = require('path');
-const common = require('./common');
+const { logger } = require('./common');
 const config = require('./configLoader');
 const { locale } = config.load(['locale']);
 
 const stringResolverInternal = (target) => {
     try {
         const localizedStr = JSON.parse(fs.readFileSync(path.join(__dirname, '../locales/', locale + '.json')));
-        console.log(target);
         if (localizedStr[target]) {
             return localizedStr[target];
         } else {
             return `Error: Locale not defined.`
         }
     } catch (err) {
-        common.logger.log('error', `[stringResolver] Failed to parse string: ${err}\n${err.body}`);
+        logger.log('error', `[stringResolver] Failed to parse string: ${err}\n${err.body}`);
     }
 }
 

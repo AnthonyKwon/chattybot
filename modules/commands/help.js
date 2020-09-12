@@ -1,4 +1,4 @@
-const common = require('../common');
+const { logger } = require('../common');
 const config = require('../configLoader');
 const string = require('../stringResolver');
 const { prefix } = config.load(['prefix']);
@@ -24,7 +24,7 @@ module.exports = {
                     if (message.channel.type === 'dm') return;
                     message.channel.send(string.get('helpDescSendSucceed').format(message.author));
                 }).catch(error => {
-                    common.logger.log('info', `[discord.js] Failed to send DM to ${message.author.tag}: ${error}\n${error.body}`);
+                    logger.log('info', `[discord.js] Failed to send DM to ${message.author.tag}: ${error}\n${error.body}`);
                     message.channel.send(string.get('helpDescSendFailed').format(message.author));
                 });
         }

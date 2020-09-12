@@ -1,6 +1,6 @@
 {
     "argsRequiredLine1": "{0}님, 명령어 인수를 입력해 주세요!",
-    "argsRequiresLine2": "\n명령어 이용법: {0}{1} {2}",
+    "argsRequiredLine2": "\n**이용법**: {0}{1} {2}",
     "helpCommandAliases1": "도움말",
     "helpCommandAliases2": "명령어",
     "helpCommandDesc": "명령어 도움말을 보여줍니다.",
@@ -17,10 +17,20 @@
     "infoCommandAliases": "정보",
     "infoCommandDesc": "Catty의 정보를 보여줍니다.",
     "internalError": "명령어를 실행하는 도중 오류가 발생했습니다.",
+    "joinCommandAliases": "들어가기",
+    "joinCommandDesc": "Chatty를 음성 채널에 입장시킵니다.",
+    "joinCommandUsage": "[채널]",
+    "leaveCommandAliases": "나가기",
+    "leaveCommandDesc": "Chatty를 음성 채널에서 내보냅니다.",
     "noPermissionError": "이 명령어를 수행 할 권한이 없습니다!",
     "reloadCommandDesc": "명령어 세트를 다시 불러옵니다.",
     "reloadComplete": "`{0}`을(를) 성공적으로 갱신했습니다!",
     "reloadFailed": "`{0}{1}`을(를) 갱신하지 못했습니다!",
+    "sayCommandAliases": "말하기",
+    "sayCommandDesc": "TTS를 통해 입력한 내용을 음성 채팅으로 말합니다.",
+    "sayCommandUsage": "<내용>",
+    "ttsLocale": "ko-KR",
+    "ttsPrefix": "{0}님이 말해요",
     "unknownCommandError": "해당 명령어를 찾을 수 없어요. 다시 시도해 주세요.",
     "waitForCoolDown": "{0}초 뒤에 명령어를 실행할 수 있습니다."
 }
