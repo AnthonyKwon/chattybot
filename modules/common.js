@@ -18,9 +18,23 @@ const setYtConnection = args => {
     ytConnection = args;
 }
 
+const getUsername = message => {
+    const username = message.client.guilds.cache.get(message.guild.id).member(message.author).displayName;
+    return username.split('_').join(' ');
+}
+
+if (!String.prototype.replaceAll) {
+    String.prototype.replaceAll = function (search, replace) {
+        return this.split(search).join(replace);
+    }
+}
+
 const logger = winston.createLogger({
     level: 'info',
-    format: winston.format.json(),
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
     transports: [
         new winston.transports.File({ filename: path.join(__dirname, '../logs/error.log'), level: 'error' }),
         new winston.transports.File({ filename: path.join(__dirname, '../logs/verbose.log'), level: 'verbose' })
@@ -38,5 +52,6 @@ module.exports = {
     setTtsConnection,
     getYtConnection,
     setYtConnection,
+    getUsername,
     logger
 }

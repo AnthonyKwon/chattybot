@@ -1,5 +1,5 @@
 const fs = require('fs');
-let { getTtsConnection, setTtsConnection, getYtConnection, setYtConnection } = require('../common');
+const { getTtsConnection, setTtsConnection, getYtConnection, setYtConnection } = require('../common');
 const string = require('../stringResolver');
 const tts = require('../textToSpeech');
 
@@ -7,8 +7,16 @@ const leaveInternal = async (message, args) => {
     if (!getTtsConnection()) {
         return;
     }
-    getTtsConnection().disconnect();
-    getYtConnection().disconnect();
+    if (getTtsConnection()) {
+        getTtsConnection().disconnect();
+        setTtsConnection(undefined);
+    }
+    if (getYtConnection()) {
+        getYtConnection().disconnect();
+        setYtConnection(undefined);
+    }
+    logger.log('verbose', `[discord.js] Left voice channel.`);
+    message.channel.send(string.get('leftVoiceChannel'));
 }
 
 module.exports = {
