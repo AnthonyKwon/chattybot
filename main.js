@@ -3,7 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const common = require(path.join(__dirname, 'modules/common'));
 const config = require(path.join(__dirname, 'modules/configLoader'));
+const string = require(path.join(__dirname, 'modules/stringResolver'));
 const { prefix, token } = config.load(['prefix', 'token']);
+if (!String.prototype.format) {
+    String.prototype.format = string.format;
+}
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -30,10 +34,10 @@ client.on('message', message => {
     if(!command) return;
 
     if (command.argsRequired && !args.length) {
-        let reply = `${message.author}님, 명령어 인수를 입력해 주세요!`;
+        let reply = string.get('argsRequiredLine1').format(message.author);
 
         if (command.usage) {
-            reply += `\n명령어 이용법: ${prefix}${command.name} ${command.usage}`;
+            reply += string.get('argsRequiredLine2').format(prefix, command.name, command.usage);
         }
 
         return message.channel.send(reply);
@@ -54,7 +58,7 @@ client.on('message', message => {
 
         if (now < expirationTime) {
             const timeLeft = (expirationTime - now) / 1000;
-            return message.reply(`${timeLeft.toFixed(1)}초 뒤에 ${command.name} 명령어를 사용하실 수 있습니다.`);
+            return message.channel.send(string.get('waitForCoolDown').format(timeLeft.toFixed(1), command.name));
         }
     }
 
@@ -62,7 +66,7 @@ client.on('message', message => {
         command.execute(message, args);
     } catch (err) {
         common.logger.log('error', `[discord.js] Failed to launch requested command: ${err}\n${err.body}`);
-        message.reply('명령을 실행하는 도중 문제가 발생했습니다!');
+        message.channel.send(string.get('internalError'));
     }
 });
 
