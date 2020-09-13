@@ -1,4 +1,4 @@
-configs/token.json
+configs/*.json
 credentials
 logs
 node_modules
