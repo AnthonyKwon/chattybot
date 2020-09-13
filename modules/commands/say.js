@@ -31,7 +31,7 @@ const sayInternal = async (message, args) => {
     if (!getTtsConnection() && message.member.voice.channel) {
         setTtsConnection(await message.member.voice.channel.join());
         logger.log('verbose', `[discord.js] Joined voice channel ${getTtsConnection().channel.id}`);
-        return message.channel.send(string.get('joinedVoiceChannel').format(getTtsConnection().channel.name));
+        message.channel.send(string.get('joinedVoiceChannel').format(getTtsConnection().channel.name));
     } else if (getTtsConnection()) {
     } else {
         return string.get('joinVoiceChannelFirst');

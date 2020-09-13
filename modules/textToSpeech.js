@@ -36,8 +36,11 @@ const tts_speak = async (connection, message, text) => {
     } else {
         request.input = { text: text }
     }
-    request.voice = { languageCode: string.get('ttsLocale'), ssmlGender: ssmlGender };
-    request.audioConfig = { audioEncoding: 'OGG_OPUS', speakingRate: speed, pitch: pitch, volumeGainDb: volumeGain };
+    request.voice.ssmlGender = ssmlGender;
+    request.audioConfig.speakingRate = speed;
+    request.audioConfig.pitch = pitch
+    request.audioConfig.volumeGainDb = volumeGain;
+
     console.log(request) /* Debug */
     lastAuthor = message.author;
     lastChannel = connection.channel.id;
@@ -49,9 +52,7 @@ const tts_speak = async (connection, message, text) => {
 const tts_config = (key, value) => {
     switch (key) {
         case 'ssmlGender':
-            if (ssmlGender === value) {
-                return false;
-            }
+            if (ssmlGender === value) return false;
             ssmlGender = value;
             return true;
             break;
@@ -64,11 +65,10 @@ const tts_config = (key, value) => {
             return true;
             break;
         case 'volumeGainDb':
+            if (volumeGain === value) return false;
             volumeGain = value;
             return true;
             break;
-        default:
-            return false;
     }
     return false;
 }

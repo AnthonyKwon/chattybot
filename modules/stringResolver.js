@@ -10,7 +10,7 @@ const stringResolverInternal = (target) => {
         if (localizedStr[target]) {
             return localizedStr[target];
         } else {
-            return `${target}.${locale} NOT_FOUND`
+            return `${target}_${locale}`
         }
     } catch (err) {
         logger.log('error', `[stringResolver] Failed to parse string: ${err}\n${err.body}`);
