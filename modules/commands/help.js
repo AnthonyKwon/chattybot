@@ -7,7 +7,7 @@ module.exports = {
     name: 'help',
     description: string.get('helpCommandDesc'),
     argsRequired: false,
-    aliases: [string.get('helpCommandAliases1'), string.get('helpCommandAliases2')],
+    aliases: [string.get('helpCommandAliases')],
     usage: string.get('helpCommandUsage'),
     cooldown: 5,
     execute(message, args) {
@@ -15,17 +15,17 @@ module.exports = {
         const { commands } = message.client;
 
         if (!args.length) {
-            data.push(string.get('helpDescLine1'));
+            data.push(string.get('helpDmDescLine1'));
             data.push(commands.map(command => command.name).join(', '));
-            data.push(string.get('helpDescLine3').format(prefix));
+            data.push(string.get('helpDmDescLine3').format(prefix));
 
             return message.author.send(data, {split: true})
                 .then(() => {
                     if (message.channel.type === 'dm') return;
-                    message.channel.send(string.get('helpDescSendSucceed').format(message.author));
+                    message.channel.send(string.get('helpDmDescSendSucceed').format(message.author));
                 }).catch(error => {
                     logger.log('info', `[discord.js] Failed to send DM to ${message.author.tag}: ${error}\n${error.body}`);
-                    message.channel.send(string.get('helpDescSendFailed').format(message.author));
+                    message.channel.send(string.get('helpDmDescSendFailed').format(message.author));
                 });
         }
 
@@ -36,11 +36,11 @@ module.exports = {
             return message.channel.send(string.get('unknownCommandError'));
         }
 
-        data.push(string.get('helpSingleName').format(command.name));
-        if (command.aliases) data.push(string.get('helpSingleAliases').format(command.aliases.join(', ')));
-        if (command.description) data.push(string.get('helpSingleDesc').format(command.description));
-        if (command.usage) data.push(string.get('helpSingleUsage').format(prefix, command.name, command.usage));
-        data.push(string.get('helpSingleCoolDown').format(command.cooldown || 3));
+        if (command.aliases) data.push(string.get('helpCmdDescNameWithAliases').format(prefix, command.name, command.aliases.join(', ')));
+        else data.push(string.get('helpCmdDescName').format(prefix, command.name));
+        if (command.description) data.push(string.get('helpCmdDescDesc').format(command.description));
+        if (command.usage) data.push(string.get('helpCmdDescUsage').format(prefix, command.name, command.usage));
+        data.push(string.get('helpCmdDescCooldown').format(command.cooldown || 3));
 
         message.channel.send(data, { split: true });
     }

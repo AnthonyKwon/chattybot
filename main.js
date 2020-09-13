@@ -35,7 +35,7 @@ client.on('message', async message => {
     if(!command) return;
 
     if (command.argsRequired && !args.length) {
-        let reply = string.get('argsRequiredLine1').format(message.author);
+        let reply = string.get('argsRequiredLine1');
 
         if (command.usage) {
             reply += string.get('argsRequiredLine2').format(prefix, command.name, command.usage);
@@ -59,7 +59,7 @@ client.on('message', async message => {
 
         if (now < expirationTime) {
             const timeLeft = (expirationTime - now) / 1000;
-            return message.channel.send(string.get('waitForCoolDown').format(timeLeft.toFixed(1), command.name));
+            return message.channel.send(string.get('cooldownRemain').format(timeLeft.toFixed(1), command.name));
         }
     }
 
