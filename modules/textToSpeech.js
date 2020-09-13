@@ -46,7 +46,7 @@ const tts_speak = async (connection, message, text) => {
     lastChannel = connection.channel.id;
     const [response] = await client.synthesizeSpeech(request);
     const stream = bufferToStream(response.audioContent);
-    connection.play(stream, { type: 'ogg/opus' });
+    await connection.play(stream, { type: 'ogg/opus' });
 }
 
 const tts_config = (key, value) => {
