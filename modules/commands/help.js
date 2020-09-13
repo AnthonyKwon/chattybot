@@ -5,7 +5,7 @@ const { prefix } = config.load(['prefix']);
 
 module.exports = {
     name: 'help',
-    description: string.get('helpCommandDesc'),
+    description: string.get('helpCommandDesc').format(string.get('localizedBotName')),
     argsRequired: false,
     aliases: [string.get('helpCommandAliases')],
     usage: string.get('helpCommandUsage'),
@@ -15,7 +15,7 @@ module.exports = {
         const { commands } = message.client;
 
         if (!args.length) {
-            data.push(string.get('helpDmDescLine1'));
+            data.push(string.get('helpDmDescLine1').format(string.get('localizedBotName')));
             data.push(commands.map(command => command.name).join(', '));
             data.push(string.get('helpDmDescLine3').format(prefix));
 

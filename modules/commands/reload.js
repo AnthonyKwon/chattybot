@@ -7,7 +7,7 @@ const { staff_roles } = config.load(['staff_roles']);
 
 module.exports = {
     name: 'reload',
-    description: string.get('reloadCommandDesc'),
+    description: string.get('reloadCommandDesc').format(string.get('localizedBotName')),
     execute (message, args) {
         /* If user does not have staff role */
         if (!message.member.roles.cache.some((role) => role === staff_roles)) {

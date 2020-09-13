@@ -48,8 +48,8 @@ const sayInternal = async (message, args) => {
 }
 
 module.exports = {
-    name: 'say',
-    description: string.get('sayCommandDesc'),
+    name: string.get('sayCommandName'),
+    description: string.get('sayCommandDesc').format(string.get('localizedBotName')),
     argsRequired: true,
     aliases: [string.get('sayCommandAliases')],
     usage: string.get('sayCommandUsage'),

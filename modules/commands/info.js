@@ -1,11 +1,12 @@
 const string = require('../stringResolver');
 
 module.exports = {
-    name: 'info',
-    argsRequired: true,
+    name: string.get('infoCommandName'),
+    argsRequired: false,
     aliases: [string.get('infoCommandAliases')],
-    description: string.get('infoCommandDesc'),
+    description: string.get('infoCommandDesc').format(string.get('localizedBotName')),
     execute(message, args) {
-        message.channel.send('NO_MESSAGE');
+        const info_message = [];
+        message.channel.send(info_message);
     },
 };
