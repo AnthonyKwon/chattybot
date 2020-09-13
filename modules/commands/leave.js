@@ -20,8 +20,8 @@ const leaveInternal = async (message, args) => {
 }
 
 module.exports = {
-    name: 'leave',
-    description: string.get('leaveCommandDesc'),
+    name: string.get('leaveCommandName'),
+    description: string.get('leaveCommandDesc').format(string.get('localizedBotName')),
     argsRequired: false,
     aliases: [string.get('leaveCommandAliases')],
     cooldown: 5,

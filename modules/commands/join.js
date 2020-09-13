@@ -29,8 +29,8 @@ const sayInternal = async (message, args) => {
 }
 
 module.exports = {
-    name: 'join',
-    description: string.get('joinCommandDesc'),
+    name: string.get('joinCommandName'),
+    description: string.get('joinCommandDesc').format(string.get('localizedBotName')),
     argsRequired: false,
     aliases: [string.get('joinCommandAliases')],
     usage: string.get('joinCommandUsage'),
