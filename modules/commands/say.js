@@ -1,7 +1,8 @@
 const fs = require('fs');
-const { getTtsConnection, setTtsConnection, getYtConnection, setYtConnection, logger } = require('../common');
+const { getTtsConnection, setTtsConnection, getYtConnection, logger } = require('../common');
 const config = require('../configLoader');
 const string = require('../stringResolver');
+const music = require('../tannergabriel_yt');
 const tts = require('../textToSpeech');
 const { chat_format } = config.load(['chat_format']);
 
@@ -28,6 +29,7 @@ const isMessageSafe = message => {
 }
 
 const sayInternal = async (message, args) => {
+    //if (getYtConnection()) return message.channel.send(string.get('musicPlayerTerminationRequired'));
     if (!getTtsConnection() && message.member.voice.channel) {
         setTtsConnection(await message.member.voice.channel.join());
         logger.log('verbose', `[discord.js] Joined voice channel ${getTtsConnection().channel.id}`);
@@ -44,7 +46,12 @@ const sayInternal = async (message, args) => {
     }
     logger.log('verbose', `[discord.js] ${message.author} spoken: ${args.join(' ')}`);
     message.channel.send(chat_format.format(message.author, safeMsg));
-    tts.speak(getTtsConnection(), message, safeMsg);
+    const serverQueue = music.queue.get(message.guild.id);
+    let lastPlaytime, ytStream = false;
+    if (getYtConnection()) ytStream = true;
+    if (ytStream) lastPlaytime = music.ttsRestoreStreamStage1(serverQueue);
+    await tts.speak(getTtsConnection(), message, safeMsg);
+    if (ytStream) music.ttsRestoreStreamStage2(message, serverQueue, lastPlaytime);
 }
 
 module.exports = {

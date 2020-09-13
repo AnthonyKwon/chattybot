@@ -10,7 +10,7 @@ const addElement = (ElementList, element) => {
     return newList;
 }
 
-const configLoaderInternal = (target) => {
+const loadConfig = (target) => {
     const files = fs.readdirSync(path.join(__dirname, '../configs'));
     try {
         for (file of files) {
@@ -29,11 +29,16 @@ const configLoaderInternal = (target) => {
     }
 }
 
+const checkConfig = () => {
+    return true;
+}
+
 module.exports = {
+    check: checkConfig,
     load: (target) => {
         let returnArray = {};
         for (t of target) {
-            returnArray = addElement(returnArray, { [t]: configLoaderInternal(t) });
+            returnArray = addElement(returnArray, { [t]: loadConfig(t) });
         }
         return returnArray;
     }

@@ -1,10 +1,11 @@
 const fs = require('fs');
-const { getTtsConnection, setTtsConnection, getYtConnection, setYtConnection } = require('../common');
+const { getTtsConnection, setTtsConnection, getYtConnection } = require('../common');
 const string = require('../stringResolver');
+const music = require('../tannergabriel_yt');
 const tts = require('../textToSpeech');
 
 const leaveInternal = async (message, args) => {
-    if (!getTtsConnection()) {
+    if (!getTtsConnection() && !getYtConnection()) {
         return;
     }
     if (getTtsConnection()) {
@@ -12,8 +13,8 @@ const leaveInternal = async (message, args) => {
         setTtsConnection(undefined);
     }
     if (getYtConnection()) {
-        getYtConnection().disconnect();
-        setYtConnection(undefined);
+        const serverQueue = music.queue.get(message.guild.id);
+        music.stop(message, serverQueue);
     }
     logger.log('verbose', `[discord.js] Left voice channel.`);
     message.channel.send(string.get('leftVoiceChannel'));
