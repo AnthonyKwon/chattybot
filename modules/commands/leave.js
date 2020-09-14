@@ -5,7 +5,7 @@ const tts = require('../textToSpeech');
 const voice = require('../discordAudio');
 
 const leaveInternal = async (message, args) => {
-    voice.leave();
+    voice.leave(message);
 }
 
 module.exports = {

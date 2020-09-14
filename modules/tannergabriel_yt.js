@@ -33,10 +33,13 @@ const addSong = (songList, songToAdd) => {
     return song;
 }
 
-const addQueue = async (message, serverQueue) => {
+const addQueue = async (message, serverQueue, skip=false) => {
     const args = message.content.split(" ");
-
     let song = [];
+
+    if (voice.isOccupied() && !isPlaying(message)) return message.channel.send('voiceConnectionOccupied');
+    /* resolve leave -> play conflict */
+    if (!skip && !voice.isConnected() && (serverQueue && serverQueue.songs)) return addQueue(message, undefined, true);
     if (args[1].includes('list=')) {
         if (!await ytpl.validateID(args[1])) return message.channel.send(string.get('invalidLink'));
         const result = await ytpl(args[1]);
@@ -100,10 +103,9 @@ const listQueue = (message, serverQueue, index) => {
 let dispatcher;
 
 const play = async (message, song, quiet=false) => {
-    if (voice.isOccupied() && !isPlaying) return;
     const serverQueue = queue.get(message.guild.id);
     if (!song) {
-        voice.leave(message);
+        //voice.leave(message);
         queue.delete(message.guild.id);
         logger.log('verbose', '[tannergabriel-music] Stopped player and left from voice channel.');
         return;
@@ -169,7 +171,7 @@ const restore = (message, data) => {
 
 const skip = (message, serverQueue) => {
     if (!serverQueue) return message.channel.send(string.get('noSongtoSkip'));
-    message.channel.send(string.get('skipCurrentSong').format());
+    message.channel.send(string.get('skipCurrentSong').format(serverQueue.songs[0].title));
 
     if (serverQueue.playing !== true) {
         dispatcher.resume();
