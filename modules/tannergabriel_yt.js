@@ -3,12 +3,23 @@
  * https://github.com/TannerGabriel/discord-bot.git
  */
 
+const ffmpeg = require('fluent-ffmpeg');
+const util = require('util');
 const ytdl = require('ytdl-core');
 const ytpl = require('ytpl');
-const { getYtConnection, setYtConnection, logger } = require('./common');
+const { bufferToStream, logger, parseTime } = require('./common');
 const string = require('./stringResolver');
+const voice = require('./discordAudio');
+const ffprobe = util.promisify(ffmpeg.ffprobe);
+let timeOffset = 0;
 
 const queue = new Map();
+
+const isPlaying = message => {
+    const serverQueue = queue.get(message.guild.id);
+    if (voice.isOccupied() && serverQueue) return true;
+    else return false;
+}
 
 const addSong = (songList, songToAdd) => {
     const song = songList;
@@ -24,11 +35,6 @@ const addSong = (songList, songToAdd) => {
 
 const addQueue = async (message, serverQueue) => {
     const args = message.content.split(" ");
-
-    const voiceChannel = message.member.voice.channel;
-    if (!voiceChannel) return message.channel.send(string.get('joinVoiceChannelFirst'));
-    const permissions = voiceChannel.permissionsFor(message.client.user);
-    if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) return message.channel.send(string.get('noVoiceChannelPermission'));
 
     let song = [];
     if (args[1].includes('list=')) {
@@ -58,8 +64,6 @@ const addQueue = async (message, serverQueue) => {
 
     const queueConstruct = {
         textChannel: message.channel,
-        voiceChannel: voiceChannel,
-        connection: null,
         songs: [],
         volume: 5,
         playing: true
@@ -68,10 +72,8 @@ const addQueue = async (message, serverQueue) => {
     addSong(queueConstruct.songs, song);
 
     try {
-        setYtConnection(await voiceChannel.join());
-        queueConstruct.connection = getYtConnection();
         message.delete();
-        play(message.guild, queueConstruct.songs[0]);
+        play(message, queueConstruct.songs[0]);
     } catch (err) {
         logger.log('error', `[tannergabriel-music] Failed to add to queue and play music: ${err.stack}`);
         queue.delete(message.guild.id);
@@ -80,7 +82,7 @@ const addQueue = async (message, serverQueue) => {
 }
 
 const listQueue = (message, serverQueue, index) => {
-    if (!getYtConnection()) return message.channel.send(string.get('noSongPlaying'));
+    if (!serverQueue || !serverQueue.songs) return message.channel.send(string.get('noSongPlaying'));
     const songList = [];
     const indexN = index >= 1 && index <= Math.ceil(serverQueue.songs.length/7) ? index : 1; /* Convert index to correct value */
     for (let i = (indexN-1)*7; i < (indexN * 7); i++) {
@@ -92,43 +94,32 @@ const listQueue = (message, serverQueue, index) => {
         }
     }
     songList.push(string.get('songQueueIndex2').format(indexN, Math.ceil(serverQueue.songs.length/7)));
-    console.log(songList);
     message.channel.send(songList.join('\n'));
 }
 
 let dispatcher;
-const ttsRestoreStreamStage1 = (serverQueue) => {
-    const lastPlaytime = serverQueue.connection.dispatcher.streamTime;
-    return lastPlaytime;
-}
-const ttsRestoreStreamStage2 = async (message, serverQueue, lastPlaytime) => {
-    play(message.guild, serverQueue.songs[0], lastPlaytime, true);
-    if (!serverQueue.playing) dispatcher.pause();
-}
 
-const play = (guild, song, lastPlaytime = undefined, quiet = false) => {
-    const serverQueue = queue.get(guild.id);
+const play = async (message, song, quiet=false) => {
+    if (voice.isOccupied() && !isPlaying) return;
+    const serverQueue = queue.get(message.guild.id);
     if (!song) {
-        serverQueue.voiceChannel.leave();
-        setYtConnection(undefined);
-        queue.delete(guild.id);
+        voice.leave(message);
+        queue.delete(message.guild.id);
+        logger.log('verbose', '[tannergabriel-music] Stopped player and left from voice channel.');
         return;
     }
 
-    console.log(lastPlaytime);
-    if (!lastPlaytime) {
-        dispatcher = serverQueue.connection.play(ytdl(song.url))
-            .on('finish', () => {
-                serverQueue.songs.shift();
-            play(guild, serverQueue.songs[0]);
-            }).on('error', error => logger.log('error', `[tannergabriel-music] Failed to play music: ${error.stack}`));
-    } else {
-        dispatcher = serverQueue.connection.play(ytdl(song.url, { begin: `${lastPlaytime}ms` }))
-            .on('finish', () => {
-                serverQueue.songs.shift();
-            play(guild, serverQueue.songs[0]);
-            }).on('error', error => logger.log('error', `[tannergabriel-music] Failed to play music: ${error.stack}`));
-    }
+    let stream = await seek(ytdl(song.url, { filter: 'audioonly', format: 'webm' }));
+    dispatcher = await voice.play(message, stream, { type: 'ogg/opus' });
+    logger.log('verbose', `[tannergabriel-music] Now playing ${song.title}...`);
+    dispatcher.on('finish', () => {
+        logger.log('verbose', '[tannergabriel-music] Finished. Shifting to next song...');
+        timeOffset = 0;
+        serverQueue.songs.shift();
+        play(message, serverQueue.songs[0]);
+    }).on('error', err => {
+        logger.log('error', `[tannergabriel-music] Failed to play music: ${err.stack}`);
+    });
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
     if (!quiet) serverQueue.textChannel.send(string.get('playSongStart').format(song.title));
 }
@@ -146,37 +137,67 @@ const pause = (message, serverQueue) => {
     }
 }
 
-const skip = (message, serverQueue) => {
-    if (!message.member.voice.channel) return message.channel.send(string.get('joinVoiceChannelFirst'));
-    if (!serverQueue) return message.channel.send(string.get('noSongtoSkip'));
-    message.channel.send(string.get('skipCurrentSong').format(serverQueue.songs[0].title));
-    if (serverQueue.playing !== true) {
-        dispatcher.resume();
-        serverQueue.playing = true;
+const seek = async (stream) => {
+    try {
+        const result = ffmpeg(stream).seek(parseTime(timeOffset)).format('opus')
+            .on('error', (err, stdout, stderr) => {
+                throw err;
+            })
+            .on('stderr', (stderr) => { /* Why fluent-ffmpeg prints stdout to stderr? */
+                logger.log('verbose', `[fluent-ffmpeg] FFMPEG output: ${stderr}`);
+            });
+        return result.pipe();
+    } catch (err) {
+        logger.log('error', `[fluent-ffmpeg] Failed to encode: ${err.stack}`);
     }
-    serverQueue.connection.dispatcher.end();
 }
 
-const stop = (message, serverQueue) => {
-    if (!message.member.voice.channel) return message.channel.send(string.get('joinVoiceChannelFirst'));
-    serverQueue.songs = [];
-    message.channel.send(string.get('stopPlayer'));
+const destroy = message => {
+    const serverQueue = queue.get(message.guild.id);
+    const backupQueue = Object.assign({}, serverQueue);
+    const playTime = timeOffset + dispatcher.streamTime;
+    stop(message, serverQueue, true);
+    dispatcher = undefined;
+    return { serverQueue: backupQueue, playTime: playTime };
+}
+
+const restore = (message, data) => {
+    queue.set(message.guild.id, data.serverQueue);
+    timeOffset = data.playTime;
+    play(message, data.serverQueue.songs[0], true);
+}
+
+const skip = (message, serverQueue) => {
+    if (!serverQueue) return message.channel.send(string.get('noSongtoSkip'));
+    message.channel.send(string.get('skipCurrentSong').format());
+
     if (serverQueue.playing !== true) {
         dispatcher.resume();
         serverQueue.playing = true;
     }
-    serverQueue.connection.dispatcher.end();
+    dispatcher.end();
+}
+
+const stop = (message, serverQueue, quiet=false) => {
+    serverQueue.songs = [];
+    if(!quiet) message.channel.send(string.get('stopPlayer'));
+    if (serverQueue.playing !== true) {
+        dispatcher.resume();
+        serverQueue.playing = true;
+    }
+    dispatcher.end();
 }
 
 module.exports = {
+    isPlaying,
     queue,
     addQueue,
     listQueue,
-    ttsRestoreStreamStage1,
-    ttsRestoreStreamStage2,
     play,
     pause,
     skip,
-    stop
+    stop,
+    destroy,
+    restore
 }
 

@@ -1,23 +1,11 @@
 const fs = require('fs');
-const { getTtsConnection, setTtsConnection, getYtConnection } = require('../common');
 const string = require('../stringResolver');
 const music = require('../tannergabriel_yt');
 const tts = require('../textToSpeech');
+const voice = require('../discordAudio');
 
 const leaveInternal = async (message, args) => {
-    if (!getTtsConnection() && !getYtConnection()) {
-        return;
-    }
-    if (getTtsConnection()) {
-        getTtsConnection().disconnect();
-        setTtsConnection(undefined);
-    }
-    if (getYtConnection()) {
-        const serverQueue = music.queue.get(message.guild.id);
-        music.stop(message, serverQueue);
-    }
-    logger.log('verbose', `[discord.js] Left voice channel.`);
-    message.channel.send(string.get('leftVoiceChannel'));
+    voice.leave();
 }
 
 module.exports = {

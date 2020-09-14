@@ -1,11 +1,10 @@
 const TTS = require('@google-cloud/text-to-speech');
-const { getUsername } = require('./common');
+const { bufferToStream, getUsername } = require('./common');
 const string = require('./stringResolver');
-const { Readable } = require('stream');
+const voice = require('./discordAudio');
 
 const client = new TTS.TextToSpeechClient();
-let lastAuthor, lastChannel;
-let ssmlGender = 'FEMALE', speed = '1.0', pitch = '0.0', volumeGain = '0.0';
+let lastAuthor, ssmlGender = 'FEMALE', speed = '1.0', pitch = '0.0', volumeGain = '0.0';
 
 const requestSample = {
     input: { text: 'This is a sample text.' },
@@ -13,25 +12,10 @@ const requestSample = {
     audioConfig: { audioEncoding: 'OGG_OPUS', speakingRate: speed, pitch: pitch, volumeGainDb: volumeGain }
 };
 
-/*
- * @param binary Buffer
- * returns readableInstanceStream Readable
- * https://stackoverflow.com/a/54136803
- */
-const bufferToStream = (binary) => {
-    const readableInstanceStream = new Readable({
-        read() {
-            this.push(binary);
-            this.push(null);
-        }
-    });
-    return readableInstanceStream;
-}
-
-const tts_speak = async (connection, message, text) => {
+const tts_speak = async (message, text) => {
     let request = requestSample;
     /* Replace all parameters */
-    if ((message.author !== lastAuthor) || (connection.channel.id !== lastChannel)) {
+    if (lastAuthor !== message.author || voice.isInturrupted()) {
         request.input = { ssml: '<speak>' + string.get('ttsPrefix').format(getUsername(message)) + '<break time="0.5s"/>' + text + '</speak>' };
     } else {
         request.input = { text: text }
@@ -41,12 +25,10 @@ const tts_speak = async (connection, message, text) => {
     request.audioConfig.pitch = pitch
     request.audioConfig.volumeGainDb = volumeGain;
 
-    console.log(request) /* Debug */
     lastAuthor = message.author;
-    lastChannel = connection.channel.id;
     const [response] = await client.synthesizeSpeech(request);
     const stream = bufferToStream(response.audioContent);
-    await connection.play(stream, { type: 'ogg/opus' });
+    return voice.play(message, stream, { type: 'ogg/opus' }, true);
 }
 
 const tts_config = (key, value) => {
