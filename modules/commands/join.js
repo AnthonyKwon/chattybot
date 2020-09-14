@@ -1,29 +1,10 @@
 const fs = require('fs');
-const { getTtsConnection, setTtsConnection, logger } = require('../common');
+const { logger } = require('../common');
 const string = require('../stringResolver');
+const voice = require('../discordAudio');
 
-const sayInternal = async (message, args) => {
-    try {
-        if (!getTtsConnection() && message.member.voice.channel) {
-            setTtsConnection(await message.member.voice.channel.join());
-            logger.log('verbose', `[discord.js] Joined voice channel ${getTtsConnection().channel.id}`);
-            return message.channel.send(string.get('joinedVoiceChannel').format(getTtsConnection().channel.name));
-        } else if (!getTtsConnection() && args) {
-            const channel = await message.client.channels.fetch(args[0]);
-            setTtsConnection(await channel.join());
-            logger.log('verbose', `[discord.js] Joined voice channel ${getTtsConnection().channel.id}`);
-            return message.channel.send(string.get('joinedVoiceChannel').format(getTtsConnection().channel.name));
-        } else {
-            return string.get('joinVoiceChannelFirst');
-        }
-    } catch (err) {
-        if (err.message === 'Unknown Channel') {
-            message.channel.send(string.get('unknownChannelError'));
-        } else if (err.message.split(`\n`)[0] === 'Invalid Form Body') {
-            message.channel.send(string.get('invalidFormBodyError'));
-        }
-        logger.log('error', `[discord.js] An error occured while connected to voice channel: \n${err.stack}`);
-    }
+const joinInternal = async (message, args) => {
+    voice.join(message);
 }
 
 module.exports = {
@@ -34,6 +15,6 @@ module.exports = {
     usage: string.get('joinCommandUsage'),
     cooldown: 5,
     execute(message, args) {
-       return sayInternal(message, args);
+       return joinInternal(message, args);
     }
 }

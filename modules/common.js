@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const winston = require('winston');
+const { Readable } = require('stream');
 
 let ttsConnection = undefined;
 const getTtsConnection = () => {
@@ -23,10 +24,46 @@ const getUsername = message => {
     return username.split('_').join(' ');
 }
 
+/*
+ * Add padding zero
+ * https://stackoverflow.com/a/9744576
+*/
+const paddy = (num, padlen, padchar) => {
+    var pad_char = typeof padchar !== 'undefined' ? padchar : '0';
+    var pad = new Array(1 + padlen).join(pad_char);
+    return (pad + num).slice(-pad.length);
+}
+
+const parseTime = param => {
+    let time = paddy(Math.floor(param) % 1000, 3);
+    time = Math.floor(param / 1000) > 1 ?
+        `${paddy((Math.floor(param / 1000)) % 60, 2)}.${time}` : `00.${time}`;
+    time = Math.floor((param / (1000 * 60))) ?
+        `${paddy(Math.floor((param / (1000 * 60))) % 60, 2)}:${time}` : `00:${time}`;
+    time = Math.floor((param / (1000 * 60 * 60))) ?
+        `${param / (1000 * 60 * 60)}:${time}` : `00:${time}`
+    return time;
+}
+
 if (!String.prototype.replaceAll) {
     String.prototype.replaceAll = function (search, replace) {
         return this.split(search).join(replace);
     }
+}
+
+/*
+ * @param binary Buffer
+ * returns readableInstanceStream Readable
+ * https://stackoverflow.com/a/54136803
+ */
+const bufferToStream = (binary) => {
+    const readableInstanceStream = new Readable({
+        read() {
+            this.push(binary);
+            this.push(null);
+        }
+    });
+    return readableInstanceStream;
 }
 
 const logger = winston.createLogger({
@@ -48,10 +85,12 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 module.exports = {
+    bufferToStream,
     getTtsConnection,
     setTtsConnection,
     getYtConnection,
     setYtConnection,
     getUsername,
-    logger
+    logger,
+    parseTime,
 }
