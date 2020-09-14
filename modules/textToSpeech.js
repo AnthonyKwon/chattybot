@@ -28,7 +28,7 @@ const tts_speak = async (message, text) => {
     lastAuthor = message.author;
     const [response] = await client.synthesizeSpeech(request);
     const stream = bufferToStream(response.audioContent);
-    return voice.play(message, stream, { type: 'ogg/opus' }, true);
+    return voice.play(message, stream, { type: 'ogg/opus' });
 }
 
 const tts_config = (key, value) => {

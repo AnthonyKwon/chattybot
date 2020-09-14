@@ -4,13 +4,14 @@ const string = require('./stringResolver');
 const em = event.EventEmitter();
 let connection = undefined; /* Discord.js VoiceConnection */
 let _isInturrupted = false;
+const isConnected = () => (!connection) ? false : true;
 const isInturrupted = () => { /* get value of _isInturrupted */
     return _isInturrupted;
-}
+};
 const isOccupied = () => { /* check if dispatcher is used */
     if (connection != undefined && connection.dispatcher) return true;
     else return false;
-}
+};
 
 const join = async (message, channel=undefined) => {
     if (!message.member.voice.channel && !channel) return message.channel.send(string.get('joinVoiceChannelFirst'));
@@ -38,8 +39,7 @@ const join = async (message, channel=undefined) => {
     }
 }
 
-const play = async (message, stream, option=undefined, override=false) => {
-    while (!override && connection && connection.dispatcher) {} /* Wait for another stream to end */
+const play = async (message, stream, option=undefined) => {
     if (!connection) await join(message);
     if (_isInturrupted) _isInturrupted = false;
     return await connection.play(stream, option);
@@ -55,6 +55,7 @@ const leave = (message, quiet=false) => {
 }
 
 module.exports = {
+    isConnected,
     isInturrupted,
     isOccupied,
     join,
