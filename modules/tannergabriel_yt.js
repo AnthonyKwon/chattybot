@@ -17,7 +17,7 @@ const queue = new Map();
 
 const isPlaying = message => {
     const serverQueue = queue.get(message.guild.id);
-    if (voice.isOccupied() && serverQueue) return true;
+    if (voice.isOccupied(message.guild.id) && serverQueue) return true;
     else return false;
 }
 
@@ -37,9 +37,9 @@ const addQueue = async (message, serverQueue, skip=false) => {
     const args = message.content.split(" ");
     let song = [], songTitle;
 
-    if (voice.isOccupied() && !isPlaying(message)) return message.channel.send('voiceConnectionOccupied');
+    if (voice.isOccupied(message.guild.id) && !isPlaying(message)) return message.channel.send('voiceConnectionOccupied');
     /* resolve leave -> play conflict */
-    if (!skip && !voice.isConnected() && (serverQueue && serverQueue.songs)) return addQueue(message, undefined, true);
+    if (!skip && !voice.isConnected(message.guild.id) && (serverQueue && serverQueue.songs)) return addQueue(message, undefined, true);
     if (args[1].includes('list=')) {
         if (!await ytpl.validateID(args[1])) return message.channel.send(string.get('invalidLink'));
         const result = await ytpl(args[1]);
@@ -107,6 +107,7 @@ let dispatcher;
 const play = async (message, song, quiet=false) => {
     const serverQueue = queue.get(message.guild.id);
     if (!song) {
+        /* Temporary disabled until find solution to auto-disconnect */
         //voice.leave(message);
         queue.delete(message.guild.id);
         logger.log('verbose', '[tannergabriel-music] Stopped player and left from voice channel.');
@@ -161,7 +162,6 @@ const destroy = message => {
     const backupQueue = Object.assign({}, serverQueue);
     const playTime = timeOffset + dispatcher.streamTime;
     stop(message, serverQueue, true);
-    dispatcher = undefined;
     return { serverQueue: backupQueue, playTime: playTime };
 }
 

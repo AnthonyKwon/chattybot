@@ -15,7 +15,7 @@ const requestSample = {
 const tts_speak = async (message, text) => {
     let request = requestSample;
     /* Replace all parameters */
-    if (lastAuthor !== message.author || voice.isInturrupted()) {
+    if (lastAuthor !== message.author || voice.isInturrupted(message.guild.id)) {
         request.input = { ssml: '<speak>' + string.get('ttsPrefix').format(getUsername(message)) + '<break time="0.5s"/>' + text + '</speak>' };
     } else {
         request.input = { text: text }
