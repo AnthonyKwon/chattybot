@@ -35,7 +35,7 @@ const addSong = (songList, songToAdd) => {
 
 const addQueue = async (message, serverQueue, skip=false) => {
     const args = message.content.split(" ");
-    let song = [];
+    let song = [], songTitle;
 
     if (voice.isOccupied() && !isPlaying(message)) return message.channel.send('voiceConnectionOccupied');
     /* resolve leave -> play conflict */
@@ -50,6 +50,7 @@ const addQueue = async (message, serverQueue, skip=false) => {
             };
             song.push(data);
         });
+        songTitle = string.get('playlistTitle').format(song[0].title, song.length - 1);
     } else {
         if (!ytdl.validateURL(args[1])) return message.channel.send(string.get('invalidLink'));
         const songInfo = await ytdl.getInfo(args[1]);
@@ -57,12 +58,13 @@ const addQueue = async (message, serverQueue, skip=false) => {
             title: songInfo.videoDetails.title,
             url: songInfo.videoDetails.video_url
         };
+        songTitle = song.title;
     }
 
     if (serverQueue) {
         addSong(serverQueue.songs, song);
         message.delete();
-        return message.channel.send(string.get('addSongSucess').format(song.title));
+        return message.channel.send(string.get('addSongSucess').format(songTitle));
     }
 
     const queueConstruct = {
@@ -80,7 +82,7 @@ const addQueue = async (message, serverQueue, skip=false) => {
     } catch (err) {
         logger.log('error', `[tannergabriel-music] Failed to add to queue and play music: ${err.stack}`);
         queue.delete(message.guild.id);
-        return message.channel.send(string.get('addSongFailed').format(song.title));
+        return message.channel.send(string.get('addSongFailed').format(songTitle));
     }
 }
 
