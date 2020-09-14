@@ -1,46 +1,41 @@
 const fs = require('fs');
+const util = require('util');
 const { logger } = require('../common');
 const config = require('../configLoader');
 const string = require('../stringResolver');
 const music = require('../tannergabriel_yt');
 const tts = require('../textToSpeech');
 const { chat_format } = config.load(['chat_format']);
+const regexMention = /<(#|@!)[0-9]{18}>/g;
+const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~+<>@\#$%&\\\=\(]/gi;
 
-const getUnsafe = () => {
-    const unsafe = ['<', '/', '>']; /* XML and some unsafe characters */
-    return unsafe;
-}
-
-const saferMessage = message => {
-    const unsafe = getUnsafe();
-    let newMsg = message;
-    for (u of unsafe) {
-        newMsg = newMsg.replaceAll(u, '');
-    }
-    return newMsg;
-}
-
-const isMessageSafe = message => {
-    const unsafe = getUnsafe();
-    for (u of unsafe) {
-        if (message.includes(u)) return false;
-    }
-    return true;
+const saferMessage = (message, content) => {
+    let saferMsg = content.replace(regexMention, (match, $1) => {
+        let id = match.replaceAll(/[<>]/g, '');
+        if (id.includes('@!')) {
+            id = message.guild.members.cache.get(id.replace('@!', '')).displayName;
+            return id;
+        } else if (id.includes('#')) {
+            const asyncFetchChannel = util.promisify(message.client.channels.fetch);
+            const channel = asyncFetchChannel(id.replace('#', ''));
+            id = channel.name;
+            return id;
+        }
+    });
+    console.log(saferMsg);
+    saferMsg = saferMsg.replaceAll(regExSpecial, '');
+    return saferMsg;
 }
 
 const sayInternal = async (message, args) => {
-    const safeMsg = saferMessage(args.join(' '));
+    const safeMsg = saferMessage(message, args.join(' '));
     message.delete();
-    if (!isMessageSafe(args.join(' '))) {
-        logger.log('warn', `[discord.js] ${message.author} tried to send unsafe character/word in message!`);
-        message.channel.send(string.get('unsafeMessageWarning'));
-    }
     logger.log('verbose', `[discord.js] ${message.author} spoken: ${args.join(' ')}`);
     const musicPlaying = music.isPlaying(message);
     let dispatcherData;
     if (musicPlaying) dispatcherData = music.destroy(message);
     message.channel.send(chat_format.format(message.author, args.join(' ')));
-    const result = await tts.speak(message, safeMsg)
+    const result = tts.speak(message, safeMsg);
     result.on('finish', () => {
         if (musicPlaying) music.restore(message, dispatcherData);
     });

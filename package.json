@@ -1,6 +1,6 @@
 {
   "name": "catty",
-  "version": "1.0.0",
+  "version": "0.4.5",
   "description": "An Discord Text-To-Speech Bot.",
   "main": "main.js",
   "scripts": {
