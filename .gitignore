@@ -1,4 +1,4 @@
+.vscode
 configs/*.json
-credentials
 logs
 node_modules

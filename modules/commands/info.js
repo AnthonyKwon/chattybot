@@ -7,7 +7,7 @@ module.exports = {
     argsRequired: false,
     aliases: [string.get('infoCommandAliases')],
     description: string.get('infoCommandDesc').format(string.get('localizedBotName')),
-    execute(message, args) {
+    execute(message) {
         const info_message = [];
         info_message.push(string.get('infoMessage1').format(string.get('localizedBotName'), version));
         info_message.push(string.get('infoMessage2').format(string.get('localizedBotName')));

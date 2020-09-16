@@ -1,4 +1,3 @@
-const fs = require('fs');
 const path = require('path');
 const winston = require('winston');
 const { Readable } = require('stream');
@@ -22,27 +21,6 @@ if (!String.prototype.format) {
     };
 }
 
-/*
- * Add padding zero
- * https://stackoverflow.com/a/9744576
-*/
-const paddy = (num, padlen, padchar) => {
-    var pad_char = typeof padchar !== 'undefined' ? padchar : '0';
-    var pad = new Array(1 + padlen).join(pad_char);
-    return (pad + num).slice(-pad.length);
-}
-
-const parseTime = param => {
-    let time = paddy(Math.floor(param) % 1000, 3);
-    time = Math.floor(param / 1000) > 1 ?
-        `${paddy((Math.floor(param / 1000)) % 60, 2)}.${time}` : `00.${time}`;
-    time = Math.floor((param / (1000 * 60))) ?
-        `${paddy(Math.floor((param / (1000 * 60))) % 60, 2)}:${time}` : `00:${time}`;
-    time = Math.floor((param / (1000 * 60 * 60))) ?
-        `${param / (1000 * 60 * 60)}:${time}` : `00:${time}`
-    return time;
-}
-
 if (!String.prototype.replaceAll) {
     String.prototype.replaceAll = function (search, replace) {
         return this.split(search).join(replace);
@@ -62,6 +40,27 @@ const bufferToStream = (binary) => {
         }
     });
     return readableInstanceStream;
+}
+
+/*
+ * Add padding zero
+ * https://stackoverflow.com/a/9744576
+*/
+const paddy = (num, padlen, padchar) => {
+    var pad_char = typeof padchar !== 'undefined' ? padchar : '0';
+    var pad = new Array(1 + padlen).join(pad_char);
+    return (pad + num).slice(-pad.length);
+}
+
+const parseTime = param => {
+    let time = paddy(Math.floor(param) % 1000, 3);
+    time = Math.floor(param / 1000) > 1 ?
+        `${paddy((Math.floor(param / 1000)) % 60, 2)}.${time}` : `00.${time}`;
+    time = Math.floor((param / (1000 * 60))) ?
+        `${paddy(Math.floor((param / (1000 * 60))) % 60, 2)}:${time}` : `00:${time}`;
+    time = Math.floor((param / (1000 * 60 * 60))) ?
+        `${param / (1000 * 60 * 60)}:${time}` : `00:${time}`
+    return time;
 }
 
 const logger = winston.createLogger({

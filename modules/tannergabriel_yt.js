@@ -1,13 +1,11 @@
 /* TannerGabriel's youtube-dl discord bot sample.
  * https://github.com/TannerGabriel/discord-bot.git */
 const ffmpeg = require('fluent-ffmpeg');
-const util = require('util');
 const ytdl = require('ytdl-core');
 const ytpl = require('ytpl');
-const { bufferToStream, logger, parseTime } = require('./common');
+const { logger, parseTime } = require('./common');
 const string = require('./stringResolver');
 const voice = require('./discordAudio');
-const ffprobe = util.promisify(ffmpeg.ffprobe);
 let timeOffset = 0;
 
 const queue = new Map();
@@ -122,12 +120,15 @@ const listQueue = (message, serverQueue, index) => {
     message.channel.send(songList.join('\n'));
 }
 
+/* TODO: dispatcher variable is global and only accepts one guild data.
+ * This might cause problem later. */
 let dispatcher;
 
 const play = async (message, song, quiet=false) => {
     const serverQueue = queue.get(message.guild.id);
     if (!song) {
         /* Dirty trial to resolve FFmpeg memory leak */
+        /* TODO: leave voice channel (only when song play queue reached end) */
         if (stream.get(message.guild.id)) {
             await stream.get(message.guild.id).kill();
             stream.delete(message.guild.id);
@@ -137,10 +138,13 @@ const play = async (message, song, quiet=false) => {
         return;
     }
 
+    /* Pipe stream from ytdl to ffmpeg and save to guild's stream */
     stream.set(message.guild.id, await seek(ytdl(song.url, { filter: 'audioonly', format: 'webm' })));
+    /* Send stream to voice channel */
     dispatcher = await voice.play(message, stream.get(message.guild.id).pipe(), { type: 'ogg/opus' });
     logger.log('verbose', `[tannergabriel-music] Now playing ${song.title}...`);
     dispatcher.on('finish', () => {
+        /* Play next song on finish */
         logger.log('verbose', '[tannergabriel-music] Finished. Shifting to next song...');
         timeOffset = 0;
         serverQueue.songs.shift();
@@ -153,6 +157,7 @@ const play = async (message, song, quiet=false) => {
 }
 
 const pause = (message, serverQueue) => {
+    /* If dispatcher is not running (no song playing), show error. */
     if (!dispatcher) return message.channel.send(string.get('noSongPlaying'));
     if (serverQueue.playing === true) {
         dispatcher.pause();
@@ -167,11 +172,13 @@ const pause = (message, serverQueue) => {
 
 const seek = async (serverStream) => {
     try {
+        /* TODO: find the way to seek without ffmpeg
+         *(encoding lossy format again might degrade the audio quality severely) */
         const result = ffmpeg(serverStream).seek(parseTime(timeOffset)).format('opus')
             .on('error', (err, stdout, stderr) => {
                 throw err;
             })
-            .on('stderr', (stderr) => { /* Why fluent-ffmpeg prints stdout to stderr? */
+            .on('stderr', stderr => { /* Why fluent-ffmpeg prints stdout to stderr? */
                 logger.log('verbose', `[fluent-ffmpeg] FFMPEG output: ${stderr}`);
             });
         return result;
@@ -180,6 +187,8 @@ const seek = async (serverStream) => {
     }
 }
 
+/* Resolve conflict between TTS and Music Player
+ * Destroy current music player and return queue/playtime data */
 const destroy = message => {
     const serverQueue = queue.get(message.guild.id);
     const backupQueue = Object.assign({}, serverQueue);
@@ -188,6 +197,8 @@ const destroy = message => {
     return { serverQueue: backupQueue, playTime: playTime };
 }
 
+/* Resolve conflict between TTS and Music Player
+ * Restore music player with passed queue/playtime data */
 const restore = (message, data) => {
     queue.set(message.guild.id, data.serverQueue);
     timeOffset = data.playTime;
@@ -195,6 +206,7 @@ const restore = (message, data) => {
 }
 
 const skip = (message, serverQueue) => {
+    /* If guild's queue isn't exist, return an error. */
     if (!serverQueue) return message.channel.send(string.get('noSongtoSkip'));
     message.channel.send(string.get('skipCurrentSong').format(serverQueue.songs[0].title));
 
@@ -227,4 +239,3 @@ module.exports = {
     destroy,
     restore
 }
-

@@ -9,6 +9,8 @@ const { chat_format } = config.load(['chat_format']);
 const regexMention = /<(#|@!)[0-9]{18}>/g;
 const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~+<>@\#$%&\\\=\(]/gi;
 
+/* Remove all potentally dangerous characters,
+ * replace user & mention to name */
 const saferMessage = (message, content) => {
     let saferMsg = content.replace(regexMention, (match, $1) => {
         let id = match.replaceAll(/[<>]/g, '');
@@ -27,16 +29,22 @@ const saferMessage = (message, content) => {
     return saferMsg;
 }
 
-const sayInternal = async (message, args) => {
+const commandFunc = async (message, args) => {
+    /* Get filtered message */
     const safeMsg = saferMessage(message, args.join(' '));
     message.delete();
     logger.log('verbose', `[discord.js] ${message.author} spoken: ${args.join(' ')}`);
+    /* Check if music playing */
     const musicPlaying = music.isPlaying(message);
     let dispatcherData;
+    /* Destroy current music session */
     if (musicPlaying) dispatcherData = music.destroy(message);
     message.channel.send(chat_format.format(message.author, args.join(' ')));
     const result = tts.speak(message, safeMsg);
     result.on('finish', () => {
+        /* Restore destoryed music session
+         * TODO: this code throws exception, but works. (I don't know why)
+         * We need to fix it. */
         if (musicPlaying) music.restore(message, dispatcherData);
     });
 }
@@ -49,6 +57,6 @@ module.exports = {
     usage: string.get('sayCommandUsage'),
     cooldown: 5,
     execute(message, args) {
-        return sayInternal(message, args);
+        return commandFunc(message, args);
     }
 }

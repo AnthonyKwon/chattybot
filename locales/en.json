@@ -42,7 +42,6 @@
     "joinedVoiceChannel": "Joined voice channel **#{0}**.",
     "leftVoiceChannel": "Left from voice channel.",
     "noVoiceChannelPermission": "I don't have permission to join or speak in that voice channel!",
-    "reloadCommandDesc": "Reload command set.",
     "reloadComplete": "Sucessfully reload `{0}`!",
     "reloadFailed": "Failed to reload `{0}{1}`!",
     "unsafeMessageWarning": "Unsafe character detected in message. It will be automatically deleted.",

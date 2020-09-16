@@ -1,61 +1,60 @@
 /* Google's Text-to-Speech Library Loader */
+const path = require('path');
 const TTS = require('@google-cloud/text-to-speech');
 const { bufferToStream, getUsername } = require('./common');
+const config = require('./configLoader');
+const { projectId } = config.load(['project_id']);
 const string = require('./stringResolver');
 const voice = require('./discordAudio');
 
-const client = new TTS.TextToSpeechClient();
-let lastAuthor, ssmlGender = 'FEMALE', speed = '1.0', pitch = '0.0', volumeGain = '0.0';
+/* Get GCP project ID and key file name */
+const client = new TTS.TextToSpeechClient({ projectId, keyFilename: path.join(__dirname, '../configs/gcp-credentials.json') });
+const request = new Map();
+let lastAuthor;
 
-const requestSample = {
-    input: { text: 'This is a sample text.' },
-    voice: { languageCode: string.get('ttsLocale'), ssmlGender: ssmlGender },
-    audioConfig: { audioEncoding: 'OGG_OPUS', speakingRate: speed, pitch: pitch, volumeGainDb: volumeGain }
-};
+/* Initialize TTS request */
+const tts_init = message => {
+    const reqTemplate = {
+        input: { text: 'This is a sample text.' },
+        voice: { languageCode: string.get('ttsLocale'), ssmlGender: 'NEUTRAL' },
+        audioConfig: { audioEncoding: 'OGG_OPUS', speakingRate: '1.0', pitch: '1.0', volumeGainDb: '0.0' }
+    };
+    request.set(message.guild.id, reqTemplate);
+    return;
+}
 
 const tts_speak = async (message, text) => {
-    /* Set TTS request content */
-    let request = requestSample;
+    /* If current guild's tts request not initialized, do it first. */
+    if (!request.get(message.guild.id)) tts_init(message);
+    const guildRequest = request.get(message.guild.id);
     /* If message author or channel is different, send TTS w/ prefix. */
     if (lastAuthor !== message.author || voice.isInturrupted(message.guild.id)) {
-        request.input = { ssml: '<speak>' + string.get('ttsPrefix').format(getUsername(message)) + '<break time="0.5s"/>' + text + '</speak>' };
-    } else {
-        request.input = { text: text }
-    }
-    request.voice.ssmlGender = ssmlGender;
-    request.audioConfig.speakingRate = speed;
-    request.audioConfig.pitch = pitch
-    request.audioConfig.volumeGainDb = volumeGain;
-    lastAuthor = message.author;
+        guildRequest.input = { ssml: '<speak>' + string.get('ttsPrefix').format(getUsername(message)) + 
+            '<break time="0.5s"/>' + text + '</speak>' };
+    /* If not, send just text only */
+    } else guildRequest.input = { text: text };
     const [response] = await client.synthesizeSpeech(request);
     /* Google sends response as buffer. We need to convert it as ReadableStream. */
     const stream = bufferToStream(response.audioContent);
     return voice.play(message, stream, { type: 'ogg/opus' });
 }
 
-const tts_config = (key, value) => {
-    /* TODO: Change it as better implemention. */
-    switch (key) {
-        case 'ssmlGender':
-            if (ssmlGender === value) return false;
-            ssmlGender = value;
-            return true;
-            break;
-        case 'speakingRate':
-            speed = value;
-            return true;
-            break;
-        case 'pitch':
-            pitch = value;
-            return true;
-            break;
-        case 'volumeGainDb':
-            if (volumeGain === value) return false;
-            volumeGain = value;
-            return true;
-            break;
+const tts_config = (message, key, value) => {
+    /* If current guild's tts request not initialized, do it first. */
+    if (!request.get(message.guild.id)) tts_init(message);
+    const guildRequest = request.get(message.guild.id);
+    try {
+        /* set request option */
+        if (key === 'ssmlGender') guildRequest.voice.ssmlGender = value;
+        else guildRequest.audioConfig[key] = value;
+        /* send success message */
+        logger.log('info', `[google-tts] ${key} changed to ${value}.`);
+        message.channel.send(string.get('propChangeSuccessful').format(string.get(`keyCommandName`), gender));
+    } catch (err) {
+        logger.log('error', `[google-tts] Failed to change ${string.get(key)}: ${err.stack}`);
+        message.channel.send(string.get('propChangeFailed').format(string.get(`{key}CommandName`)));
     }
-    return false;
+    return;
 }
 
 module.exports = {
