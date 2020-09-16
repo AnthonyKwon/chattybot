@@ -1,3 +1,4 @@
+/* Google's Text-to-Speech Library Loader */
 const TTS = require('@google-cloud/text-to-speech');
 const { bufferToStream, getUsername } = require('./common');
 const string = require('./stringResolver');
@@ -13,8 +14,9 @@ const requestSample = {
 };
 
 const tts_speak = async (message, text) => {
+    /* Set TTS request content */
     let request = requestSample;
-    /* Replace all parameters */
+    /* If message author or channel is different, send TTS w/ prefix. */
     if (lastAuthor !== message.author || voice.isInturrupted(message.guild.id)) {
         request.input = { ssml: '<speak>' + string.get('ttsPrefix').format(getUsername(message)) + '<break time="0.5s"/>' + text + '</speak>' };
     } else {
@@ -24,14 +26,15 @@ const tts_speak = async (message, text) => {
     request.audioConfig.speakingRate = speed;
     request.audioConfig.pitch = pitch
     request.audioConfig.volumeGainDb = volumeGain;
-
     lastAuthor = message.author;
     const [response] = await client.synthesizeSpeech(request);
+    /* Google sends response as buffer. We need to convert it as ReadableStream. */
     const stream = bufferToStream(response.audioContent);
     return voice.play(message, stream, { type: 'ogg/opus' });
 }
 
 const tts_config = (key, value) => {
+    /* TODO: Change it as better implemention. */
     switch (key) {
         case 'ssmlGender':
             if (ssmlGender === value) return false;

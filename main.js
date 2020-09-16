@@ -5,15 +5,13 @@ const { logger } = require(path.join(__dirname, 'modules/common'));
 const config = require(path.join(__dirname, 'modules/configLoader'));
 const string = require(path.join(__dirname, 'modules/stringResolver'));
 const { prefix, token } = config.load(['prefix', 'token']);
-if (!String.prototype.format) {
-    String.prototype.format = string.format;
-}
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
 const commandFiles = fs.readdirSync(path.join(__dirname, 'modules/commands')).filter(file => file.endsWith('.js'));
 
+/* Dyanic command handler */
 for (const file of commandFiles) {
     const command = require(path.join(__dirname, 'modules/commands', file));
     client.commands.set(command.name, command);
@@ -24,7 +22,7 @@ client.once('ready', () => {
 });
 
 client.on('message', async message => {
-    /* Command handler */
+    /* Dyanmic coomand handler */
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
@@ -34,6 +32,7 @@ client.on('message', async message => {
         || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
     if(!command) return;
 
+    /* Check argument exists (if required) */
     if (command.argsRequired && !args.length) {
         let reply = string.get('argsRequiredLine1');
 
@@ -44,6 +43,7 @@ client.on('message', async message => {
         return message.channel.send(reply);
     }
 
+    /* Check cooldown past (needs fix) */
     const cooldowns = new Discord.Collection();
 
     if (!cooldowns.has(command.name)) {
