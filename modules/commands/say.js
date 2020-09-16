@@ -40,7 +40,7 @@ const commandFunc = async (message, args) => {
     /* Destroy current music session */
     if (musicPlaying) dispatcherData = music.destroy(message);
     message.channel.send(chat_format.format(message.author, args.join(' ')));
-    const result = tts.speak(message, safeMsg);
+    const result = await tts.speak(message, safeMsg);
     result.on('finish', () => {
         /* Restore destoryed music session
          * TODO: this code throws exception, but works. (I don't know why)

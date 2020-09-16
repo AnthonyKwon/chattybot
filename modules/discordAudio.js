@@ -69,7 +69,6 @@ const leave = (message, quiet=false) => {
 }
 
 module.exports = {
-    getConnection,
     isConnected,
     isInturrupted,
     isOccupied,

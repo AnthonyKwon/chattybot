@@ -1,6 +1,6 @@
 {
   "name": "catty",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "description": "An Discord Text-To-Speech Bot.",
   "main": "main.js",
   "scripts": {
@@ -17,6 +17,6 @@
     "fluent-ffmpeg": "^2.1.2",
     "winston": "^3.3.3",
     "ytdl-core": "^3.2.2",
-    "ytpl": "^1.0.0"
+    "ytpl": "^1.0.1"
   }
 }
