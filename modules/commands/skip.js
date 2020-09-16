@@ -6,6 +6,7 @@ module.exports = {
     aliases: [string.get('skipSongCommandAliases')],
     description: string.get('skipSongCommandDesc'),
     async execute(message, args) {
+        /* Parse music queue by author's current guild */
         const serverQueue = music.queue.get(message.guild.id);
         music.skip(message, serverQueue);
     }

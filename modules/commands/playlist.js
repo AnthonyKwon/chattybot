@@ -7,6 +7,7 @@ module.exports = {
     description: string.get('playlistCommandDesc'),
     usage: string.get('playlistCommandUsage'),
     async execute(message, args) {
+        /* Parse music queue by author's current guild */
         const serverQueue = music.queue.get(message.guild.id);
         music.listQueue(message, serverQueue, args[0]);
     }

@@ -8,8 +8,9 @@ module.exports = {
     description: string.get('playSongCommandDesc'),
     usage: string.get('playSongCommandUsage'),
     async execute(message, args) {
+        /* Actually, play is simmilar to addsong. */
+        /* Parse music queue by author's current guild */
         const serverQueue = music.queue.get(message.guild.id);
-        if (!args) music.play(message.guild, serverQueue);
         music.addQueue(message, serverQueue);
     }
 }
