@@ -4,7 +4,7 @@ const path = require('path');
 const { logger } = require(path.join(__dirname, 'modules/common'));
 const config = require(path.join(__dirname, 'modules/configLoader'));
 const string = require(path.join(__dirname, 'modules/stringResolver'));
-const { prefix, token } = config.load(['prefix', 'token']);
+const { prefix, status, token } = config.load(['prefix', 'status', 'token']);
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -19,6 +19,7 @@ for (const file of commandFiles) {
 
 client.once('ready', () => {
     logger.log('verbose', `[discord.js] Connected to ${client.user.username}!`);
+    client.user.setActivity(status, "PLAYING");
 });
 
 client.on('message', async message => {
