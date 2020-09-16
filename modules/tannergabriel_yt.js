@@ -176,7 +176,9 @@ const seek = async (serverStream) => {
          *(encoding lossy format again might degrade the audio quality severely) */
         const result = ffmpeg(serverStream).seek(parseTime(timeOffset)).format('opus')
             .on('error', (err, stdout, stderr) => {
-                throw err;
+                if (err.message === "ffmpeg was killed with signal SIGKILL") return;
+                logger.log('error', `[fluent-ffmpeg] Failed to encode: ${err.stack}`);
+                //throw err; /* Why this does not go to catch? */
             })
             .on('stderr', stderr => { /* Why fluent-ffmpeg prints stdout to stderr? */
                 logger.log('verbose', `[fluent-ffmpeg] FFMPEG output: ${stderr}`);
