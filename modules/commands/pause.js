@@ -5,7 +5,7 @@ module.exports = {
     name: string.get('pauseSongCommandName'),
     aliases: [string.get('pauseSongCommandAliases')],
     description: string.get('pauseSongCommandDesc'),
-    async execute(message, args) {
+    async execute(message) {
         const serverQueue = music.queue.get(message.guild.id);
         music.pause(message, serverQueue);
     }

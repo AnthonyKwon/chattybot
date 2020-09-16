@@ -6,7 +6,7 @@ const { logger } = require('./common');
 const config = require('./configLoader');
 const { locale } = config.load(['locale']);
 
-const stringResolverInternal = target => {
+const string_get = target => {
     try {
         const localizedStr = JSON.parse(fs.readFileSync(path.join(__dirname, '../locales/', locale + '.json')));
         if (localizedStr[target]) {
@@ -20,8 +20,6 @@ const stringResolverInternal = target => {
 }
 
 module.exports = {
-    get: target => {
-        return stringResolverInternal (target);
-    }
+    get: string_get
 }
 

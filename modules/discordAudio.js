@@ -1,12 +1,8 @@
-const event = require('events');
 const { logger } = require('./common');
 const string = require('./stringResolver');
 /* Discord.js VoiceConnection */
 let connection = new Map();
-/* get connection by guild id */
-const getConnection = guildId => {
-    return connection.get(guildId);
-}
+
 const isConnected = guildId => (!connection.get(guildId)) ? false : true;
 /* isInturrupted checks if voice connection state changed */
 let _isInturrupted = false;

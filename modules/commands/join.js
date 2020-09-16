@@ -10,7 +10,7 @@ module.exports = {
     aliases: [string.get('joinCommandAliases')],
     usage: string.get('joinCommandUsage'),
     cooldown: 5,
-    async execute(message, args) {
+    async execute(message) {
        voice.join(message);
     }
 }

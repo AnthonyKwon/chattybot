@@ -11,19 +11,7 @@ const commandFunc = (message, args) => {
             string.get('wrongProperties2').format(string.get('genderCommandName'), string.get('genderCommandUsage')));
         return;
     }
-
-    const result = tts.config('ssmlGender', gender);
-    /* Send success/failed message by result
-     * TODO: move this part into textToSpeech.js - tts_config() */
-    if (result === true) {
-        /* Success */
-        logger.log('info', `[google-tts] ${string.get('genderCommandName')} changed to ${gender}.`);
-        message.channel.send(string.get('propChangeSuccessful').format(string.get('genderCommandName'), gender));
-    } else {
-        /* Failed */
-        logger.log('error', `[google-tts] Failed to change ${string.get('volumeCommandName')} to ${gender}.`);
-        message.channel.send(string.get('propChangeFailed').format(string.get('genderCommandName')));
-    }
+    const result = tts.config(message, 'ssmlGender', gender);
 }
 
 module.exports = {

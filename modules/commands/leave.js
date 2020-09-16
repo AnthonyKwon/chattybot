@@ -10,7 +10,7 @@ module.exports = {
     argsRequired: false,
     aliases: [string.get('leaveCommandAliases')],
     cooldown: 5,
-    execute(message, args) {
+    execute(message) {
         voice.leave(message);
     }
 }

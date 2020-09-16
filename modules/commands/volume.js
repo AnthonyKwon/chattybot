@@ -20,13 +20,6 @@ module.exports = {
                 string.get('wrongProperties2').format(string.get('volumeCommandName'), string.get('volumeCommandUsage')));
             return;
         }
-        const result = tts.config('volumeGainDb', volume);
-        if (result === true) {
-            logger.log('info', `[google-tts] volume changed to ${volume}.`);
-            message.channel.send(string.get('propChangeSuccessful').format(string.get('volumeCommandName'), volume));
-        } else {
-            logger.log('error', `[google-tts] Failed to change volume to ${volume}.`);
-            message.channel.send(string.get('propChangeFailed').format(string.get('volumeCommandName')));
-        }
+        const result = tts.config(message, 'volumeGainDb', volume);
     }
 }

@@ -23,23 +23,23 @@ const commandFunc = (message, args) => {
                 logger.log('info', `[discord.js] Failed to send DM to ${message.author.tag}: ${error}\n${error.body}`);
                 message.channel.send(string.get('helpDmDescSendFailed').format(message.author));
             });
-
-        /* Parse command from argument */
-        const name = args[0].toLowerCase();
-        command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));
-
-        /* If command doesn't exist, send error */
-        if (!command) return message.channel.send(string.get('unknownCommandError'));
-
-        /* Send help about parsed command */
-        if (command.aliases) data.push(string.get('helpCmdDescNameWithAliases').format(prefix, command.name, command.aliases.join(', ')));
-        else data.push(string.get('helpCmdDescName').format(prefix, command.name));
-        if (command.description) data.push(string.get('helpCmdDescDesc').format(command.description));
-        if (command.usage) data.push(string.get('helpCmdDescUsage').format(prefix, command.name, command.usage));
-        data.push(string.get('helpCmdDescCooldown').format(command.cooldown || 3));
-
-        message.channel.send(data, { split: true });
     }
+    
+    /* Parse command from argument */
+    const name = args[0].toLowerCase();
+    command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));
+
+    /* If command doesn't exist, send error */
+    if (!command) return message.channel.send(string.get('unknownCommandError'));
+
+    /* Send help about parsed command */
+    if (command.aliases) data.push(string.get('helpCmdDescNameWithAliases').format(prefix, command.name, command.aliases.join(', ')));
+    else data.push(string.get('helpCmdDescName').format(prefix, command.name));
+    if (command.description) data.push(string.get('helpCmdDescDesc').format(command.description));
+    if (command.usage) data.push(string.get('helpCmdDescUsage').format(prefix, command.name, command.usage));
+    data.push(string.get('helpCmdDescCooldown').format(command.cooldown || 3));
+
+    message.channel.send(data, { split: true });
 }
 
 module.exports = {

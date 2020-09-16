@@ -43,7 +43,6 @@
     "joinedVoiceChannel": "**#{0}**에 들어갔어요.",
     "leftVoiceChannel": "음성 채널에서 나왔어요.",
     "noVoiceChannelPermission": "음성 채널에 들어가거나 말할 권한이 없어요!",
-    "reloadCommandDesc": "명령어 세트를 다시 불러옵니다.",
     "reloadComplete": "`{0}`을(를) 성공적으로 갱신했습니다!",
     "reloadFailed": "`{0}{1}`을(를) 갱신하지 못했습니다!",
     "unknownGender1": "성별 **{0}**을(를) 알수 없습니다.",

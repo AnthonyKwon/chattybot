@@ -1,4 +1,5 @@
 {
+    "token": "paste_your_token_here",
     "locale": "ko",
     "prefix": "!",
     "chat_format": "{0} » {1}",
