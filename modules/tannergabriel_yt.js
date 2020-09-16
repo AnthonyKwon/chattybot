@@ -1,6 +1,5 @@
 /* TannerGabriel's youtube-dl discord bot sample.
  * https://github.com/TannerGabriel/discord-bot.git */
-
 const ffmpeg = require('fluent-ffmpeg');
 const util = require('util');
 const ytdl = require('ytdl-core');
@@ -14,6 +13,7 @@ let timeOffset = 0;
 const queue = new Map();
 const stream = new Map();
 
+/* Check if music player is playing */
 const isPlaying = message => {
     const serverQueue = queue.get(message.guild.id);
     if (voice.isOccupied(message.guild.id) && serverQueue) return true;
@@ -22,11 +22,14 @@ const isPlaying = message => {
 
 const addSong = (songList, songToAdd) => {
     const song = songList;
+    /* If song list is array */
     if (Array.isArray(songToAdd)) {
+        /* combine current queue array and new songlist array */
         songToAdd.forEach(s => {
             song.push(s);
         });
     } else {
+        /* Put passed object to queue array */
         song.push(songToAdd);
     }
     return song;
@@ -36,43 +39,56 @@ const addQueue = async (message, serverQueue, skip=false) => {
     const args = message.content.split(" ");
     let song = [], songTitle;
 
+    /* If voice connection is occupied (not by music player), return error */
     if (voice.isOccupied(message.guild.id) && !isPlaying(message)) return message.channel.send('voiceConnectionOccupied');
     /* resolve leave -> play conflict */
     if (!skip && !voice.isConnected(message.guild.id) && (serverQueue && serverQueue.songs)) return addQueue(message, undefined, true);
+    /* If link is playlist */
     if (args[1].includes('list=')) {
+        /* Validate youtube playlist link */
         if (!await ytpl.validateID(args[1])) return message.channel.send(string.get('invalidLink'));
         const result = await ytpl(args[1]);
         result.items.forEach(i => {
+            /* push data to song list (song list will be array) */
             const data = {
                 title: i.title,
                 url: i.url
             };
             song.push(data);
         });
+        /* Set title as 1st song name and playlist count (ex: Next to Me and 11 more song(s) added to queue.) */
         songTitle = string.get('playlistTitle').format(song[0].title, song.length - 1);
     } else {
+        /* Validate youtube video link */
         if (!ytdl.validateURL(args[1])) return message.channel.send(string.get('invalidLink'));
         const songInfo = await ytdl.getInfo(args[1]);
+        /* set data to song list (song list will be object) */
         song = {
             title: songInfo.videoDetails.title,
             url: songInfo.videoDetails.video_url
         };
+        /* Set title as 1st song name (ex: Next to Me added to queue.) */
         songTitle = song.title;
     }
 
+    /* If serverQueue is not null == music is already playing */
     if (serverQueue) {
+        /* Add music to current queue */
         addSong(serverQueue.songs, song);
         message.delete();
         return message.channel.send(string.get('addSongSucess').format(songTitle));
     }
 
+    /* Queue */
     const queueConstruct = {
         textChannel: message.channel,
         songs: [],
         volume: 5,
         playing: true
     };
+    /* Set queue by message author's guild */
     queue.set(message.guild.id, queueConstruct);
+    /* Add song to queue and play music */
     addSong(queueConstruct.songs, song);
 
     try {
@@ -86,17 +102,22 @@ const addQueue = async (message, serverQueue, skip=false) => {
 }
 
 const listQueue = (message, serverQueue, index) => {
+    /* If playlist empty, return error */
     if (!serverQueue || !serverQueue.songs) return message.channel.send(string.get('noSongPlaying'));
     const songList = [];
     const indexN = index >= 1 && index <= Math.ceil(serverQueue.songs.length/7) ? index : 1; /* Convert index to correct value */
+    /* Show playlist as 7 line */
     for (let i = (indexN-1)*7; i < (indexN * 7); i++) {
+        /* If no more song exists, break out */
         if (!serverQueue.songs[i]) break;
         if (i === 0) {
+            /* Show first song as Now playing */
             songList.push(string.get('songQueueIndex1Current').format(serverQueue.songs[i].title));
         } else {
             songList.push(string.get('songQueueIndex1').format(i, serverQueue.songs[i].title));
         }
     }
+    /* Playlist index */
     songList.push(string.get('songQueueIndex2').format(indexN, Math.ceil(serverQueue.songs.length/7)));
     message.channel.send(songList.join('\n'));
 }

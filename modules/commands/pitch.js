@@ -9,10 +9,8 @@ module.exports = {
     usage: string.get('pitchCommandUsage'),
     description: string.get('pitchCommandDesc').format(string.get('localizedBotName')),
     execute (message, args) {
-        /*
-         * Convert every falsey value to 0
-         * https://stackoverflow.com/a/7540412
-         */
+        /* Convert every falsey value to 0
+         * https://stackoverflow.com/a/7540412 */
         const pitch = parseFloat(args[0]) || 0;
         if (pitch < -20 || pitch > 20) {
             logger.log('error', `[google-tts] Wrong pitch range ${pitch}.`);
