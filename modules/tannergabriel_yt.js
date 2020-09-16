@@ -1,7 +1,5 @@
-/*
- * TannerGabriel's youtube-dl discord bot sample.
- * https://github.com/TannerGabriel/discord-bot.git
- */
+/* TannerGabriel's youtube-dl discord bot sample.
+ * https://github.com/TannerGabriel/discord-bot.git */
 
 const ffmpeg = require('fluent-ffmpeg');
 const util = require('util');
@@ -110,7 +108,8 @@ const play = async (message, song, quiet=false) => {
     if (!song) {
         /* Dirty trial to resolve FFmpeg memory leak */
         if (stream.get(message.guild.id)) {
-            stream.get(message.guild.id).kill();
+            await stream.get(message.guild.id).kill();
+            stream.delete(message.guild.id);
         }
         queue.delete(message.guild.id);
         logger.log('verbose', '[tannergabriel-music] Stopped player and left from voice channel.');

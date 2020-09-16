@@ -3,25 +3,23 @@ const path = require('path');
 const winston = require('winston');
 const { Readable } = require('stream');
 
-let ttsConnection = undefined;
-const getTtsConnection = () => {
-    return ttsConnection;
-}
-const setTtsConnection = args => {
-    ttsConnection = args;
-}
-
-let ytConnection = undefined;
-const getYtConnection = () => {
-    return ytConnection;
-}
-const setYtConnection = args => {
-    ytConnection = args;
-}
-
 const getUsername = message => {
     const username = message.client.guilds.cache.get(message.guild.id).member(message.author).displayName;
     return username.split('_').join(' ');
+}
+
+/* Implement format() in javascript
+   https://stackoverflow.com/a/18405800 */
+if (!String.prototype.format) {
+    String.prototype.format = function() {
+        const args = arguments;
+        return this.replace(/{(\d+)}/g, (match, number) => {
+            return typeof args[number] != 'undefined'
+                ? args[number]
+                : match
+            ;
+        });
+    };
 }
 
 /*
@@ -86,10 +84,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = {
     bufferToStream,
-    getTtsConnection,
-    setTtsConnection,
-    getYtConnection,
-    setYtConnection,
     getUsername,
     logger,
     parseTime,
