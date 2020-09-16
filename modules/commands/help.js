@@ -39,6 +39,7 @@ const commandFunc = (message, args) => {
         data.push(string.get('helpCmdDescCooldown').format(command.cooldown || 3));
 
         message.channel.send(data, { split: true });
+    }
 }
 
 module.exports = {
@@ -52,3 +53,4 @@ module.exports = {
         return commandFunc(message, args);
     }
 }
+
