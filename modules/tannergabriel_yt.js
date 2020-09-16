@@ -14,6 +14,7 @@ const ffprobe = util.promisify(ffmpeg.ffprobe);
 let timeOffset = 0;
 
 const queue = new Map();
+const stream = new Map();
 
 const isPlaying = message => {
     const serverQueue = queue.get(message.guild.id);
@@ -107,15 +108,17 @@ let dispatcher;
 const play = async (message, song, quiet=false) => {
     const serverQueue = queue.get(message.guild.id);
     if (!song) {
-        /* Temporary disabled until find solution to auto-disconnect */
-        //voice.leave(message);
+        /* Dirty trial to resolve FFmpeg memory leak */
+        if (stream.get(message.guild.id)) {
+            stream.get(message.guild.id).kill();
+        }
         queue.delete(message.guild.id);
         logger.log('verbose', '[tannergabriel-music] Stopped player and left from voice channel.');
         return;
     }
 
-    let stream = await seek(ytdl(song.url, { filter: 'audioonly', format: 'webm' }));
-    dispatcher = await voice.play(message, stream, { type: 'ogg/opus' });
+    stream.set(message.guild.id, await seek(ytdl(song.url, { filter: 'audioonly', format: 'webm' })));
+    dispatcher = await voice.play(message, stream.get(message.guild.id).pipe(), { type: 'ogg/opus' });
     logger.log('verbose', `[tannergabriel-music] Now playing ${song.title}...`);
     dispatcher.on('finish', () => {
         logger.log('verbose', '[tannergabriel-music] Finished. Shifting to next song...');
@@ -142,16 +145,16 @@ const pause = (message, serverQueue) => {
     }
 }
 
-const seek = async (stream) => {
+const seek = async (serverStream) => {
     try {
-        const result = ffmpeg(stream).seek(parseTime(timeOffset)).format('opus')
+        const result = ffmpeg(serverStream).seek(parseTime(timeOffset)).format('opus')
             .on('error', (err, stdout, stderr) => {
                 throw err;
             })
             .on('stderr', (stderr) => { /* Why fluent-ffmpeg prints stdout to stderr? */
                 logger.log('verbose', `[fluent-ffmpeg] FFMPEG output: ${stderr}`);
             });
-        return result.pipe();
+        return result;
     } catch (err) {
         logger.log('error', `[fluent-ffmpeg] Failed to encode: ${err.stack}`);
     }
