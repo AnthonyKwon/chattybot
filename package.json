@@ -1,10 +1,10 @@
 {
   "name": "catty",
-  "version": "0.4.11",
+  "version": "0.4.12",
   "description": "An Discord Text-To-Speech Bot.",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js",
+    "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Anthony Kwon",

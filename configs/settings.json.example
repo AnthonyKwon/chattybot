@@ -2,6 +2,7 @@
     "token": "paste_your_token_here",
     "locale": "ko",
     "prefix": "!",
+    "status": "purrr... | %help",
     "chat_format": "{0} » {1}",
     "staff_roles": "000000000000000000"
 }
