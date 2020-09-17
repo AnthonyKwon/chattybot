@@ -1,12 +1,13 @@
 const music = require('../tannergabriel_yt');
 const string = require('../stringResolver');
+const name = string.get('addsongCommangName');
 
 module.exports = {
-    name: string.get('addSongCommandName'),
+    name,
     argsRequired: true,
-    aliases: [string.get('addSongCommandAliases')],
-    description: string.get('addSongCommandDesc'),
-    usage: string.get('addSongCommandUsage'),
+    aliases: [string.get('addsongCommandAliases')],
+    description: string.get('addsongCommandDesc'),
+    usage: string.get('addsongCommandUsage'),
     async execute(message, args) {
         /* Parse music queue by author's current guild */
         const serverQueue = music.queue.get(message.guild.id);

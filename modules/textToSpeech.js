@@ -1,7 +1,7 @@
 /* Google's Text-to-Speech Library Loader */
 const path = require('path');
 const TTS = require('@google-cloud/text-to-speech');
-const { bufferToStream, getUsername } = require('./common');
+const { bufferToStream, getUsername, logger } = require('./common');
 const config = require('./configLoader');
 const { projectId } = config.load(['project_id']);
 const string = require('./stringResolver');
@@ -39,7 +39,7 @@ const tts_speak = async (message, text) => {
     return voice.play(message, stream, { type: 'ogg/opus' });
 }
 
-const tts_config = (message, key, value) => {
+const tts_config = (key, value, message, name) => {
     /* If current guild's tts request not initialized, do it first. */
     if (!request.get(message.guild.id)) tts_init(message);
     const guildRequest = request.get(message.guild.id);
@@ -49,10 +49,10 @@ const tts_config = (message, key, value) => {
         else guildRequest.audioConfig[key] = value;
         /* send success message */
         logger.log('info', `[google-tts] ${key} changed to ${value}.`);
-        message.channel.send(string.get('propChangeSuccessful').format(string.get(`keyCommandName`), gender));
+        message.channel.send(string.get('propChangeSuccessful').format(key, value));
     } catch (err) {
-        logger.log('error', `[google-tts] Failed to change ${string.get(key)}: ${err.stack}`);
-        message.channel.send(string.get('propChangeFailed').format(string.get(`{key}CommandName`)));
+        logger.log('error', `[google-tts] Failed to change ${string.get(`${name}CommandName`)}: ${err.stack}`);
+        message.channel.send(string.get('propChangeFailed').format(string.get(`${name}CommandName`)));
     }
     return;
 }

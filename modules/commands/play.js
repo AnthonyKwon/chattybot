@@ -1,12 +1,13 @@
 const music = require('../tannergabriel_yt');
 const string = require('../stringResolver');
+const name = string.get('playCommandName');
 
 module.exports = {
-    name: string.get('playSongCommandName'),
+    name,
     argsRequired: true,
-    aliases: [string.get('playSongCommandAliases')],
-    description: string.get('playSongCommandDesc'),
-    usage: string.get('playSongCommandUsage'),
+    aliases: [string.get('playCommandAliases')],
+    description: string.get('playCommandDesc'),
+    usage: string.get('playCommandUsage'),
     async execute(message) {
         /* Actually, play is simmilar to addsong. */
         /* Parse music queue by author's current guild */
