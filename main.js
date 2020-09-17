@@ -2,12 +2,14 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const { logger } = require(path.join(__dirname, 'modules/common'));
-const config = require(path.join(__dirname, 'modules/configLoader'));
-const string = require(path.join(__dirname, 'modules/stringResolver'));
+const config = require('./modules/configLoader');
+const music = require('./modules/tannergabriel_yt');
+const string = require('./modules/stringResolver');
 const { prefix, status, token } = config.load(['prefix', 'status', 'token']);
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
+const pauseState = new Map();
 
 const commandFiles = fs.readdirSync(path.join(__dirname, 'modules/commands')).filter(file => file.endsWith('.js'));
 

@@ -1,6 +1,7 @@
 const { logger } = require('../common');
 const string = require('../stringResolver');
 const tts = require('../textToSpeech');
+const name = string.get('genderCommandName');
 
 const commandFunc = (message, args) => {
     const gender = args[0].toUpperCase();
@@ -11,11 +12,11 @@ const commandFunc = (message, args) => {
             string.get('wrongProperties2').format(string.get('genderCommandName'), string.get('genderCommandUsage')));
         return;
     }
-    const result = tts.config(message, 'ssmlGender', gender);
+    tts.config('ssmlGender', gender, message, name);
 }
 
 module.exports = {
-    name: string.get('genderCommandName'),
+    name,
     argsRequired: true,
     aliases: [string.get('genderCommandAliases')],
     usage: string.get('genderCommandUsage'),

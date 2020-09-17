@@ -2,11 +2,11 @@ const fs = require('fs');
 const { logger } = require('../common');
 const string = require('../stringResolver');
 const voice = require('../discordAudio');
+const name = string.get('joinCommandName');
 
 module.exports = {
-    name: string.get('joinCommandName'),
+    name,
     description: string.get('joinCommandDesc').format(string.get('localizedBotName')),
-    argsRequired: false,
     aliases: [string.get('joinCommandAliases')],
     usage: string.get('joinCommandUsage'),
     cooldown: 5,

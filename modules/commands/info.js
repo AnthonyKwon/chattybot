@@ -1,10 +1,10 @@
 const string = require('../stringResolver');
 const { version } = require('../../package.json');
+const name = string.get('infoCommandName');
 const repository = 'https://github.com/AnthonyKwon/discord-catty/';
 
 module.exports = {
-    name: string.get('infoCommandName'),
-    argsRequired: false,
+    name,
     aliases: [string.get('infoCommandAliases')],
     description: string.get('infoCommandDesc').format(string.get('localizedBotName')),
     execute(message) {

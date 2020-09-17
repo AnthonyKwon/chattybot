@@ -1,6 +1,7 @@
 const { logger } = require('../common');
 const string = require('../stringResolver');
 const tts = require('../textToSpeech');
+const name = 'pitch';
 
 const commandFunc = (message, args) => {
     /* Convert every falsey value to 0
@@ -12,11 +13,11 @@ const commandFunc = (message, args) => {
             string.get('wrongProperties2').format(string.get('pitchCommandName'), string.get('pitchCommandUsage')));
         return;
     }
-    const result = tts.config(message, 'pitch', pitch);
+    const result = tts.config('pitch', pitch, message, name);
 }
 
 module.exports = {
-    name: string.get('pitchCommandName'),
+    name,
     argsRequired: true,
     aliases: [string.get('pitchCommandAliases')],
     usage: string.get('pitchCommandUsage'),

@@ -5,6 +5,7 @@ const config = require('../configLoader');
 const string = require('../stringResolver');
 const music = require('../tannergabriel_yt');
 const tts = require('../textToSpeech');
+const name = string.get('sayCommandName');
 const { chat_format } = config.load(['chat_format']);
 const regexMention = /<(#|@!)[0-9]{18}>/g;
 const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~+<>@\#$%&\\\=\(]/gi;
@@ -24,7 +25,6 @@ const saferMessage = (message, content) => {
             return id;
         }
     });
-    console.log(saferMsg);
     saferMsg = saferMsg.replaceAll(regExSpecial, '');
     return saferMsg;
 }
@@ -50,7 +50,7 @@ const commandFunc = async (message, args) => {
 }
 
 module.exports = {
-    name: string.get('sayCommandName'),
+    name,
     description: string.get('sayCommandDesc').format(string.get('localizedBotName')),
     argsRequired: true,
     aliases: [string.get('sayCommandAliases')],

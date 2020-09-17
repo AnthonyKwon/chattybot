@@ -3,6 +3,8 @@ const string = require('./stringResolver');
 /* Discord.js VoiceConnection */
 let connection = new Map();
 
+const getDispatcher = guildId => connection.get(guildId).dispatcher;
+
 const isConnected = guildId => (!connection.get(guildId)) ? false : true;
 /* isInturrupted checks if voice connection state changed */
 let _isInturrupted = false;
@@ -69,6 +71,7 @@ const leave = (message, quiet=false) => {
 }
 
 module.exports = {
+    getDispatcher,
     isConnected,
     isInturrupted,
     isOccupied,

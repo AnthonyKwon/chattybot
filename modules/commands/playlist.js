@@ -1,8 +1,9 @@
 const music = require('../tannergabriel_yt');
 const string = require('../stringResolver');
+const name = string.get('playlistCommandName');
 
 module.exports = {
-    name: string.get('playlistCommandName'),
+    name,
     aliases: [string.get('playlistCommandAliases')],
     description: string.get('playlistCommandDesc'),
     usage: string.get('playlistCommandUsage'),

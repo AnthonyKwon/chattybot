@@ -1,10 +1,11 @@
 const music = require('../tannergabriel_yt');
 const string = require('../stringResolver');
+const name = string.get('pauseCommandName');
 
 module.exports = {
-    name: string.get('pauseSongCommandName'),
-    aliases: [string.get('pauseSongCommandAliases')],
-    description: string.get('pauseSongCommandDesc'),
+    name,
+    aliases: [string.get('pauseCommandAliases')],
+    description: string.get('pauseCommandDesc'),
     async execute(message) {
         const serverQueue = music.queue.get(message.guild.id);
         music.pause(message, serverQueue);

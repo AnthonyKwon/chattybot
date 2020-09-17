@@ -120,10 +120,6 @@ const listQueue = (message, serverQueue, index) => {
     message.channel.send(songList.join('\n'));
 }
 
-/* TODO: dispatcher variable is global and only accepts one guild data.
- * This might cause problem later. */
-let dispatcher;
-
 const play = async (message, song, quiet=false) => {
     const serverQueue = queue.get(message.guild.id);
     if (!song) {
@@ -141,9 +137,9 @@ const play = async (message, song, quiet=false) => {
     /* Pipe stream from ytdl to ffmpeg and save to guild's stream */
     stream.set(message.guild.id, await seek(ytdl(song.url, { filter: 'audioonly', format: 'webm' })));
     /* Send stream to voice channel */
-    dispatcher = await voice.play(message, stream.get(message.guild.id).pipe(), { type: 'ogg/opus' });
+    await voice.play(message, stream.get(message.guild.id).pipe(), { type: 'ogg/opus' });
     logger.log('verbose', `[tannergabriel-music] Now playing ${song.title}...`);
-    dispatcher.on('finish', () => {
+    voice.getDispatcher(message.guild.id).on('finish', () => {
         /* Play next song on finish */
         logger.log('verbose', '[tannergabriel-music] Finished. Shifting to next song...');
         timeOffset = 0;
@@ -152,21 +148,21 @@ const play = async (message, song, quiet=false) => {
     }).on('error', err => {
         logger.log('error', `[tannergabriel-music] Failed to play music: ${err.stack}`);
     });
-    dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+    voice.getDispatcher(message.guild.id).setVolumeLogarithmic(serverQueue.volume / 5);
     if (!quiet) serverQueue.textChannel.send(string.get('playSongStart').format(song.title));
 }
 
 const pause = (message, serverQueue) => {
-    /* If dispatcher is not running (no song playing), show error. */
-    if (!dispatcher) return message.channel.send(string.get('noSongPlaying'));
+    /* If voice.getDispatcher(message.guild.id) is not running (no song playing), show error. */
+    if (!voice.getDispatcher(message.guild.id)) return message.channel.send(string.get('noSongPlaying'));
     if (serverQueue.playing === true) {
-        dispatcher.pause();
+        voice.getDispatcher(message.guild.id).pause();
         serverQueue.playing = false;
-        message.channel.send(string.get('songPaused'));
+        if (message) message.channel.send(string.get('songPaused'));
     } else {
-        dispatcher.resume();
+        voice.getDispatcher(message.guild.id).resume();
         serverQueue.playing = true;
-        message.channel.send(string.get('songResumed'));
+        if (message) message.channel.send(string.get('songResumed'));
     }
 }
 
@@ -194,7 +190,7 @@ const seek = async (serverStream) => {
 const destroy = message => {
     const serverQueue = queue.get(message.guild.id);
     const backupQueue = Object.assign({}, serverQueue);
-    const playTime = timeOffset + dispatcher.streamTime;
+    const playTime = timeOffset + voice.getDispatcher(message.guild.id).streamTime;
     stop(message, serverQueue, true);
     return { serverQueue: backupQueue, playTime: playTime };
 }
@@ -213,20 +209,20 @@ const skip = (message, serverQueue) => {
     message.channel.send(string.get('skipCurrentSong').format(serverQueue.songs[0].title));
 
     if (serverQueue.playing !== true) {
-        dispatcher.resume();
+        voice.getDispatcher(message.guild.id).resume();
         serverQueue.playing = true;
     }
-    dispatcher.end();
+    voice.getDispatcher(message.guild.id).end();
 }
 
 const stop = (message, serverQueue, quiet=false) => {
     serverQueue.songs = [];
     if(!quiet) message.channel.send(string.get('stopPlayer'));
     if (serverQueue.playing !== true) {
-        dispatcher.resume();
+        voice.getDispatcher(message.guild.id).resume();
         serverQueue.playing = true;
     }
-    dispatcher.end();
+    voice.getDispatcher(message.guild.id).end();
 }
 
 module.exports = {
