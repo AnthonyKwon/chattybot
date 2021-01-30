@@ -1,6 +1,6 @@
 const music = require('../tannergabriel_yt');
 const string = require('../stringResolver');
-const name = string.get('addsongCommangName');
+const name = string.get('addsongCommandName');
 
 module.exports = {
     name,
