@@ -8,7 +8,7 @@ const getDispatcher = guildId => connection.get(guildId).dispatcher;
 const isConnected = guildId => (!connection.get(guildId)) ? false : true;
 /* isInturrupted checks if voice connection state changed */
 let _isInturrupted = false;
-const isInturrupted = () => {
+const isInturrupted = (guildId) => {
     return _isInturrupted;
 };
 /* check if dispatcher is used */

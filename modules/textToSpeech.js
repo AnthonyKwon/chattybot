@@ -33,6 +33,7 @@ const tts_speak = async (message, text) => {
             '<break time="0.5s"/>' + text + '</speak>' };
     /* If not, send just text only */
     } else guildRequest.input = { text: text };
+    lastAuthor = message.author;
     const [response] = await client.synthesizeSpeech(request.get(message.guild.id));
     /* Google sends response as buffer. We need to convert it as ReadableStream. */
     const stream = bufferToStream(response.audioContent);
