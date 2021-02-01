@@ -49,12 +49,12 @@ async function onMessageEvent(message) {
     /* Check argument exists (if required) */
     if (command.argsRequired && !args.length) {
         let _reply = [];
-        _reply.push(string.stringFromId('discord.error.argsmissing.line1'));
+        _reply.push(string.stringFromId('discord.error.argsmissing'));
 
         if (command.usage) {
-            _reply.push(string.stringFromId('discord.error.argsmissing.line2'));
-            _reply.push(string.stringFromId('discord.error.argsmissing.line3', config.prefix, string.stringFromId(command.name), string.stringFromId(command.usage)));
-            _reply.push(string.stringFromId('discord.error.argsmissing.line4', string.stringFromId(command.description, message.client.user)));
+            _reply.push(string.stringFromId('catty.help.message.detail.line2'));
+            _reply.push(string.stringFromId('catty.help.message.detail.line3', config.prefix, string.stringFromId(command.name), string.stringFromId(command.usage)));
+            _reply.push(string.stringFromId('catty.help.message.detail.line4', string.stringFromId(command.description, message.client.user)));
         }
 
         return message.channel.send(_reply);
