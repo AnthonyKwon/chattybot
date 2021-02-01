@@ -1,56 +1,35 @@
 const { logger } = require('../common');
-const config = require('../configLoader');
-const string = require('../stringResolver');
-const { prefix } = config.load(['prefix']);
+const configManager = require('../configManager.js');
+const string = require('../stringManager.js');
 
-const commandFunc = (message, args) => {
-    const data = [];
-    const { commands } = message.client;
+const config = configManager.read('prefix');
 
-    /* If no argument provided, send full help to DM */
-    if (!args.length) {
-        data.push(string.get('helpDmDescLine1').format(string.get('localizedBotName')));
-        data.push(commands.map(command => command.name).join(', '));
-        data.push(string.get('helpDmDescLine3').format(prefix));
-
-        return message.author.send(data, {split: true})
-            .then(() => {
-                /* Notice user to check DM for help message */
-                if (message.channel.type === 'dm') return;
-                message.channel.send(string.get('helpDmDescSendSucceed').format(message.author));
-            }).catch(error => {
-                /* Notice DM send failure to user */
-                logger.log('info', `[discord.js] Failed to send DM to ${message.author.tag}: ${error}\n${error.body}`);
-                message.channel.send(string.get('helpDmDescSendFailed').format(message.author));
-            });
+function commandHelp(message, args) {
+    const reply = [];
+    if (args.length === 0) {
+        /* If no argument provided, send full help to DM */
+        reply.push(string.stringFromId('catty.help.message.main.line1'));
+        reply.push(string.stringFromId('catty.help.message.main.line2'));
+        reply.push('*' + message.client.commands.map(cmd => '%' + string.stringFromId(cmd.name)).join(', ') + '*');
+        reply.push('\n' + string.stringFromId('catty.help.message.main.line3',
+            config.prefix, string.stringFromId(this.name), string.stringFromId(this.usage)));
+        try {
+            const resposne = message.author.send(reply, {split:true});
+            message.channel.send(string.stringFromId('catty.help.message.check_dm', message.author));
+        } catch(err) {
+            logger.log('info', `[discord.js] Failed to send DM to ${message.author.tag}: ${err}\n${err.body}\n${err.stack}`);
+            message.channel.send(string.stringFromId('catty.help.message.dm_failed', message.author));
+        }
     }
-    
-    /* Parse command from argument */
-    const name = args[0].toLowerCase();
-    command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));
-
-    /* If command doesn't exist, send error */
-    if (!command) return message.channel.send(string.get('unknownCommandError'));
-
-    /* Send help about parsed command */
-    if (command.aliases) data.push(string.get('helpCmdDescNameWithAliases').format(prefix, command.name, command.aliases.join(', ')));
-    else data.push(string.get('helpCmdDescName').format(prefix, command.name));
-    if (command.description) data.push(string.get('helpCmdDescDesc').format(command.description));
-    if (command.usage) data.push(string.get('helpCmdDescUsage').format(prefix, command.name, command.usage));
-    data.push(string.get('helpCmdDescCooldown').format(command.cooldown || 3));
-
-    message.channel.send(data, { split: true });
 }
 
 module.exports = {
-    name: 'help',
-    description: string.get('helpCommandDesc').format(string.get('localizedBotName')),
+    name: 'catty.command.help',
+    description: 'catty.command.help.desc',
     argsRequired: false,
-    aliases: [string.get('helpCommandAliases')],
-    usage: string.get('helpCommandUsage'),
+    aliases: 'catty.command.help.aliases',
+    usage: 'catty.command.help.usage',
     cooldown: 5,
-    execute(message, args) {
-        return commandFunc(message, args);
-    }
+    execute: commandHelp
 }
 

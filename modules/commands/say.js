@@ -1,19 +1,17 @@
-const fs = require('fs');
 const util = require('util');
+const join = require('./join.js');
 const { logger } = require('../common');
-const config = require('../configLoader');
-const string = require('../stringResolver');
-const music = require('../tannergabriel_yt');
-const tts = require('../textToSpeech');
-const name = string.get('sayCommandName');
-const { chat_format } = config.load(['chat_format']);
-const regexMention = /<(#|@!)[0-9]{18}>/g;
-const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~+<>@\#$%&\\\=\(]/gi;
+const discord = require('../discord.js');
+const string = require('../stringManager.js');
+const TTSClass = require('../textToSpeech.js');
 
-/* Remove all potentally dangerous characters,
- * replace user & mention to name */
-const saferMessage = (message, content) => {
-    let saferMsg = content.replace(regexMention, (match, $1) => {
+const devFlag = process.env.NODE_ENV === 'development' ? true : false;
+const regexMention = /<(#|@!)[0-9]{18}>/g;
+const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~+<>\#\\\=\(]/gi;
+
+function messageFix(message, content) {
+    /* replace raw mention id to discord mention */
+    let finalMsg = content.replace(regexMention, (match, $1) => {
         let id = match.replaceAll(/[<>]/g, '');
         if (id.includes('@!')) {
             id = message.guild.members.cache.get(id.replace('@!', '')).displayName;
@@ -25,38 +23,49 @@ const saferMessage = (message, content) => {
             return id;
         }
     });
-    saferMsg = saferMsg.replaceAll(regExSpecial, '');
-    return saferMsg;
+
+    /* Replace '@'(at) symbol to text '-at-' */
+    finalMsg = finalMsg.replaceAll('@', '-at-');
+
+    /* Replace '&'(and) symbol to text '-and-' */
+    finalMsg = finalMsg.replaceAll('&', '-and-');
+
+    /* Replace TTS unreadable charater to whitespace */
+    finalMsg = finalMsg.replaceAll(regExSpecial, ' ');
+    return finalMsg;
 }
 
-const commandFunc = async (message, args) => {
-    /* Get filtered message */
-    const safeMsg = saferMessage(message, args.join(' '));
-    message.delete();
-    logger.log('verbose', `[discord.js] ${message.author} spoken: ${args.join(' ')}`);
-    /* Check if music playing */
-    const musicPlaying = music.isPlaying(message);
-    let dispatcherData;
-    /* Destroy current music session */
-    if (musicPlaying) dispatcherData = music.destroy(message);
-    message.channel.send(chat_format.format(message.author, args.join(' ')));
-    const result = await tts.speak(message, safeMsg);
-    result.on('finish', () => {
-        /* Restore destoryed music session
-         * TODO: this code throws exception, but works. (I don't know why)
-         * We need to fix it. */
-        if (musicPlaying) music.restore(message, dispatcherData);
-    });
+async function commandSay(message, args) {
+    /* If not joined to voice channel, join first */
+    if (!discord.voiceMap.get(message.guild.id)) {
+        const response = await join.execute(message, []);
+        if (response.result === 'FAIL') return;
+    }
+    const voice = discord.voiceMap.get(message.guild.id);
+    /* If TTS is not initalized, do it first */
+    if (!voice.TTS) voice.TTS = new TTSClass();
+    /* Fix message for TTS-readable */
+    const text = args.join(' ');
+    const fixedText = await messageFix(message, text);
+    try {
+        logger.log('verbose', `[discord.js] ${message.author} spoken: ${text}`);
+        /* Send message and TTS to discord */
+        message.channel.send(string.stringFromId('catty.tts.text.format', voice.channel.name, message.author, text));
+        await voice.TTS.speak(message, fixedText);
+    } catch(err) {
+        logger.log('error', `[discord.js] Failed to launch requested command: ${err}\n${err.body}\n${err.stack}`);
+        let _msg = string.stringFromId('discord.error.exception.line1') + '\n';
+        if (!devFlag) _msg += string.stringFromId('discord.error.exception.line2.prod');
+        else _msg += string.stringFromId('discord.error.exception.line2.dev') + '\n```\n' + err.stack + '```';
+    }
 }
 
 module.exports = {
-    name,
-    description: string.get('sayCommandDesc').format(string.get('localizedBotName')),
+    name: 'catty.command.say',
+    description: 'catty.command.say.desc',
     argsRequired: true,
-    aliases: [string.get('sayCommandAliases')],
-    usage: string.get('sayCommandUsage'),
+    aliases: 'catty.command.say.aliases',
+    usage: 'catty.command.say.usage',
     cooldown: 5,
-    execute(message, args) {
-        return commandFunc(message, args);
-    }
+    execute: commandSay
 }
