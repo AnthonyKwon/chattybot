@@ -3,10 +3,14 @@ const path = require('path');
 const configManager = require('./configManager.js');
 const discord = require('./discord.js');
 const string = require('./stringManager.js');
-const { bufferToStream, getUsername, logger } = require('./common');
+const { bufferToStream, getUsername, logger, uniq } = require('./common');
 
 /* read config from file */
 const config = configManager.read('project_id');
+
+function getVoiceList(ttsClient, callback) {
+    
+}
 
 class TTSClass {
     constructor() {
@@ -15,7 +19,7 @@ class TTSClass {
         this._request = {
             input: { text: 'This is a sample text.' },
             voice: { languageCode: string.locale, ssmlGender: 'NEUTRAL' },
-            audioConfig: { audioEncoding: 'OGG_OPUS', speakingRate: '1.0', pitch: '1.0', volumeGainDb: '0.0' }
+            audioConfig: { audioEncoding: 'OGG_OPUS', speakingRate: '1.0', pitch: '0.0', volumeGainDb: '0.0' }
         };
     }
 
@@ -40,29 +44,54 @@ class TTSClass {
     get locale() {
         return this._request.voice.languageCode;
     }
-    set locale(code) {
-        this._request.voice.languageCode = code;
+    /* Do NOT use setter for locale, it requires asyncronization */
+    async setLocale(code) {
+        let locales = [];
+        try {
+            const [result] = await this._client.listVoices({});
+            result.voices.forEach(voice => locales = [...locales, ...voice.languageCodes] );
+        } catch (err) {
+            /* Error while retrieving suppoerted locale list */
+            console.log(err.stack);
+        }
+        /* remove duplicates from array */
+        locales = uniq(locales);
+        /* apply locale if available */
+        if (locales.includes(code))
+            this._request.voice.languageCode = code;
     }
 
     get pitch() {
-        return this._request.audioConfig.pitch;
+        const pitch = parseFloat(this._request.audioConfig.pitch);
+        if (pitch < 0 && pitch >= -5.0)
+            return (pitch * (-10)) + 100;
+        else if (pitch <= 5.0 && pitch >= 0)
+            return (pitch * 20) + 100;
     }
     set pitch(rate) {
-        this._request.audioConfig.pitch = rate;
+        const newPitch = parseInt(rate);
+        if (newPitch < 100 && newPitch >= 50)
+            this._request.audioConfig.pitch = (100 - newPitch) / (-10); 
+        else if (newPitch <= 200 && newPitch >= 100)
+            this._request.audioConfig.pitch = (newPitch - 100) / 20;
     }
 
     get speed() {
-        return this._request.audioConfig.speakingRate;
+        return parseFloat(this._request.audioConfig.speakingRate) * 100;
     }
     set speed(rate) {
-        this._request.audioConfig.speakingRate = rate;
+        const newSpeed = parseInt(rate) / 100;
+        if (newSpeed <= 2 && newSpeed >= 0.5)
+            this._request.audioConfig.speakingRate = newSpeed;
     }
 
     get volume() {
-        return this._request.audioConfig.volumeGainDb;
+        return ((parseFloat(this._request.audioConfig.volumeGainDb) + 24) / 24) * 100;
     }
     set volume(rate) {
-        this._request.audioConfig.volumeGainDb = rate;
+        const newVolume = ((parseInt(rate) / 100) * 24) - 24;
+        if (newVolume <= 0 && newVolume >= -24)
+            this._request.audioConfig.volumeGainDb = newVolume;
     }
 
     async speak(message, text, ssml=false) {

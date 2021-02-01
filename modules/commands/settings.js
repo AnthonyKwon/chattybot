@@ -43,15 +43,15 @@ async function commandSettings(message, args) {
                     break;
                 case 'catty.settings.item.pitch':
                     message.channel.send(string.stringFromId('catty.setting.value.current',
-                        string.stringFromId('catty.settings.item.pitch'), voice.TTS.pitch));
+                        string.stringFromId('catty.settings.item.pitch'), voice.TTS.pitch + '%'));
                     break;
                 case 'catty.settings.item.speed':
                     message.channel.send(string.stringFromId('catty.setting.value.current',
-                        string.stringFromId('catty.settings.item.pitch'), voice.TTS.speed));
+                        string.stringFromId('catty.settings.item.speed'), voice.TTS.speed + '%'));
                     break;
                 case 'catty.settings.item.volume':
                     message.channel.send(string.stringFromId('catty.setting.value.current',
-                        string.stringFromId('catty.settings.item.volume'), voice.TTS.volume));
+                        string.stringFromId('catty.settings.item.volume'), voice.TTS.volume + '%'));
                     break;
             }
         }
@@ -69,24 +69,24 @@ async function commandSettings(message, args) {
                         string.stringFromId('catty.settings.item.gender'), voice.TTS.gender));
                     break;
                 case 'catty.settings.item.locale':
-                    voice.TTS.locale = args[1];
+                    await voice.TTS.setLocale(args[1]);
                     message.channel.send(string.stringFromId('catty.settings.changed',
                         string.stringFromId('catty.settings.item.locale'), voice.TTS.locale));
                     break;
                 case 'catty.settings.item.pitch':
                     voice.TTS.pitch = args[1];
                     message.channel.send(string.stringFromId('catty.settings.changed',
-                        string.stringFromId('catty.settings.item.pitch'), voice.TTS.pitch));
+                        string.stringFromId('catty.settings.item.pitch'), voice.TTS.pitch + '%'));
                     break;
                 case 'catty.settings.item.speed':
                     voice.TTS.speed = args[1];
                     message.channel.send(string.stringFromId('catty.settings.changed',
-                        string.stringFromId('catty.settings.item.speed'), voice.TTS.speed));
+                        string.stringFromId('catty.settings.item.speed'), voice.TTS.speed + '%'));
                     break;
                 case 'catty.settings.item.volume':
                     voice.TTS.volume = args[1];
                     message.channel.send(string.stringFromId('catty.settings.changed',
-                        string.stringFromId('catty.settings.item.volume'), voice.TTS.volume));
+                        string.stringFromId('catty.settings.item.volume'), voice.TTS.volume + '%'));
                     break;
             }
         }

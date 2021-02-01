@@ -7,7 +7,7 @@ const TTSClass = require('../textToSpeech.js');
 
 const devFlag = process.env.NODE_ENV === 'development' ? true : false;
 const regexMention = /<(#|@!)[0-9]{18}>/g;
-const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~+<>\#\\\=\(]/gi;
+const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~<>\#\\\=\(]/gi;
 
 function messageFix(message, content) {
     /* replace raw mention id to discord mention */

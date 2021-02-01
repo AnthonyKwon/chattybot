@@ -63,6 +63,14 @@ const parseTime = param => {
     return time;
 }
 
+/*
+ * Remove duplicate from array (ES6 style)
+ * https://stackoverflow.com/a/9229821
+ */
+function uniq(a) {
+   return Array.from(new Set(a));
+}
+
 const logger = winston.createLogger({
     level: 'info',
     format: winston.format.combine(
@@ -86,4 +94,5 @@ module.exports = {
     getUsername,
     logger,
     parseTime,
+    uniq,
 }
