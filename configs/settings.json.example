@@ -1,6 +1,6 @@
 {
     "token": "paste_your_token_here",
-    "locale": "ko-KR",
+    "locale": "en-US",
     "prefix": "%",
     "status": "purrr... | %help"
 }
