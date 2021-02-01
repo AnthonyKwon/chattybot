@@ -11,7 +11,7 @@ const addElement = (ElementList, element) => {
     return newList;
 }
 
-const loadConfig = (target) => {
+const readJson = item => {
     const files = fs.readdirSync(path.join(__dirname, '../configs'));
     try {
         for (file of files) {
@@ -19,7 +19,7 @@ const loadConfig = (target) => {
             if (!file.endsWith('.json')) continue;
 
             const json_read = JSON.parse(fs.readFileSync(path.join(__dirname, '../configs', file)));
-            if (json_read[target]) return json_read[target];
+            if (json_read[item]) return json_read[item];
         }
     } catch(err) {
         console.error(`[configLoader] Failed to parse config: ${err.stack}`);
@@ -27,10 +27,10 @@ const loadConfig = (target) => {
 }
 
 module.exports = {
-    load: target => {
-        let returnArray = {};
-        for (t of target) {
-            returnArray = addElement(returnArray, { [t]: loadConfig(t) });
+    read() {
+        let returnArray = new Object();
+        for (arg of arguments) {
+            returnArray = addElement(returnArray, { [arg]: readJson(arg) });
         }
         return returnArray;
     }

@@ -1,18 +1,20 @@
-const string = require('../stringResolver');
-const { version } = require('../../package.json');
-const name = string.get('infoCommandName');
-const repository = 'https://github.com/AnthonyKwon/discord-catty/';
+const string = require('../stringManager.js');
+const info = require('../../package.json');
+
+const devFlag = process.env.NODE_ENV === 'development' ? true : false;
 
 module.exports = {
-    name,
-    aliases: [string.get('infoCommandAliases')],
-    description: string.get('infoCommandDesc').format(string.get('localizedBotName')),
+    name: 'catty.command.info',
+    acceptDM: true,
+    aliases: 'catty.command.info.aliases',
+    description: 'catty.command.info.desc',
     execute(message) {
-        const info_message = [];
-        info_message.push(string.get('infoMessage1').format(string.get('localizedBotName'), version));
-        info_message.push(string.get('infoMessage2').format(string.get('localizedBotName')));
-        info_message.push(string.get('infoMessage3'));
-        info_message.push(string.get('infoMessage4').format(repository));
-        message.channel.send(info_message);
+        const reply = [];
+        reply.push(string.stringFromId('catty.info.message.line1', message.client.user, info.version));
+        if (devFlag === true) reply.push(string.stringFromId('catty.info.message.maintenance', message.client.user));
+        reply.push(string.stringFromId('catty.info.message.line2', message.client.user));
+        reply.push(string.stringFromId('catty.info.message.line3'));
+        reply.push(string.stringFromId('catty.info.message.line4', info.repository.url));
+        message.channel.send(reply);
     },
 };
