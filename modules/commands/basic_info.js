@@ -5,9 +5,9 @@ const devFlag = process.env.NODE_ENV === 'development' ? true : false;
 
 module.exports = {
     name: 'chattybot.command.info',
-    acceptDM: true,
     aliases: 'chattybot.command.info.aliases',
     description: 'chattybot.command.info.desc',
+    cooldown: 30,
     execute(message) {
         const reply = [];
         reply.push(string.stringFromId('chattybot.info.message.line1', message.client.user, info.version));
