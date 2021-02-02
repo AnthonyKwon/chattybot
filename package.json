@@ -1,6 +1,6 @@
 {
   "name": "chattybot",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "An Discord Text-To-Speech Bot.",
   "main": "main.js",
   "scripts": {
