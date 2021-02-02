@@ -65,7 +65,7 @@ async function commandSettings(message, args) {
                 case 'chattybot.settings.item.gender':
                     voice.TTS.gender = args[1];
                     message.channel.send(string.stringFromId('chattybot.settings.changed',
-                        string.stringFromId('chattybot.settings.item.gender'), voice.TTS.gender));
+                        string.stringFromId('chattybot.settings.item.gender'), string.stringFromId('google.tts.gender.' + voice.TTS.gender)));
                     break;
                 case 'chattybot.settings.item.locale':
                     await voice.TTS.setLocale(args[1]);

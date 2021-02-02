@@ -65,7 +65,7 @@
     "discord.error.unknown_command": ":information_source: :no_entry_sign: **Unknown** command. Please check if you typed **correctly**.",
     "discord.voice.joined": ":loud_sound: Joined **{0}** voice channel.",
     "discord.voice.left": ":loud_sound: :wave: Left **{0}** voice channel.",
-    "google.tts.gender.female": "Female",
-    "google.tts.gender.male": "Male",
-    "google.tts.gender.neutral": "Neutral"
+    "google.tts.gender.FEMALE": "Female",
+    "google.tts.gender.MALE": "Male",
+    "google.tts.gender.NEUTRAL": "Neutral"
 }
