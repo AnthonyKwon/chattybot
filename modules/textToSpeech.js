@@ -32,13 +32,13 @@ class TTSClass {
     }
     set gender(code) {
         switch (code) {
-            case string.stringFromId('google.tts.gender.female'):
+            case string.stringFromId('google.tts.gender.FEMALE'):
                 this._request.voice.ssmlGender = "FEMALE";
                 break;
-            case string.stringFromId('google.tts.gender.male'):
+            case string.stringFromId('google.tts.gender.MALE'):
                 this._request.voice.ssmlGender = "MALE";
                 break;
-            case string.stringFromId('google.tts.gender.neutral'):
+            case string.stringFromId('google.tts.gender.NEUTRAL'):
                 this._request.voice.ssmlGender = "NEUTRAL";
                 break;
         }

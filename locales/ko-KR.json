@@ -82,7 +82,7 @@
     "discord.error.unknown_command": ":information_source: :no_entry_sign: **알수 없는** 명령어입니다. 재대로 입력했는지 **다시 확인**해 주세요.",
     "discord.voice.joined": ":loud_sound: **{0}** 채널에 들어갔습니다.",
     "discord.voice.left": ":loud_sound: :wave: **{0}**에서 나갔습니다.",
-    "google.tts.gender.female": "여성",
-    "google.tts.gender.male": "남성",
-    "google.tts.gender.neutral": "중성"
+    "google.tts.gender.FEMALE": "여성",
+    "google.tts.gender.MALE": "남성",
+    "google.tts.gender.NEUTRAL": "중성"
 }
