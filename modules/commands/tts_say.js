@@ -1,5 +1,5 @@
 const util = require('util');
-const join = require('./join.js');
+const join = require('./basic_join.js');
 const { logger } = require('../common');
 const discord = require('../discord.js');
 const string = require('../stringManager.js');
