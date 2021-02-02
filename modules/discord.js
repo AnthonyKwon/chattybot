@@ -52,9 +52,9 @@ async function onMessageEvent(message) {
         _reply.push(string.stringFromId('discord.error.argsmissing'));
 
         if (command.usage) {
-            _reply.push(string.stringFromId('catty.help.message.detail.line2'));
-            _reply.push(string.stringFromId('catty.help.message.detail.line3', config.prefix, string.stringFromId(command.name), string.stringFromId(command.usage)));
-            _reply.push(string.stringFromId('catty.help.message.detail.line4', string.stringFromId(command.description, message.client.user)));
+            _reply.push(string.stringFromId('chattybot.help.message.detail.line2'));
+            _reply.push(string.stringFromId('chattybot.help.message.detail.line3', config.prefix, string.stringFromId(command.name), string.stringFromId(command.usage)));
+            _reply.push(string.stringFromId('chattybot.help.message.detail.line4', string.stringFromId(command.description, message.client.user)));
         }
 
         return message.channel.send(_reply);

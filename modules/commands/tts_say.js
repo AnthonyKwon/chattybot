@@ -50,7 +50,7 @@ async function commandSay(message, args) {
     logger.log('verbose', `[discord.js] ${message.author} spoken: ${text}`);
     try {
         /* Send message and TTS to discord */
-        message.channel.send(string.stringFromId('catty.tts.text.format', voice.channel.name, message.author, text));
+        message.channel.send(string.stringFromId('chattybot.tts.text.format', voice.channel.name, message.author, text));
         /* If bot have message delete permission, delete user's message */
         if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();
         voice.TTS.setQueue(message.author.id, fixedText);
@@ -66,11 +66,11 @@ async function commandSay(message, args) {
 }
 
 module.exports = {
-    name: 'catty.command.say',
-    description: 'catty.command.say.desc',
+    name: 'chattybot.command.say',
+    description: 'chattybot.command.say.desc',
     argsRequired: true,
-    aliases: 'catty.command.say.aliases',
-    usage: 'catty.command.say.usage',
+    aliases: 'chattybot.command.say.aliases',
+    usage: 'chattybot.command.say.usage',
     cooldown: 5,
     execute: commandSay
 }

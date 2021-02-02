@@ -28,10 +28,10 @@ async function commandJoin(message, args) {
 }
 
 module.exports = {
-    name: 'catty.command.join',
-    description: 'catty.command.join.name',
-    aliases: 'catty.command.join.alias',
-    usage: 'catty.command.join.usage',
+    name: 'chattybot.command.join',
+    description: 'chattybot.command.join.name',
+    aliases: 'chattybot.command.join.alias',
+    usage: 'chattybot.command.join.usage',
     cooldown: 5,
     execute: commandJoin
 }

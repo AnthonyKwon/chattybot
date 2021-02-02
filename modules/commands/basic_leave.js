@@ -11,10 +11,10 @@ async function commandLeave(message) {
 }
 
 module.exports = {
-    name: 'catty.command.leave',
-    description: 'catty.command.leave.desc',
+    name: 'chattybot.command.leave',
+    description: 'chattybot.command.leave.desc',
     argsRequired: false,
-    aliases: 'catty.command.leave.aliases',
+    aliases: 'chattybot.command.leave.aliases',
     cooldown: 5,
     execute: commandLeave
 }

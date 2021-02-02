@@ -118,7 +118,7 @@ class TTSClass {
         while (this._queue.length > 0) {
             /* If message author or channel is different, send TTS w/ prefix. */
             if (this._lastAuthor !== this._queue[0].authorId) {
-                this._request.input = { ssml: '<speak>' + string.stringFromId('catty.tts.prefix', getUsername(message, this._queue[0].authorId)) + 
+                this._request.input = { ssml: '<speak>' + string.stringFromId('chattybot.tts.prefix', getUsername(message, this._queue[0].authorId)) + 
                 '<break time="0.5s"/>' + this._queue[0].message + '</speak>' };
             /* If not, send just text only */
             } else this._request.input = { text: this._queue[0].message };
