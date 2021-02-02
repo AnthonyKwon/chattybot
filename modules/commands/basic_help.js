@@ -20,6 +20,8 @@ function commandHelp(message, args) {
             logger.log('info', `[discord.js] Failed to send DM to ${message.author.tag}: ${err}\n${err.body}\n${err.stack}`);
             message.channel.send(string.stringFromId('chattybot.help.message.dm_failed', message.author));
         }
+    } else {
+        /* forgot to re-implement here... */
     }
 }
 
@@ -29,7 +31,7 @@ module.exports = {
     argsRequired: false,
     aliases: 'chattybot.command.help.aliases',
     usage: 'chattybot.command.help.usage',
-    cooldown: 5,
+    cooldown: 30,
     execute: commandHelp
 }
 

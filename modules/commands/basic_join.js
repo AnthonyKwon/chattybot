@@ -32,6 +32,6 @@ module.exports = {
     description: 'chattybot.command.join.name',
     aliases: 'chattybot.command.join.alias',
     usage: 'chattybot.command.join.usage',
-    cooldown: 5,
+    cooldown: 30,
     execute: commandJoin
 }

@@ -15,6 +15,6 @@ module.exports = {
     description: 'chattybot.command.leave.desc',
     argsRequired: false,
     aliases: 'chattybot.command.leave.aliases',
-    cooldown: 5,
+    cooldown: 30,
     execute: commandLeave
 }
