@@ -30,7 +30,7 @@ async function onMessageEvent(message) {
     if (!message.content.startsWith(config.prefix) || message.author.bot) return;
     /* if env var is development and user is not an developer, show message and exit */
     if (devFlag && message.member.roles.cache.some(role => role.name === 'Discord Bot Developer')) {
-        message.channel.send(`**Development Mode:** ${message.author} issued command: *${message.content}*`);
+        logger.log('verbose',`[discord.js] ${message.author.tag} issued command: ${message.content}`);
     } else if (devFlag) {
         message.channel.send(':no_entry_sign: **앗!** 지금은 개발자분들이 시험 중이라 사용이 불가능해요.\n' +
           '다음에 더 나아진 모습으로 찾아올게요! :wink:\n' +
@@ -141,12 +141,12 @@ class VoiceClass {
         }
     }
 
-    async play(stream, option=undefined) {
+    play(stream, option=undefined) {
         /* Join voice channel first if not */
         if (this._connection.status !== 0) {
             return { result: 'FAIL', reason: 'specify_or_join_channel' };
         }
-        return await this._connection.play(stream, option);
+        return this._connection.play(stream, option);
     }
 
     /* leave discord voice connection */
