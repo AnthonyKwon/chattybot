@@ -1,5 +1,5 @@
 {
-  "name": "catty",
+  "name": "chattybot",
   "version": "0.5.4",
   "description": "An Discord Text-To-Speech Bot.",
   "main": "main.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/AnthonyKwon/discord-catty.git"
+    "url": "https://github.com/AnthonyKwon/chattybot.git"
   },
   "author": "Anthony Kwon",
   "license": "GPL-2.0-or-later",
