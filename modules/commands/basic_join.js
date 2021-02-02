@@ -15,11 +15,18 @@ async function commandJoin(message, args) {
         message.channel.send(string.stringFromId('discord.voice.joined', voice.channel.name));
     else if (response.result === 'FAIL') {
         let text = string.stringFromId('discord.error.exception.line1') + '\n';
-        if (response.reason) {
-            text = text + response.reason;
-        } else if (response.stack) {
-            if (devFlag === false) text += string.stringFromId('discord.error.exception.line2.prod');
-            else text += string.stringFromId('discord.error.exception.line2.dev') + '\n```\n' + response.stack + '```';
+        switch (response.reason) {
+            case 'no_permission':
+            case 'specify_or_join_channel':
+            case 'unknown_channel':
+                text = string.stringFromId('discord.error.' + response.reason);
+                break;
+            case 'exception':
+                if (devFlag === false) text += string.stringFromId('discord.error.exception.line2.prod');
+                else text += string.stringFromId('discord.error.exception.line2.dev') + '\n```\n' + response.stack + '```';
+                break;
+            default:
+                text = text + response.reason;
         }
         discord.voiceMap.delete(message.guild.id);
         message.channel.send(text);
