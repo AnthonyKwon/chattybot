@@ -10,7 +10,7 @@ async function commandEmpty(message) {
         return;
     }
     /* Ignore command when queue is empty */
-    if (!voice.TTS.queue.length === 0) {
+    if (voice.TTS.queue.length === 0) {
         return;
     }
 

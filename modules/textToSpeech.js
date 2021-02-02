@@ -4,7 +4,7 @@ const { once } = require('events');
 const configManager = require('./configManager.js');
 const discord = require('./discord.js');
 const string = require('./stringManager.js');
-const { bufferToStream, getUsername, logger, uniq } = require('./common');
+const { bufferToStream, getUsername, uniq } = require('./common');
 
 /* read config from file */
 const config = configManager.read('project_id');
