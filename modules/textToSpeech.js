@@ -9,15 +9,15 @@ const { bufferToStream, getUsername, logger, uniq } = require('./common');
 /* read config from file */
 const config = configManager.read('project_id');
 
-function getVoiceList(ttsClient, callback) {
-    
-}
-
 class TTSClass {
-    constructor() {
+    constructor(arg1) {
         this._client = new GcpTts.TextToSpeechClient({ projectId: config.projectId, keyFilename: path.join(__dirname, '../configs/gcp-credentials.json') });
         this._lastAuthor = undefined;
-        this._queue = [];
+        /* set queue as argument */
+        if (arguments.length > 0)
+            this._queue = arg1;
+        else
+            this._queue = [];
         this._request = {
             input: { text: 'This is a sample text.' },
             voice: { languageCode: string.locale, ssmlGender: 'NEUTRAL' },
@@ -97,10 +97,7 @@ class TTSClass {
             this._request.audioConfig.volumeGainDb = newVolume;
     }
 
-    /* clear-get-set queue */
-    clearQueue() {
-        this._queue = [];
-    }
+    /* get-set queue */
     setQueue(authorId, message) {
         this._queue.push({ authorId, message });
     }
@@ -116,10 +113,10 @@ class TTSClass {
         const voice = discord.voiceMap.get(message.guild.id);
         this._speaking = true;
         while (this._queue.length > 0) {
-            /* If message author or channel is different, send TTS w/ prefix. */
-            if (this._lastAuthor !== this._queue[0].authorId) {
-                this._request.input = { ssml: '<speak>' + string.stringFromId('chattybot.tts.prefix', getUsername(message, this._queue[0].authorId)) + 
-                '<break time="0.5s"/>' + this._queue[0].message + '</speak>' };
+            /* If message author or channel is different or authorId is not system(0), send TTS w/ prefix. */
+            if (this._lastAuthor !== this._queue[0].authorId && this._queue[0].authorId !== 0) {
+                this._request.input = { ssml: '<speak>' + string.stringFromId('chattybot.tts.prefix',
+                getUsername(message, this._queue[0].authorId)) + '<break time="0.5s"/>' + this._queue[0].message + '</speak>' };
             /* If not, send just text only */
             } else this._request.input = { text: this._queue[0].message };
             this._lastAuthor = this._queue[0].authorId;
