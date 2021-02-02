@@ -1,4 +1,7 @@
 {
+    "chattybot.command.empty": "empty",
+    "chattybot.command.empty.desc": "Empty reading queue and re-initialize TTS.",
+    "chattybot.command.empty.aliases": "clear",
     "chattybot.command.info": "info",
     "chattybot.command.info.desc": "Show information about {0}.",
     "chattybot.command.info.aliases": "about",
@@ -47,6 +50,8 @@
     "chattybot.setting.value.current": ":wrench: Current value of **{0}** is *{1}*.",
     "chattybot.tts.prefix": "{0} says,",
     "chattybot.tts.text.format": ":loud_sound: **{0}\\:**{1} » {2}",
+    "chattybot.tts.queue.empty.message": ":page_with_curl: Successfully cleared **TTS queue**.",
+    "chattybot.tts.queue.empty.speak": "A queue has cleared.",
     "discord.error.argsmissing": ":grey_exclamation:**Required argument** is missing in command!",
     "discord.error.exception.line1": ":octagonal_sign: **Error** occured while launcing command!",
     "discord.error.exception.line2.prod": "Please notify to **staff** or **developer**.",
