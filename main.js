@@ -1,10 +1,30 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const winston = require('winston');
 const discord = require('./modules/discord.js');
 const configManager = require('./modules/configManager.js');
 
 const config = configManager.read('status', 'token');
+const devFlag = process.env.NODE_ENV === 'development' ? true : false;
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
+    transports: [
+        new winston.transports.File({ filename: path.join(__dirname, './logs/error.log'), level: 'error' }),
+        new winston.transports.File({ filename: path.join(__dirname, './logs/verbose.log'), level: 'verbose' })
+    ]
+});
+
+/* Logging winston to console on development mode. */
+if (devFlag === true) {
+    logger.add(new winston.transports.Console({
+        format: winston.format.simple(),
+    }));
+}
 
 /* Discord client */
 const client = new Discord.Client();
@@ -20,10 +40,14 @@ for (const file of commandFiles) {
 }
 
 client.once('ready', () => {
-    const botStatus = process.env.NODE_ENV == "development" ? "🔧 점검 중 🔧" : config.status;
-    discord.onReady(client, botStatus);
+    const botStatus = devFlag ? "🔧 점검 중 🔧" : config.status;
+    discord.onReady(client, logger, botStatus);
 });
 
-client.on('message', discord.onMessage);
+client.on('message', (message) => discord.onMessage(message, logger));
 
 client.login(config.token);
+
+module.exports = {
+    logger,
+}

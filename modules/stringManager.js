@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { logger } = require('./common');
+const { logger } = require('../main.js');
 const configManager = require('./configManager');
 const config = configManager.read('locale');
 

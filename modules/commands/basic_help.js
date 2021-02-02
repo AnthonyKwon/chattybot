@@ -1,4 +1,3 @@
-const { logger } = require('../common');
 const configManager = require('../configManager.js');
 const string = require('../stringManager.js');
 
@@ -16,9 +15,10 @@ function commandHelp(message, args) {
         try {
             const resposne = message.author.send(reply, {split:true});
             message.channel.send(string.stringFromId('chattybot.help.message.check_dm', message.author));
+            return { result: 'SUCCESS' };
         } catch(err) {
-            logger.log('info', `[discord.js] Failed to send DM to ${message.author.tag}: ${err}\n${err.body}\n${err.stack}`);
             message.channel.send(string.stringFromId('chattybot.help.message.dm_failed', message.author));
+            return { result: 'FAIL', app: 'discord.js', message: `Failed to send DM to ${message.author}!`, exception: err.stack };
         }
     } else {
         /* forgot to re-implement here... */

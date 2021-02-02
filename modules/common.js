@@ -1,8 +1,5 @@
 const path = require('path');
-const winston = require('winston');
 const { Readable } = require('stream');
-
-const devFlag = process.env.NODE_ENV === 'development' ? true : false;
 
 const getUsername = (message, userId) => {
     const username = message.client.guilds.cache.get(message.guild.id).member(userId).displayName;
@@ -23,10 +20,9 @@ if (!String.prototype.format) {
     };
 }
 
-if (!String.prototype.replaceAll) {
-    String.prototype.replaceAll = function (search, replace) {
-        return this.split(search).join(replace);
-    }
+/* replace all in string */
+function replaceAll(string, search, replace) {
+    return string.split(search).join(replace);
 }
 
 /*
@@ -73,32 +69,10 @@ function uniq(a) {
    return Array.from(new Set(a));
 }
 
-const logger = winston.createLogger({
-    level: 'info',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
-    ),
-    transports: [
-        new winston.transports.File({ filename: path.join(__dirname, '../logs/error.log'), level: 'error' }),
-        new winston.transports.File({ filename: path.join(__dirname, '../logs/verbose.log'), level: 'verbose' })
-    ]
-});
-
-/* 
- * Logging winston to console on development mode.
- * (currently doesn't work)
- */
-if (devFlag === true) {
-    logger.add(new winston.transports.Console({
-        format: winston.format.simple(),
-    }));
-}
-
 module.exports = {
     bufferToStream,
     getUsername,
-    logger,
     parseTime,
+    replaceAll,
     uniq,
 }

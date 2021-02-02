@@ -1,4 +1,3 @@
-const { logger } = require('../common');
 const join = require('./basic_join.js');
 const discord = require('../discord.js');
 const string = require('../stringManager.js');

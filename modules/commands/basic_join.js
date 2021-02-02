@@ -1,5 +1,4 @@
 const fs = require('fs');
-const { logger } = require('../common');
 const discord = require('../discord.js');
 const string = require('../stringManager.js');
 

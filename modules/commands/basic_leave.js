@@ -8,6 +8,7 @@ async function commandLeave(message) {
         message.channel.send(string.stringFromId('discord.voice.left', voice.channel.name));
         discord.voiceMap.delete(message.guild.id);
     }
+    return response;
 }
 
 module.exports = {
