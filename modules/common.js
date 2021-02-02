@@ -2,8 +2,10 @@ const path = require('path');
 const winston = require('winston');
 const { Readable } = require('stream');
 
-const getUsername = message => {
-    const username = message.client.guilds.cache.get(message.guild.id).member(message.author).displayName;
+const devFlag = process.env.NODE_ENV === 'development' ? true : false;
+
+const getUsername = (message, userId) => {
+    const username = message.client.guilds.cache.get(message.guild.id).member(userId).displayName;
     return username.split('_').join(' ');
 }
 
@@ -83,10 +85,14 @@ const logger = winston.createLogger({
     ]
 });
 
-if (process.env.NODE_ENV !== 'production') {
+/* 
+ * Logging winston to console on development mode.
+ * (currently doesn't work)
+ */
+if (devFlag === true) {
     logger.add(new winston.transports.Console({
-            format: winston.format.simple(),
-        }))
+        format: winston.format.simple(),
+    }));
 }
 
 module.exports = {

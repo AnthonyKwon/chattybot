@@ -47,13 +47,18 @@ async function commandSay(message, args) {
     /* Fix message for TTS-readable */
     const text = args.join(' ');
     const fixedText = await messageFix(message, text);
+    logger.log('verbose', `[discord.js] ${message.author} spoken: ${text}`);
     try {
-        logger.log('verbose', `[discord.js] ${message.author} spoken: ${text}`);
         /* Send message and TTS to discord */
         message.channel.send(string.stringFromId('catty.tts.text.format', voice.channel.name, message.author, text));
-        await voice.TTS.speak(message, fixedText);
+        /* If bot have message delete permission, delete user's message */
+        if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();
+        voice.TTS.setQueue(message.author.id, fixedText);
+        /* If TTS is already speaking, do not call TTS */
+        if (voice.TTS.speaking === true) return;
+        await voice.TTS.speak(message);
     } catch(err) {
-        logger.log('error', `[discord.js] Failed to launch requested command: ${err}\n${err.body}\n${err.stack}`);
+        logger.log('error', `[discord.js] Failed to launch requested command: ${err.stack}`);
         let _msg = string.stringFromId('discord.error.exception.line1') + '\n';
         if (!devFlag) _msg += string.stringFromId('discord.error.exception.line2.prod');
         else _msg += string.stringFromId('discord.error.exception.line2.dev') + '\n```\n' + err.stack + '```';

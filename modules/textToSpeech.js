@@ -1,5 +1,6 @@
 const GcpTts = require('@google-cloud/text-to-speech');
 const path = require('path');
+const { once } = require('events');
 const configManager = require('./configManager.js');
 const discord = require('./discord.js');
 const string = require('./stringManager.js');
@@ -16,11 +17,13 @@ class TTSClass {
     constructor() {
         this._client = new GcpTts.TextToSpeechClient({ projectId: config.projectId, keyFilename: path.join(__dirname, '../configs/gcp-credentials.json') });
         this._lastAuthor = undefined;
+        this._queue = [];
         this._request = {
             input: { text: 'This is a sample text.' },
             voice: { languageCode: string.locale, ssmlGender: 'NEUTRAL' },
             audioConfig: { audioEncoding: 'OGG_OPUS', speakingRate: '1.0', pitch: '0.0', volumeGainDb: '0.0' }
         };
+        this._speaking = false;
     }
 
     /* get-set setting entry */
@@ -94,19 +97,42 @@ class TTSClass {
             this._request.audioConfig.volumeGainDb = newVolume;
     }
 
-    async speak(message, text, ssml=false) {
+    /* clear-get-set queue */
+    clearQueue() {
+        this._queue = [];
+    }
+    setQueue(authorId, message) {
+        this._queue.push({ authorId, message });
+    }
+    get queue() {
+        return this._queue;
+    }
+
+    get speaking() {
+        return this._speaking;
+    }
+
+    async speak(message, isSsml=false) {
         const voice = discord.voiceMap.get(message.guild.id);
-        /* If message author or channel is different, send TTS w/ prefix. */
-        if (this._lastAuthor !== message.author) {
-            this._request.input = { ssml: '<speak>' + string.stringFromId('catty.tts.prefix', getUsername(message)) + 
-            '<break time="0.5s"/>' + text + '</speak>' };
-        /* If not, send just text only */
-        } else this._request.input = { text };
-        this._lastAuthor = message.author;
-        const [response] = await this._client.synthesizeSpeech(this._request);
-        /* Google sends response as buffer. We need to convert it as ReadableStream. */
-        const stream = bufferToStream(response.audioContent);
-        return voice.play(stream, { type: 'ogg/opus' });
+        this._speaking = true;
+        while (this._queue.length > 0) {
+            /* If message author or channel is different, send TTS w/ prefix. */
+            if (this._lastAuthor !== this._queue[0].authorId) {
+                this._request.input = { ssml: '<speak>' + string.stringFromId('catty.tts.prefix', getUsername(message, this._queue[0].authorId)) + 
+                '<break time="0.5s"/>' + this._queue[0].message + '</speak>' };
+            /* If not, send just text only */
+            } else this._request.input = { text: this._queue[0].message };
+            this._lastAuthor = this._queue[0].authorId;
+            const [response] = await this._client.synthesizeSpeech(this._request);
+            /* Google sends response as buffer. We need to convert it as ReadableStream. */
+            const stream = bufferToStream(response.audioContent);
+            const result = voice.play(stream, { type: 'ogg/opus' });
+            /* await until voice.play finishes (https://stackoverflow.com/a/43084615) */
+            await once(result, 'finish');
+            this._queue.shift();
+       }
+        this._speaking = false;
+        return;
     }
 }
 
