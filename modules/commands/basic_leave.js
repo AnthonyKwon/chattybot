@@ -2,7 +2,11 @@ const discord = require('../discord.js');
 const string = require('../stringManager.js');
 
 async function commandLeave(message) {
+    /* If not joined to voice channel, join first */
+    if (!discord.voiceMap.get(message.guild.id)) return;
     const voice = discord.voiceMap.get(message.guild.id);
+    /* If player is available, kill it first */
+    if (voice.Player) voice.Player.stop(message);
     const response = await voice.leave();
     if (response.result === 'SUCCESS') {
         message.channel.send(string.stringFromId('discord.voice.left', voice.channel.name));

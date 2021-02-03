@@ -50,7 +50,7 @@ async function commandSettings(message, args) {
                     break;
                 case 'chattybot.settings.item.volume':
                     message.channel.send(string.stringFromId('chattybot.setting.value.current',
-                        string.stringFromId('chattybot.settings.item.volume'), voice.TTS.volume + '%'));
+                        string.stringFromId('chattybot.settings.item.volume'), voice.volume + '%'));
                     break;
             }
         }
@@ -83,9 +83,9 @@ async function commandSettings(message, args) {
                         string.stringFromId('chattybot.settings.item.speed'), voice.TTS.speed + '%'));
                     break;
                 case 'chattybot.settings.item.volume':
-                    voice.TTS.volume = args[1];
+                    voice.volume = args[1];
                     message.channel.send(string.stringFromId('chattybot.settings.changed',
-                        string.stringFromId('chattybot.settings.item.volume'), voice.TTS.volume + '%'));
+                        string.stringFromId('chattybot.settings.item.volume'), voice.volume + '%'));
                     break;
             }
         }
@@ -98,6 +98,6 @@ module.exports = {
     aliases: 'chattybot.command.settings.aliases',
     usage: 'chattybot.command.settings.usage',
     description: 'chattybot.command.settings.desc',
-    cooldown: 15,
+    cooldown: 0,
     execute: commandSettings
 }

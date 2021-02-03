@@ -2,6 +2,7 @@ const util = require('util');
 const join = require('./basic_join.js');
 const common = require('../common.js');
 const discord = require('../discord.js');
+const PlayerClass = require('../player.js');
 const string = require('../stringManager.js');
 const TTSClass = require('../textToSpeech.js');
 
@@ -35,11 +36,12 @@ function messageFix(message, content) {
     return finalMsg;
 }
 
-async function commandSay(message, args) {
+async function ttsSay(message, args) {
     /* If not joined to voice channel, join first */
     if (!discord.voiceMap.get(message.guild.id)) {
         const response = await join.execute(message, []);
-        if (response.result === 'FAIL') return;
+        if (response.result === 'FAIL') 
+            return { result: 'FAIL', app: 'discord.js', message: `Failed to join voice channel:\n{response}` };
     }
     const voice = discord.voiceMap.get(message.guild.id);
     /* If TTS is not initalized, do it first */
@@ -50,12 +52,25 @@ async function commandSay(message, args) {
     try {
         /* Send message and TTS to discord */
         message.channel.send(string.stringFromId('chattybot.tts.text.format', voice.channel.name, message.author, text));
-        /* If bot have message delete permission, delete user's message */
+        /* If bot have message delete permission, delete user's request message */
         if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();
         voice.TTS.setQueue(message.author.id, fixedText);
         /* If TTS is already speaking, do not call TTS */
         if (voice.TTS.speaking === true) return;
+        /* If music is playing, destroy it first */
+        let playtime = 0, queue = [], voiceDestroyed = false;
+        if (voice.Player) {
+            playtime = voice.Player.getPlaytime(message);
+            queue = voice.Player.queue;
+            voice.Player.stop(message);
+            voiceDestroyed = true;
+        }
         await voice.TTS.speak(message);
+        if (voiceDestroyed === true) {
+            voice.Player = new PlayerClass(queue);
+            voice.Player.play(message, playtime);
+            destroyed = false;
+        }
         return { result: 'SUCCESS', app: 'discord.js', message: `${message.author} spoken: ${text}` };
     } catch(err) {
         let _msg = string.stringFromId('discord.error.exception.line1') + '\n';
@@ -72,5 +87,5 @@ module.exports = {
     aliases: 'chattybot.command.say.aliases',
     usage: 'chattybot.command.say.usage',
     cooldown: 3,
-    execute: commandSay
+    execute: ttsSay
 }
