@@ -3,7 +3,7 @@ const discord = require('../discord.js');
 const string = require('../stringManager.js');
 const TTSClass = require('../textToSpeech.js');
 
-async function commandEmpty(message) {
+async function ttsEmpty(message) {
     /* This command only can be used after TTS is initialized */
     const voice = discord.voiceMap.get(message.guild.id);
     if (!voice || !voice.TTS) {
@@ -27,5 +27,5 @@ module.exports = {
     argsRequired: false,
     aliases: 'chattybot.command.empty.aliases',
     cooldown: 30,
-    execute: commandEmpty
+    execute: ttsEmpty
 }

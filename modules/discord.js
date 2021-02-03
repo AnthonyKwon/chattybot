@@ -100,7 +100,9 @@ class VoiceClass {
             name: undefined
         }
         this._guildId = guildId;
+        this._player = new Map();
         this._tts = new Map();
+        this._volume = 100;
     }
 
     get channel() {
@@ -118,12 +120,32 @@ class VoiceClass {
         return this.guildId;
     }
 
-    /* set-get TTS variable (to passed value) */
+    /* set-get Player map (to passed value) */
+    set Player(value) {
+        this._player.set(this._guildId, value);
+    }
+    get Player() {
+        return this._player.get(this._guildId);
+    }
+
+    /* set-get TTS map (to passed value) */
     set TTS(value) {
         this._tts.set(this._guildId, value);
     }
     get TTS() {
         return this._tts.get(this._guildId);
+    }
+
+    /* get-set voice volume */
+    get volume() {
+        return this._volume;
+    }
+    set volume(rate) {
+        if (rate <= 200 && rate >= 0) {
+            this._volume = rate;
+            if (this._connection.dispatcher)
+                this._connection.dispatcher.setVolume(this._volume / 100);
+        }
     }
 
     /* join discord voice connection */
@@ -165,7 +187,9 @@ class VoiceClass {
         if (this._connection.status !== 0) {
             return { result: 'FAIL', reason: 'specify_or_join_channel' };
         }
-        return this._connection.play(stream, option);
+        const output = this._connection.play(stream, option);
+        this._connection.dispatcher.setVolume(this._volume / 100);
+        return output;
     }
 
     /* leave discord voice connection */
