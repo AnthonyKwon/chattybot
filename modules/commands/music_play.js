@@ -25,7 +25,7 @@ async function musicPlay(message, args) {
         voice.Player.queue = input;
         const title = await voice.Player.getInfo(input);
         /* Check if player is running, and play music. */
-        if (voice.Player.playState === true || (voice.TTS && voice.TTS.speaking)) {
+        if (voice.Player.playState === true || (voice.Player.playState === false && voice.Player.queue.length > 1) || (voice.TTS && voice.TTS.speaking)) {
             message.channel.send(string.stringFromId('chattybot.music.playlist_added', title));
             return { result: 'SUCCESS', app: 'player', message: `Added ${title}(${input}) to music queue.` };
         }
@@ -48,6 +48,6 @@ module.exports = {
     aliases: 'chattybot.command.play.aliases',
     usage: 'chattybot.command.play.usage',
     description: 'chattybot.command.play.desc',
-    cooldown: 5,
+    cooldown: 3,
     execute: musicPlay
 }
