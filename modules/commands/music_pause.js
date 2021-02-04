@@ -31,6 +31,6 @@ module.exports = {
     argsRequired: false,
     aliases: 'chattybot.command.pause.aliases',
     usage: 'chattybot.command.pause.usage',
-    cooldown: 5,
+    cooldown: 3,
     execute: musicPause
 }

@@ -23,6 +23,6 @@ module.exports = {
     argsRequired: false,
     aliases: 'chattybot.command.stop.aliases',
     description: 'chattybot.command.stop.desc',
-    cooldown: 5,
+    cooldown: 3,
     execute: musicStop
 }
