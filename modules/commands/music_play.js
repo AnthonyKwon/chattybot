@@ -27,9 +27,11 @@ async function musicPlay(message, args) {
         /* Check if player is running, and play music. */
         if (voice.Player.playState === true || (voice.Player.playState === false && voice.Player.queue.length > 1) || (voice.TTS && voice.TTS.speaking)) {
             message.channel.send(string.stringFromId('chattybot.music.playlist_added', title));
+            /* If bot have message delete permission, delete user's message */
+            if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();
             return { result: 'SUCCESS', app: 'player', message: `Added ${title}(${input}) to music queue.` };
         }
-        voice.Player.play(message);
+        voice.Player.play(voice);
         message.channel.send(string.stringFromId('chattybot.music.now_playing', title));
         /* If bot have message delete permission, delete user's message */
         if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();

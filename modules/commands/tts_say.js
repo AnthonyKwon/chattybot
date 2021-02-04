@@ -60,15 +60,15 @@ async function ttsSay(message, args) {
         /* If music is playing, destroy it first */
         let playtime = 0, queue = [], voiceDestroyed = false;
         if (voice.Player) {
-            playtime = voice.Player.getPlaytime(message);
+            playtime = voice.Player.getPlaytime(voice);
             queue = voice.Player.queue;
-            voice.Player.stop(message);
+            voice.Player.stop(voice);
             voiceDestroyed = true;
         }
         await voice.TTS.speak(message);
         if (voiceDestroyed === true) {
             voice.Player = new PlayerClass(queue);
-            voice.Player.play(message, playtime);
+            voice.Player.play(voice, playtime);
             destroyed = false;
         }
         return { result: 'SUCCESS', app: 'discord.js', message: `${message.author} spoken: ${text}` };

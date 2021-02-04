@@ -6,7 +6,7 @@ async function commandLeave(message) {
     if (!discord.voiceMap.get(message.guild.id)) return;
     const voice = discord.voiceMap.get(message.guild.id);
     /* If player is available, kill it first */
-    if (voice.Player) voice.Player.stop(message);
+    if (voice.Player) voice.Player.stop(voice);
     const response = await voice.leave();
     if (response.result === 'SUCCESS') {
         message.channel.send(string.stringFromId('discord.voice.left', voice.channel.name));

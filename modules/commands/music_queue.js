@@ -1,14 +1,19 @@
-const join = require('./basic_join.js');
 const discord = require('../discord.js');
 const PlayerClass = require('../player.js');
 const string = require('../stringManager.js');
 
 async function musicQueue(message, args) {
-    /* If not joined to voice channel, join first */
-    if (!discord.voiceMap.get(message.guild.id)) return;
+    /* If not joined to voice channel, cancel command */
+    if (!discord.voiceMap.get(message.guild.id)) {
+        message.channel.send(string.stringFromId('chattybot.music.playlist.empty'));
+        return;
+    }
     const voice = discord.voiceMap.get(message.guild.id);
     /* If music player is already not running, cancel command */
-    if (!voice.Player) return;
+    if (!voice.Player || !voice.Player.queue.length === 0) {
+        message.channel.send(string.stringFromId('chattybot.music.playlist.empty'));
+        return;
+    }
     const playlist = voice.Player.queue;
     const pages = Math.ceil(playlist.length / 10);
     const currPage = args[0] <= pages ? args[0] : pages;
