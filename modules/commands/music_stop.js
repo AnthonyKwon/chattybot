@@ -10,7 +10,7 @@ async function musicStop(message) {
     /* If music player is already not running, cancel command */
     if (!voice.Player) return;
     /* Kill music player, and nullify it */
-    if (voice.Player) voice.Player.stop(message);
+    if (voice.Player) voice.Player.stop(voice);
     voice.Player = undefined;
     message.channel.send(string.stringFromId('chattybot.music.stopped'));
     /* If TTS is not running, leave voice channel */

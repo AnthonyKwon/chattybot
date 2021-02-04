@@ -98,6 +98,6 @@ module.exports = {
     aliases: 'chattybot.command.settings.aliases',
     usage: 'chattybot.command.settings.usage',
     description: 'chattybot.command.settings.desc',
-    cooldown: 0,
+    cooldown: 9,
     execute: commandSettings
 }
