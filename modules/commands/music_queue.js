@@ -14,23 +14,24 @@ async function musicQueue(message, args) {
         message.channel.send(string.stringFromId('chattybot.music.playlist.empty'));
         return;
     }
-    const playlist = voice.Player.queue;
-    const pages = Math.ceil(playlist.length / 10);
-    const currPage = args[0] <= pages ? args[0] : pages;
-    const maxIndex = (playlist.length - 1) >= currPage * 10 ? currPage * 10 : playlist.length - 1;
+
+    message.channel.send(string.stringFromId('chattybot.music.playlist.parsing'));   
+    const count = 10; // count of items shown in playlist
+    const start = (parseInt(args[0]) - 1) > 0 && (parseInt(args[0]) - 1) * count <
+     voice.Player.queue.length ?
+    parseInt(args[0] - 1) * count : 0; // start point of playlist
+    const playlist = await voice.Player.getQueueList(start, count);
     const output = [];
     output.push(string.stringFromId('chattybot.music.playlist.line1', message.client.user));
-    output.push(string.stringFromId('chattybot.music.playlist.line2', currPage, pages));
-    for (let i = 0; i <= maxIndex; i++) {
-        if (currPage === 1 && i === 0) {
-            output.push(string.stringFromId('chattybot.music.playlist.current',
-                await voice.Player.getInfo(playlist[(10 * (pages - 1)) + i])));
-        }
-        else {
-            output.push(string.stringFromId('chattybot.music.playlist.late', (10 * (pages - 1)) + i + 1,
-                await voice.Player.getInfo(playlist[(10 * (pages - 1)) + i])));
-        }
-    }
+    output.push(string.stringFromId('chattybot.music.playlist.line2',
+        Math.floor(voice.Player.queue.length / count) + 1, Math.floor(start / count) + 1));
+    playlist.map(item => {
+        if (start === 0 && playlist.indexOf(item) === 0)
+            output.push(string.stringFromId('chattybot.music.playlist.current', item.videoDetails.title));
+        else
+            output.push(string.stringFromId('chattybot.music.playlist.late',
+                playlist.indexOf(item) + 1, item.videoDetails.title));
+    });
     message.channel.send(output);
 }
 

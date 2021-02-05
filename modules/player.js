@@ -2,6 +2,7 @@ const fs = require('fs');
 const { once } = require('events');
 const ffmpeg = require('fluent-ffmpeg');
 const ytdl = require('ytdl-core');
+const ytpl = require('ytpl');
 const common = require('./common.js');
 const discord = require('./discord.js');
 
@@ -19,9 +20,43 @@ class PlayerClass {
         this._playing = false;
     }
 
-    async getInfo(input) {
-        const info = await ytdl.getBasicInfo(input);
-        return info.videoDetails.title;
+    async getQueueList(start, userCount) {
+        const result = [];
+        let count = 0;
+        if (start + userCount <= this._queue.length)
+            count = userCount;
+        else {
+            if (this._queue.length < start)
+                count = 0;
+            else
+                count = this._queue.length - start;
+        }
+        const end = start + count;
+        for (let i = start; i < end; i++) {
+            await result.push(await ytdl.getBasicInfo(this._queue[i]));
+        }
+        return result;
+    }
+
+    async getTitle(input) {
+        const type = this.validate(input);
+        let info, result;
+        if (type === 'playlist') {
+            info = await ytpl(input);
+            result = info.items.map(i => i.title);
+        } else {
+            info = await ytdl.getBasicInfo(input);
+            result = info.videoDetails.title
+        }
+        return result;
+    }
+
+
+    async parsePlaylist(input) {
+        const list = await ytpl(input);
+        let result = undefined;
+        result = list.items.map(i => i.shortUrl);
+        return result;
     }
 
     get playState() {
@@ -49,13 +84,22 @@ class PlayerClass {
     set queue(url) {
         this._queue.push(url);
     }
+    concatQueue(list) {
+        this._queue = this._queue.concat(list);
+    }
 
     get stream() {
         return this._stream;
     }
 
     validate(input) {
-        return (ytdl.validateID(input) || ytdl.validateURL(input));
+        if (ytpl.validateID(input)) {
+            return 'playlist';
+        } else if (ytdl.validateID(input) || ytdl.validateURL(input)) {
+            return 'video';
+        } else {
+            return false;
+        }
     }
 
     async ffmpeg_process(stream, offset) {
@@ -67,7 +111,7 @@ class PlayerClass {
                 //console.log(`[fluent-ffmpeg] Failed to encode: ${err.stack}`);
             })
             .on('stderr', stderr => { /* Why fluent-ffmpeg prints stdout to stderr? */
-                console.log(`[fluent-ffmpeg] FFMPEG output: ${stderr}`);
+                //console.log(`[fluent-ffmpeg] FFMPEG output: ${stderr}`);
             });
         return result;
     }
