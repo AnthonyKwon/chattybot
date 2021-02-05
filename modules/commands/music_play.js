@@ -27,7 +27,7 @@ async function musicPlay(message, args) {
             const playlist = await voice.Player.parsePlaylist(input);
             voice.Player.concatQueue(playlist);
             title = await voice.Player.getTitle(input);
-            title = string.stringFromId('chattybot.music.youtube_playlist', title[0], title.length - 2);
+            title = string.stringFromId('chattybot.music.youtube_playlist', title[0], title.length - 1);
         } else if (voice.Player.validate(input) === 'video') {
             voice.Player.queue = input;
             title = await voice.Player.getTitle(input);

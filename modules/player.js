@@ -31,6 +31,7 @@ class PlayerClass {
             else
                 count = this._queue.length - start;
         }
+        console.log(count);
         const end = start + count;
         for (let i = start; i < end; i++) {
             await result.push(await ytdl.getBasicInfo(this._queue[i]));
