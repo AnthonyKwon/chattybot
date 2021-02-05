@@ -20,17 +20,19 @@ async function musicQueue(message, args) {
     const start = (parseInt(args[0]) - 1) > 0 && (parseInt(args[0]) - 1) * count <
      voice.Player.queue.length ?
     parseInt(args[0] - 1) * count : 0; // start point of playlist
+    const pages = voice.Player.queue.length % count === 0 ?
+        Math.floor(voice.Player.queue.length / count) : Math.floor(voice.Player.queue.length / count) + 1;
     const playlist = await voice.Player.getQueueList(start, count);
     const output = [];
     output.push(string.stringFromId('chattybot.music.playlist.line1', message.client.user));
     output.push(string.stringFromId('chattybot.music.playlist.line2',
-        Math.floor(voice.Player.queue.length / count) + 1, Math.floor(start / count) + 1));
+        pages, Math.floor(start / count) + 1));
     playlist.map(item => {
         if (start === 0 && playlist.indexOf(item) === 0)
             output.push(string.stringFromId('chattybot.music.playlist.current', item.videoDetails.title));
         else
             output.push(string.stringFromId('chattybot.music.playlist.late',
-                playlist.indexOf(item) + 1, item.videoDetails.title));
+                start + (playlist.indexOf(item) + 1), item.videoDetails.title));
     });
     message.channel.send(output);
 }
