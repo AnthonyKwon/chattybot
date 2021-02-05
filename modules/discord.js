@@ -6,6 +6,7 @@ let _logger = undefined;
 const devFlag = process.env.NODE_ENV === 'development' ? true : false;
 const config = configManager.read('prefix');
 const cooldown = new Map();
+const voiceMap = new Map();
 
 /* parse command aliases */
 function parseAliases(aliases, commandName) {
@@ -89,6 +90,17 @@ async function onMessageEvent(message) {
         if (!devFlag) _msg.push(string.stringFromId('discord.error.exception.line2.prod'));
         else _msg.push(string.stringFromId('discord.error.exception.line2.dev') + '\n```\n' + err.stack + '```');
         message.channel.send(_msg);
+    }
+}
+
+function onVoiceStateUpdate(oldState, newState) {
+    const message = oldState.member.lastMessage;
+    const voice = voiceMap.get(oldState.guild.id);
+    /* Auto-pause music player when everyone leaves voice channel */
+    if (!voice || !voice.Player || !voice.Player.playState) return;
+    if (oldState.channel.members.size < 2) {
+        voice.Player.toggleState(voice);
+        message.channel.send(string.stringFromId('chattybot.music.auto_paused', voice.channel.name));
     }
 }
 
@@ -204,6 +216,7 @@ class VoiceClass {
 module.exports = {
     onReady: onReadyEvent,
     onMessage: onMessageEvent,
+    onVoiceUpdate: onVoiceStateUpdate,
     Voice: VoiceClass,
-    voiceMap: new Map()
+    voiceMap
 }

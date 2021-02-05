@@ -46,6 +46,8 @@ client.once('ready', () => {
 
 client.on('message', (message) => discord.onMessage(message, logger));
 
+client.on('voiceStateUpdate', discord.onVoiceUpdate);
+
 client.login(config.token);
 
 module.exports = {

@@ -1,6 +1,6 @@
 {
   "name": "chattybot",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "An Discord Text-To-Speech and Music Bot.",
   "main": "main.js",
   "scripts": {
@@ -20,6 +20,7 @@
     "discord.js": "^12.5.1",
     "fluent-ffmpeg": "^2.1.2",
     "winston": "^3.3.3",
-    "ytdl-core": "^4.4.5"
+    "ytdl-core": "^4.4.5",
+    "ytpl": "^2.0.5"
   }
 }

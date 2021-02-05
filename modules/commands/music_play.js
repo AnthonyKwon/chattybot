@@ -14,18 +14,27 @@ async function musicPlay(message, args) {
     const voice = discord.voiceMap.get(message.guild.id);
     /* If Player is not initalized, do it first */
     if (!voice.Player) voice.Player = new PlayerClass();
-    /* Test input if it's valid youtube video */
+    /* Test input if it's valid youtu%재생 https://www.youtube.com/watch?v=wBTpAw2famk&list=PLB5vexwf7WGmGk2Wi6OjQo12ILzyh-1Vpbe video */
     const input = args.join(' ');
     if (!voice.Player.validate(input)) {
         message.channel.send(string.stringFromId('chattybot.settings.error.unknown_item'));
         return { result: 'FAIL', app: 'discord.js', message: `Unknown input ${input} provided.` };
     }
     try {
+        let title = undefined;
         /* Add provided input to queue and get title from info */
-        voice.Player.queue = input;
-        const title = await voice.Player.getInfo(input);
+        if (voice.Player.validate(input) === 'playlist') {
+            const playlist = await voice.Player.parsePlaylist(input);
+            voice.Player.concatQueue(playlist);
+            title = await voice.Player.getTitle(input);
+            title = string.stringFromId('chattybot.music.youtube_playlist', title[0], title.length - 2);
+        } else if (voice.Player.validate(input) === 'video') {
+            voice.Player.queue = input;
+            title = await voice.Player.getTitle(input);
+        }
+        console.log(title);
         /* Check if player is running, and play music. */
-        if (voice.Player.playState === true || (voice.Player.playState === false && voice.Player.queue.length > 1) || (voice.TTS && voice.TTS.speaking)) {
+        if (voice.Player.playState === true || (voice.Player.playState === false && voice.Player.queue.length > input.length) || (voice.TTS && voice.TTS.speaking)) {
             message.channel.send(string.stringFromId('chattybot.music.playlist_added', title));
             /* If bot have message delete permission, delete user's message */
             if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();

@@ -19,9 +19,9 @@ async function musicSkip(message) {
 
     try {
         const skipped = await voice.Player.skip(voice);
-        if (skipped) message.channel.send(string.stringFromId('chattybot.music.skipped', await voice.Player.getInfo(skipped)));
+        if (skipped) message.channel.send(string.stringFromId('chattybot.music.skipped', await voice.Player.getTitle(skipped)));
         if (voice.Player.queue.length >= 1) message.channel.send(string.stringFromId('chattybot.music.now_playing',
-            await voice.Player.getInfo(voice.Player.queue[0])));
+            await voice.Player.getTitle(voice.Player.queue[0])));
         return;
     } catch(err) {
         let _msg = string.stringFromId('discord.error.exception.line1') + '\n';
