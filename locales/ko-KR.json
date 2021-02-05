@@ -22,7 +22,7 @@
     "chattybot.command.play": "재생",
     "chattybot.command.play.desc": "지정한 노래를 재생하거나 재생목록에 추가합니다.",
     "chattybot.command.play.aliases": "play",
-    "chattybot.command.play.usage": "<ID 또는 URL...>",
+    "chattybot.command.play.usage": "<검색어, ID 또는 URL...>",
     "chattybot.command.queue": "재생목록",
     "chattybot.command.queue.desc": "재생목록에 추가되어 있는 노래 목록을 봅니다.",
     "chattybot.command.queue.aliases": "큐",

@@ -43,7 +43,7 @@ async function musicPlay(message, args) {
             result.items.forEach(item => _url.push(item.url));
             reply.push(string.stringFromId('chattybot.music.search.choose_item'));
             _title.forEach(item => reply.push(string.stringFromId('chattybot.music.search.items', item)));
-            message.channel.send(reply);
+            const listMessage = await message.channel.send(reply);
             /* Prompt user for choice */
             const cmdFilter = message => message.content.match(/^(\d|x|X)$/g);
             const selection = await message.channel.awaitMessages(cmdFilter, { max: 1, time: 60000, errors: ['time'] });
@@ -53,6 +53,9 @@ async function musicPlay(message, args) {
                 message.channel.send(string.stringFromId('chattybot.music.search.canceled'));
                 return;
             }
+            /* Remove user sent message commands & bot messages */
+            if (message.guild.me.hasPermission('MANAGE_MESSAGES')) listMessage.delete();
+            if (message.guild.me.hasPermission('MANAGE_MESSAGES')) selection.first().delete();
             /* Add user choice to queue */
             const choice = command.match(/[0-9]+/g);
             voice.Player.queue = _url[choice[0] - 1];
