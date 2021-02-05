@@ -31,7 +31,6 @@ class PlayerClass {
             else
                 count = this._queue.length - start;
         }
-        console.log(count);
         const end = start + count;
         for (let i = start; i < end; i++) {
             await result.push(await ytdl.getBasicInfo(this._queue[i]));
@@ -40,7 +39,7 @@ class PlayerClass {
     }
 
     async getTitle(input) {
-        const type = this.validate(input);
+        const type = await this.validate(input);
         let info, result;
         if (type === 'playlist') {
             info = await ytpl(input);
@@ -93,14 +92,27 @@ class PlayerClass {
         return this._stream;
     }
 
-    validate(input) {
-        if (ytpl.validateID(input)) {
-            return 'playlist';
-        } else if (ytdl.validateID(input) || ytdl.validateURL(input)) {
-            return 'video';
-        } else {
-            return false;
+    async validate(input) {
+        let result = undefined;
+        /* Test if provided link/id is YouTube Playlist */
+        try {
+            if (ytpl.validateID(input)) {
+                result = await ytpl(input);
+                if (result.items.length > 0) return 'playlist';
+            }
+        } catch(err) {
+            /* This is not a playlist! */
         }
+        /* Test if provided link/id is YouTube Video */
+        try {
+            if (ytdl.validateID(input) || ytdl.validateURL(input)) {
+                result = await ytdl.getBasicInfo(input);
+                return 'video';
+            }
+        } catch(err) {
+            /* This video is unavailable or private, or even not a vaild id? */
+        }
+        return false;
     }
 
     async ffmpeg_process(stream, offset) {

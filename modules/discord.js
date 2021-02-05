@@ -100,7 +100,7 @@ function onVoiceStateUpdate(oldState, newState) {
     if (!voice || !voice.Player || !voice.Player.playState) return;
     if (oldState.channel.members.size < 2) {
         voice.Player.toggleState(voice);
-        message.channel.send(string.stringFromId('chattybot.music.auto_paused', voice.channel.name));
+        if (message) message.channel.send(string.stringFromId('chattybot.music.auto_paused', voice.channel.name));
     }
 }
 

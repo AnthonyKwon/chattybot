@@ -1,3 +1,4 @@
+const ytsr = require('ytsr');
 const join = require('./basic_join.js');
 const discord = require('../discord.js');
 const PlayerClass = require('../player.js');
@@ -16,25 +17,50 @@ async function musicPlay(message, args) {
     if (!voice.Player) voice.Player = new PlayerClass();
     /* Test input if it's valid youtu%재생 https://www.youtube.com/watch?v=wBTpAw2famk&list=PLB5vexwf7WGmGk2Wi6OjQo12ILzyh-1Vpbe video */
     const input = args.join(' ');
-    if (!voice.Player.validate(input)) {
-        message.channel.send(string.stringFromId('chattybot.settings.error.unknown_item'));
-        return { result: 'FAIL', app: 'discord.js', message: `Unknown input ${input} provided.` };
-    }
     try {
         let title = undefined;
         /* Add provided input to queue and get title from info */
-        if (voice.Player.validate(input) === 'playlist') {
+        let inputSize = 0;
+        if (await voice.Player.validate(input) === 'playlist') {
             const playlist = await voice.Player.parsePlaylist(input);
             voice.Player.concatQueue(playlist);
             title = await voice.Player.getTitle(input);
             title = string.stringFromId('chattybot.music.youtube_playlist', title[0], title.length - 1);
-        } else if (voice.Player.validate(input) === 'video') {
+            inputSize = playlist.length;
+        } else if (await voice.Player.validate(input) === 'video') {
             voice.Player.queue = input;
             title = await voice.Player.getTitle(input);
+            inputSize = 1;
+        } else {
+            /* Search user input from youtube */
+            const filters = await ytsr.getFilters(input);
+            const filter = filters.get('Type').get('Video');
+            const result = await ytsr(filter.url, { limit: 9 });
+            const _title = [];
+            const _url = [];
+            const reply = [];
+            result.items.forEach(item => _title.push(item.title));
+            result.items.forEach(item => _url.push(item.url));
+            reply.push(string.stringFromId('chattybot.music.search.choose_item'));
+            _title.forEach(item => reply.push(string.stringFromId('chattybot.music.search.items', item)));
+            message.channel.send(reply);
+            /* Prompt user for choice */
+            const cmdFilter = message => message.content.match(/^(\d|x|X)$/g);
+            const selection = await message.channel.awaitMessages(cmdFilter, { max: 1, time: 60000, errors: ['time'] });
+            const command = selection.first().content;
+            if (command.toUpperCase() === 'X') {
+                /* User canceled command. Escape function */
+                message.channel.send(string.stringFromId('chattybot.music.search.canceled'));
+                return;
+            }
+            /* Add user choice to queue */
+            const choice = command.match(/[0-9]+/g);
+            voice.Player.queue = _url[choice[0] - 1];
+            title = _title[choice[0] - 1];
+            inputSize = 1;
         }
-        console.log(title);
         /* Check if player is running, and play music. */
-        if (voice.Player.playState === true || (voice.Player.playState === false && voice.Player.queue.length > input.length) || (voice.TTS && voice.TTS.speaking)) {
+        if (voice.Player.playState === true || (voice.Player.playState === false && voice.Player.queue.length > inputSize) || (voice.TTS && voice.TTS.speaking)) {
             message.channel.send(string.stringFromId('chattybot.music.playlist_added', title));
             /* If bot have message delete permission, delete user's message */
             if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();
