@@ -1,4 +1,5 @@
 const discord = require('../discord.js');
+const logger = require('../logger.js');
 const PlayerClass = require('../player.js');
 const string = require('../stringManager.js');
 
@@ -6,13 +7,13 @@ async function musicQueue(message, args) {
     /* If not joined to voice channel, cancel command */
     if (!discord.voiceMap.get(message.guild.id)) {
         message.channel.send(string.stringFromId('chattybot.music.playlist.empty'));
-        return;
+        return false;
     }
     const voice = discord.voiceMap.get(message.guild.id);
     /* If music player is already not running, cancel command */
     if (!voice.Player || !voice.Player.queue.length === 0) {
         message.channel.send(string.stringFromId('chattybot.music.playlist.empty'));
-        return;
+        return false;
     }
 
     message.channel.send(string.stringFromId('chattybot.music.playlist.parsing'));   
@@ -35,6 +36,7 @@ async function musicQueue(message, args) {
                 start + (playlist.indexOf(item) + 1), item.videoDetails.title));
     });
     message.channel.send(output);
+    return true;
 }
 
 module.exports = {
