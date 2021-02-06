@@ -21,6 +21,8 @@ class PlayerClass {
     }
 
     async getQueueList(start, userCount) {
+        /* Temporary function for music_queue.js 
+         * will be removed when found a faster, better solution. */
         const result = [];
         let count = 0;
         if (start + userCount <= this._queue.length)
@@ -39,6 +41,7 @@ class PlayerClass {
     }
 
     async getTitle(input) {
+        /* get title of video */
         const type = await this.validate(input);
         let info, result;
         if (type === 'playlist') {
@@ -53,6 +56,7 @@ class PlayerClass {
 
 
     async parsePlaylist(input) {
+        /* parse playlist and get url */
         const list = await ytpl(input);
         let result = undefined;
         result = list.items.map(i => i.shortUrl);
@@ -74,6 +78,7 @@ class PlayerClass {
     }
 
     getPlaytime(voice) {
+        /* get playtime of current dispatcher */
         if (voice.dispatcher) return voice.dispatcher.streamTime;
         else return 0;
     }
@@ -139,7 +144,7 @@ class PlayerClass {
             this._queue.shift();
         }
         this._playing = false;
-        return;
+        return true;
     }
 
     async seek(voice, inputTime) {
@@ -148,11 +153,11 @@ class PlayerClass {
         const length = videoInfo.videoDetails.lengthSeconds * 1000;
         if (time && time < length) {
             this.play(voice, time);
-            return { result: 'SUCCESS' }
+            return true;
         } else {
-            return { result: 'FAIL', reason: 'invalid_time' };
+            return false;
         }
-        return { result: 'FAIL', reason: 'unknown_time' };
+        return false;
     }
 
     async skip(voice) {
@@ -175,7 +180,7 @@ class PlayerClass {
         this._queue = [];
         voice.dispatcher.destroy();
         this._playing = false;
-        return;
+        return true;
     }
 }
 

@@ -11,7 +11,7 @@ async function commandSettings(message, args) {
     /* If not joined to voice channel, join first */
     if (!discord.voiceMap.get(message.guild.id)) {
         const response = await join.execute(message, []);
-        if (response.result === 'FAIL') return;
+        if (!response) return false;
     }
     const voice = discord.voiceMap.get(message.guild.id);
     /* If TTS is not initalized, do it first */
@@ -29,7 +29,7 @@ async function commandSettings(message, args) {
         if (!ttsSettings.includes(string.idFromString(args[0]))) {
             message.channel.send(string.stringFromId('chattybot.settings.error.unknown_item'));
             commandSettings(message, []);
-            return;
+            return false;
         } else {
             switch (string.idFromString(args[0])) {
                 case 'chattybot.settings.item.gender':
@@ -59,7 +59,7 @@ async function commandSettings(message, args) {
         if (!ttsSettings.includes(string.idFromString(args[0]))) {
             message.channel.send(string.stringFromId('chattybot.settings.error.unknown_item'));
             commandSettings(message, []);
-            return;
+            return false;
         } else {
             switch (string.idFromString(args[0])) {
                 case 'chattybot.settings.item.gender':

@@ -1,6 +1,7 @@
 const ytsr = require('ytsr');
 const join = require('./basic_join.js');
 const discord = require('../discord.js');
+const logger = require('../logger.js');
 const PlayerClass = require('../player.js');
 const string = require('../stringManager.js');
 
@@ -10,12 +11,12 @@ async function musicPlay(message, args) {
     /* If not joined to voice channel, join first */
     if (!discord.voiceMap.get(message.guild.id)) {
         const response = await join.execute(message, []);
-        if (response.result === 'FAIL') return { result: 'FAIL', app: 'discord.js', message: `Failed to join voice channel:\n{response}` };
+        if (!response) return false;
     }
     const voice = discord.voiceMap.get(message.guild.id);
     /* If Player is not initalized, do it first */
     if (!voice.Player) voice.Player = new PlayerClass();
-    /* Test input if it's valid youtu%재생 https://www.youtube.com/watch?v=wBTpAw2famk&list=PLB5vexwf7WGmGk2Wi6OjQo12ILzyh-1Vpbe video */
+    /* Test input if it's valid youtube video */
     const input = args.join(' ');
     try {
         let title = undefined;
@@ -51,7 +52,7 @@ async function musicPlay(message, args) {
             if (command.toUpperCase() === 'X') {
                 /* User canceled command. Escape function */
                 message.channel.send(string.stringFromId('chattybot.music.search.canceled'));
-                return;
+                return false;
             }
             /* Remove user sent message commands & bot messages */
             if (message.guild.me.hasPermission('MANAGE_MESSAGES')) listMessage.delete();
@@ -67,18 +68,21 @@ async function musicPlay(message, args) {
             message.channel.send(string.stringFromId('chattybot.music.playlist_added', title));
             /* If bot have message delete permission, delete user's message */
             if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();
-            return { result: 'SUCCESS', app: 'player', message: `Added ${title}(${input}) to music queue.` };
+            logger.log('verbose', `[Player] Added ${title} to music queue.`);
+            return true;
         }
         voice.Player.play(voice);
         message.channel.send(string.stringFromId('chattybot.music.now_playing', title));
         /* If bot have message delete permission, delete user's message */
         if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();
-        return { result: 'SUCCESS', app: 'player', message: `Now playing ${title}(${input}).` };
+        logger.log('verbose', `[Player] Now playing ${title}.`);
+        return true;
     } catch(err) {
+        logger.log('error', `[Player] Error occured while starting!\n${err.stack}\n`);
         let _msg = string.stringFromId('discord.error.exception.line1') + '\n';
         if (!devFlag) _msg += string.stringFromId('discord.error.exception.line2.prod');
         else _msg += string.stringFromId('discord.error.exception.line2.dev') + '\n```\n' + err.stack + '```';
-        return { result: 'FAIL', app: 'discord.js', message: `Failed to launch requested command!`, exception: err.stack };
+        return false;
     }
 }
 
