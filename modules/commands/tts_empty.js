@@ -8,7 +8,7 @@ async function ttsEmpty(message) {
     /* This command only can be used after TTS is initialized */
     const voice = discord.voiceMap.get(message.guild.id);
     if (!voice || !voice.TTS) {
-        return;
+        return false;
     }
 
     /* Re-initialize TTSClass with empty queue */

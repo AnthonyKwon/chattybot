@@ -1,4 +1,5 @@
 const discord = require('../discord.js');
+const logger = require('../logger.js');
 const PlayerClass = require('../player.js');
 const string = require('../stringManager.js');
 
@@ -27,13 +28,13 @@ async function musicSeek(message, args) {
     /* If not joined to voice channel, show error and exit */
     if (!discord.voiceMap.get(message.guild.id)) {
         message.channel.send(string.stringFromId('chattybot.music.error.not_playing'));
-        return { result: 'FAIL', app: 'discord.js', message: `Failed to join voice channel:\n{response}` };
+        return false;
     }
     const voice = discord.voiceMap.get(message.guild.id);
     /* If music player is already not running, show error and exit */
     if (!voice.Player || !voice.Player.playState) {
         message.channel.send(string.stringFromId('chattybot.music.error.not_playing'));
-        return { result: 'FAIL', app: 'player', message: `${message.author} tried to change seek time, but music was not playing.` };
+        return false;
     }
     
     /* raw input and converted */
@@ -43,17 +44,18 @@ async function musicSeek(message, args) {
         /* If time is invalid, cancel seeking */
         if (milli === -1) {
             message.channel.send(string.stringFromId('chattybot.music.error.invalid_time'));
-            return { result: 'FAIL' };
+            return false;
         }
         const response = await voice.Player.seek(voice, milli);
-        if (response.result === 'SUCCESS') message.channel.send(string.stringFromId('chattybot.music.seeked'));
-        else message.channel.send(string.stringFromId(`chattybot.music.error.${response.reason}`));
+        if (response) message.channel.send(string.stringFromId('chattybot.music.seeked'));
+        else message.channel.send(string.stringFromId(`chattybot.music.error.invalid_time`));
         return response;
     } catch(err) {
+        logger.log('error', `[Player] Error occured while seeking!\n${err.stack}\n`);
         let _msg = string.stringFromId('discord.error.exception.line1') + '\n';
         if (!devFlag) _msg += string.stringFromId('discord.error.exception.line2.prod');
         else _msg += string.stringFromId('discord.error.exception.line2.dev') + '\n```\n' + err.stack + '```';
-        return { result: 'FAIL', app: 'discord.js', message: `Failed to launch requested command!`, exception: err.stack };
+        return false;
     }
 }
 

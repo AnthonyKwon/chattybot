@@ -1,8 +1,8 @@
 const Discord = require('discord.js');
 const configManager = require('./configManager.js');
+const logger = require('./logger.js');
 const string = require('./stringManager.js');
 
-let _logger = undefined;
 const devFlag = process.env.NODE_ENV === 'development' ? true : false;
 const config = configManager.read('prefix');
 const cooldown = new Map();
@@ -19,8 +19,7 @@ function parseAliases(aliases, commandName) {
 }
 
 /* event emitted when bot is connected to discord */
-function onReadyEvent(client, logger, status) {
-    _logger = logger;
+function onReadyEvent(client, status) {
     logger.log('verbose', `[discord.js] Connected to ${client.user.username}!`);
     client.user.setActivity(status, "PLAYING");
 }
@@ -33,7 +32,7 @@ async function onMessageEvent(message) {
     if (!message.content.startsWith(config.prefix) || message.author.bot) return;
     /* if env var is development and user is not an developer, show message and exit */
     if (devFlag && message.member.roles.cache.some(role => role.name === 'Discord Bot Developer')) {
-        _logger.log('verbose',`[discord.js] ${message.author.tag} issued command: ${message.content}`);
+        logger.log('verbose',`[discord.js] ${message.author.tag} issued command: ${message.content}`);
     } else if (devFlag) {
         message.channel.send(':no_entry_sign: **앗!** 지금은 개발자분들이 시험 중이라 사용이 불가능해요.\n' +
           '다음에 더 나아진 모습으로 찾아올게요! :wink:\n' +
@@ -60,7 +59,9 @@ async function onMessageEvent(message) {
             _reply.push(string.stringFromId('chattybot.help.message.detail.line4', string.stringFromId(command.description, message.client.user)));
         }
 
-        return message.channel.send(_reply);
+        logger.log('error', `[discord.js] ${message.author} tried to use command, but no argument provided!`);
+        message.channel.send(_reply);
+        return false;
     }
 
     if (command.cooldown) {
@@ -69,7 +70,8 @@ async function onMessageEvent(message) {
         if (currentCooldown && currentCooldown > Date.now()) {
             const timeLeft = Math.round((currentCooldown - Date.now()) / 1000);
             message.channel.send(string.stringFromId('discord.error.cooldown', timeLeft));
-            return;
+            logger.log('error', `[discord.js] ${message.author} tried to use command, but cooldown was not passed! (${timeLeft}s)`);
+            return false;
         }
 
         /* Register user on cooldown timer */
@@ -77,14 +79,11 @@ async function onMessageEvent(message) {
         setTimeout(() => cooldown.delete(`${message.author.id}:${command.name}`), command.cooldown * 1000);
     }
 
+    /* try to run specified command */
     try {
-        const response = await command.execute(message, args);
-        if (response && response.message) {
-            if (response.result == 'SUCCESS') _logger.log('info', `[${response.app}] ${response.message}`);
-            else _logger.log('error', `[${response.app}] ${response.message ? response.message : 'Error occured while launching command!'}\n${response.exception}`);
-        }
+        await command.execute(message, args);
     } catch (err) {
-        _logger.log('error', `[discord.js] Failed to launch requested command!\n${err.stack}`);
+        logger.log('error', `[discord.js] Failed to launch requested command!\n${err.stack}`);
         let _msg = [];
         _msg.push(string.stringFromId('discord.error.exception.line1'));
         if (!devFlag) _msg.push(string.stringFromId('discord.error.exception.line2.prod'));
@@ -100,6 +99,7 @@ function onVoiceStateUpdate(oldState, newState) {
     if (!voice || !voice.Player || !voice.Player.playState) return;
     if (oldState.channel.members.size < 2) {
         voice.Player.toggleState(voice);
+        logger.log('verbose', `[discord.js] All users left channel, player auto-paused.`);
         if (message) message.channel.send(string.stringFromId('chattybot.music.auto_paused', voice.channel.name));
     }
 }
@@ -161,43 +161,20 @@ class VoiceClass {
     }
 
     /* join discord voice connection */
-    async join(message, channelId=undefined) {
-        /* check if user joined in any voice channel or passed channel id */
-        if (!channelId && !message.member.voice.channel) {
-            return { result: 'FAIL', reason: 'specify_or_join_channel' };
-        }
-        const selectedId = channelId ? channelId : message.member.voice.channel.id;
-        /* check if channel is available */
-        const channel = message.client.channels.cache.get(selectedId);
-        if (!channel) {
-            return { result: 'FAIL', reason: 'unknown_channel' };
-        }
-        /* check if bot has permission to join target channel */
-        const permissions = channel.permissionsFor(message.client.user);
-        if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-            return { result: 'FAIL', reason: 'no_permission' };
-        }
-
-        /* Try to join voice channel */
-        try {
-            this._connection = await channel.join();
-            _logger.log('verbose', `[discord.js] Joined voice channel ${this._connection.channel.id}`);
-            /* Set speaking status to none */
-            this._connection.setSpeaking(0);
-            /* set channel info */
-            this._channel.id = this._connection.channel.id;
-            this._channel.name = this._connection.channel.name;
-            return { result: 'SUCCESS' };
-        } catch (err) {
-            _logger.log('error', `[discord.js] An error occured while connected to voice channel: \n${err.stack}`);
-            return { result: 'FAIL', reason: 'exception', stack: err.stack };
-        }
+    async join(channel) {
+        this._connection = await channel.join();
+        /* Set speaking status to none */
+        this._connection.setSpeaking(0);
+        /* set channel info */
+        this._channel.id = this._connection.channel.id;
+        this._channel.name = this._connection.channel.name;
+        return true;
     }
 
     play(stream, option=undefined) {
         /* Join voice channel first if not */
         if (this._connection.status !== 0) {
-            return { result: 'FAIL', reason: 'specify_or_join_channel' };
+            return false;
         }
         const output = this._connection.play(stream, option);
         this._connection.dispatcher.setVolume(this._volume / 100);
@@ -208,12 +185,12 @@ class VoiceClass {
     async leave() {
         if (this._connection.status !== 0) return;
         this._connection.disconnect();
-        _logger.log('verbose', `[discord.js] Left voice channel.`);
-        return { result: 'SUCCESS' };
+        return true;
     }
 }
 
 module.exports = {
+    logger,
     onReady: onReadyEvent,
     onMessage: onMessageEvent,
     onVoiceUpdate: onVoiceStateUpdate,
