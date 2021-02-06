@@ -2,6 +2,7 @@ const util = require('util');
 const join = require('./basic_join.js');
 const common = require('../common.js');
 const discord = require('../discord.js');
+const logger = require('../logger.js');
 const PlayerClass = require('../player.js');
 const string = require('../stringManager.js');
 const TTSClass = require('../textToSpeech.js');
@@ -40,8 +41,7 @@ async function ttsSay(message, args) {
     /* If not joined to voice channel, join first */
     if (!discord.voiceMap.get(message.guild.id)) {
         const response = await join.execute(message, []);
-        if (response.result === 'FAIL') 
-            return { result: 'FAIL', app: 'discord.js', message: `Failed to join voice channel:\n{response}` };
+        if (!response) return false;
     }
     const voice = discord.voiceMap.get(message.guild.id);
     /* If TTS is not initalized, do it first */
@@ -49,6 +49,7 @@ async function ttsSay(message, args) {
     /* Fix message for TTS-readable */
     const text = args.join(' ');
     const fixedText = await messageFix(message, text);
+    logger.log('warn', `[TTS] Message ${text} will be spoken as ${fixedText}.`);
     try {
         /* Send message and TTS to discord */
         message.channel.send(string.stringFromId('chattybot.tts.text.format', voice.channel.name, message.author, text));
@@ -71,13 +72,16 @@ async function ttsSay(message, args) {
             voice.Player.play(voice, playtime);
             destroyed = false;
         }
-        return { result: 'SUCCESS', app: 'discord.js', message: `${message.author} spoken: ${text}` };
+        logger.log('verbose', `[TTS] ${message.author} spoken: ${text}`);
+        return true;
     } catch(err) {
+        logger.log('error', `[TTS] Error occured while synthesizing:\n${err.stack}\n`);
         let _msg = string.stringFromId('discord.error.exception.line1') + '\n';
         if (!devFlag) _msg += string.stringFromId('discord.error.exception.line2.prod');
         else _msg += string.stringFromId('discord.error.exception.line2.dev') + '\n```\n' + err.stack + '```';
-        return { result: 'FAIL', app: 'discord.js', message: `Failed to launch requested command!`, exception: err.stack };
+        return false;
     }
+    return false;
 }
 
 module.exports = {

@@ -1,4 +1,5 @@
 const configManager = require('../configManager.js');
+const logger = require('../logger.js');
 const string = require('../stringManager.js');
 
 const config = configManager.read('prefix');
@@ -13,16 +14,19 @@ function commandHelp(message, args) {
         reply.push('\n' + string.stringFromId('chattybot.help.message.main.line3',
             config.prefix, string.stringFromId(this.name), string.stringFromId(this.usage)));
         try {
+            /* try to send DM to message author */
             const resposne = message.author.send(reply, {split:true});
             message.channel.send(string.stringFromId('chattybot.help.message.check_dm', message.author));
-            return { result: 'SUCCESS' };
+            logger.log('verbose', `[discord.js] Sent help DM to ${message.author}.`);
         } catch(err) {
+            /* DM failed. send error to channel */
             message.channel.send(string.stringFromId('chattybot.help.message.dm_failed', message.author));
-            return { result: 'FAIL', app: 'discord.js', message: `Failed to send DM to ${message.author}!`, exception: err.stack };
+            logger.log('error', `[discord.js] Failed to send DM to ${message.author}!\n${err.stack}\n`);
         }
     } else {
         /* forgot to re-implement here... */
     }
+    return;
 }
 
 module.exports = {

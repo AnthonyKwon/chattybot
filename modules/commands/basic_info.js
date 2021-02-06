@@ -16,6 +16,6 @@ module.exports = {
         reply.push(string.stringFromId('chattybot.info.message.line3'));
         reply.push(string.stringFromId('chattybot.info.message.line4', info.repository.url));
         message.channel.send(reply);
-        return { result: 'SUCCESS' };
+        return;
     },
 };
