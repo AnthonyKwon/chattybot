@@ -52,7 +52,8 @@ async function ttsSay(message, args) {
     logger.log('warn', `[TTS] Message ${text} will be spoken as ${fixedText}.`);
     try {
         /* Send message and TTS to discord */
-        message.channel.send(string.stringFromId('chattybot.tts.text.format', voice.channel.name, message.author, text));
+        discord.sendWebhook(message, text);
+        //message.channel.send(string.stringFromId('chattybot.tts.text.format', voice.channel.name, message.author, text));
         /* If bot have message delete permission, delete user's request message */
         if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();
         voice.TTS.setQueue(message.author.id, fixedText);
