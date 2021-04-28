@@ -31,7 +31,7 @@ async function onMessageEvent(message) {
     /* Dyanmic coomand handler */
     if (!message.content.startsWith(config.prefix) || message.author.bot) return;
     /* if env var is development and user is not an developer, show message and exit */
-    if (devFlag && message.member.roles.cache.some(role => role.name === 'Discord Bot Developer')) {
+    if (devFlag && message.guild.members.cache.get(message.author.id).hasPermission('MANAGE_WEBHOOKS')) {
         logger.log('verbose',`[discord.js] ${message.author.tag} issued command: ${message.content}`);
     } else if (devFlag) {
         message.channel.send(':no_entry_sign: **앗!** 지금은 개발자분들이 시험 중이라 사용이 불가능해요.\n' +
@@ -101,6 +101,41 @@ function onVoiceStateUpdate(oldState, newState) {
         voice.Player.toggleState(voice);
         logger.log('verbose', `[discord.js] All users left channel, player auto-paused.`);
         if (message) message.channel.send(string.stringFromId('chattybot.music.auto_paused', voice.channel.name));
+    }
+}
+
+// create or get webhook from sender's guild
+async function createWebhook(message) {
+    try {
+        const webhook = await message.channel.createWebhook('Chatty-Webhook');
+        logger.log('verbose', `[discord.js] Created webhook "${webhook}".`);
+        return webhook;
+    } catch (err) {
+        logger.log('error', `[discord.js] Failed to create webhook.\n ${err.stack}`);
+        return undefined;
+    }
+}
+
+async function sendWebhook(message, text) {
+    // Retrieve webhook
+    const webhook = await createWebhook(message);
+    if (!webhook) {
+        // Fallback to old method
+        message.channel.send(string.stringFromId('chattybot.tts.text.format', voice.channel.name, message.author, text));
+        return;
+    }
+
+    // send webhook message
+    try {
+        await webhook.send(text, {
+            username:message.guild.members.cache.get(message.author.id).nickname,
+            avatarURL: message.author.avatarURL()
+        });
+        webhook.delete();
+    } catch (err) {
+        logger.log('error', `[discord.js] Failed to send webhook.\n ${err.stack}`);
+        // Fallback to old method
+        message.channel.send(string.stringFromId('chattybot.tts.text.format', voice.channel.name, message.author, text));
     }
 }
 
@@ -194,6 +229,7 @@ module.exports = {
     onReady: onReadyEvent,
     onMessage: onMessageEvent,
     onVoiceUpdate: onVoiceStateUpdate,
+    sendWebhook,
     Voice: VoiceClass,
     voiceMap
 }
