@@ -1,10 +1,10 @@
 const util = require('util');
 const join = require('./basic_join.js');
 const common = require('../common.js');
-const discord = require('../discord.js');
+const discord = require('../discordwrapper.js');
+const localize = require('../localization.js');
 const logger = require('../logger.js');
 const PlayerClass = require('../player.js');
-const string = require('../stringManager.js');
 const TTSClass = require('../textToSpeech.js');
 
 const devFlag = process.env.NODE_ENV === 'development' ? true : false;
@@ -27,10 +27,10 @@ function messageFix(message, content) {
     });
 
     /* Replace TTS unreadable charater to whitespace */
-    finalMsg = common.replaceAll(finalMsg, '@', string.stringFromId('cattybot.tts.replacement.@'));
+    finalMsg = common.replaceAll(finalMsg, '@', localize.get('cattybot.tts.replacement.@'));
 
     /* Replace TTS unreadable charater to whitespace */
-    finalMsg = common.replaceAll(finalMsg, '&', string.stringFromId('cattybot.tts.replacement.&'));
+    finalMsg = common.replaceAll(finalMsg, '&', localize.get('cattybot.tts.replacement.&'));
 
     /* Replace TTS unreadable charater to whitespace */
     finalMsg = common.replaceAll(finalMsg, regExSpecial, ' ');
@@ -40,8 +40,7 @@ function messageFix(message, content) {
 async function ttsSay(message, args) {
     /* If not joined to voice channel, join first */
     if (!discord.voiceMap.get(message.guild.id)) {
-        const response = await join.execute(message, []);
-        if (!response) return false;
+        await join.execute(message, []);
     }
     const voice = discord.voiceMap.get(message.guild.id);
     /* If TTS is not initalized, do it first */
@@ -53,7 +52,7 @@ async function ttsSay(message, args) {
     try {
         /* Send message and TTS to discord */
         discord.sendWebhook(message, text);
-        //message.channel.send(string.stringFromId('chattybot.tts.text.format', voice.channel.name, message.author, text));
+        //message.channel.send(localize.get('chattybot.tts.text.format', voice.channel.name, message.author, text));
         /* If bot have message delete permission, delete user's request message */
         if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();
         voice.TTS.setQueue(message.author.id, fixedText);
@@ -74,23 +73,17 @@ async function ttsSay(message, args) {
             destroyed = false;
         }
         logger.log('verbose', `[TTS] ${message.author} spoken: ${text}`);
-        return true;
     } catch(err) {
-        logger.log('error', `[TTS] Error occured while synthesizing:\n${err.stack}\n`);
-        let _msg = string.stringFromId('discord.error.exception.line1') + '\n';
-        if (!devFlag) _msg += string.stringFromId('discord.error.exception.line2.prod');
-        else _msg += string.stringFromId('discord.error.exception.line2.dev') + '\n```\n' + err.stack + '```';
-        return false;
+        const errorReport = new discord.MessageAttachment(Buffer.from(err.stack), `report-${common.datetime()}.txt`);
+        logger.log('error', `[TTS] Error occured while synthesizing:\n  ${err.stack}\n`);
+        message.channel.send(localize.get('error.generic'), errorReport);
     }
-    return false;
+    return;
 }
 
 module.exports = {
-    name: 'chattybot.command.say',
-    description: 'chattybot.command.say.desc',
+    name: 'say',
     argsRequired: true,
-    aliases: 'chattybot.command.say.aliases',
-    usage: 'chattybot.command.say.usage',
-    cooldown: 3,
+    cooldown: 5,
     execute: ttsSay
 }

@@ -1,10 +1,8 @@
-const fs = require('fs');
 const { once } = require('events');
 const ffmpeg = require('fluent-ffmpeg');
 const ytdl = require('ytdl-core');
 const ytpl = require('ytpl');
 const common = require('./common.js');
-const discord = require('./discord.js');
 
 function test(args) {
     return ytdl(args);
