@@ -1,4 +1,6 @@
 .vscode
 configs/*.json
+locales_old
+_commands_preconvert
 logs
 node_modules
