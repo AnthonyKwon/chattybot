@@ -1,6 +1,5 @@
-const join = require('./basic_join.js');
-const discord = require('../discord.js');
-const string = require('../stringManager.js');
+const discord = require('../discordwrapper.js');
+const localize = require('../localization.js');
 const PlayerClass = require('../player.js');
 const TTSClass = require('../textToSpeech.js');
 
@@ -8,11 +7,12 @@ async function ttsEmpty(message) {
     /* This command only can be used after TTS is initialized */
     const voice = discord.voiceMap.get(message.guild.id);
     if (!voice || !voice.TTS) {
-        return false;
+        message.channel.send(localize.get('error.discord.voice.not_joined'));
+        return;
     }
 
     /* Re-initialize TTSClass with empty queue */
-    voice.TTS = new TTSClass([{ authorId: 0, message: string.stringFromId('chattybot.tts.queue.empty.speak') }]);
+    voice.TTS = new TTSClass([{ authorId: 0, message: localize.get('speak.tts_queue.empty') }]);
     /* If music is playing, destroy it first */
     let playtime = 0, queue = [], voiceDestroyed = false;
     if (voice.Player) {
@@ -22,7 +22,7 @@ async function ttsEmpty(message) {
         voiceDestroyed = true;
     }
     /* Notify to user */
-    message.channel.send(string.stringFromId('chattybot.tts.queue.empty.message'));
+    message.channel.send(localize.get('message.tts_queue.empty'));
     await voice.TTS.speak(message);
     if (voiceDestroyed === true) {
         voice.Player = new PlayerClass(queue);
@@ -32,10 +32,8 @@ async function ttsEmpty(message) {
 }
 
 module.exports = {
-    name: 'chattybot.command.empty',
-    description: 'chattybot.command.empty.desc',
+    name: 'empty',
     argsRequired: false,
-    aliases: 'chattybot.command.empty.aliases',
-    cooldown: 30,
+    cooldown: 15,
     execute: ttsEmpty
 }

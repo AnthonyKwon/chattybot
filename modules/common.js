@@ -50,6 +50,27 @@ const paddy = (num, padlen, padchar) => {
     return (pad + num).slice(-pad.length);
 }
 
+const datetime = () => {
+    const currDate = new Date();
+    let dateString = String(currDate.getFullYear()).padStart(4, '0');
+    dateString = `${dateString}${String(currDate.getMonth() + 1).padStart(2, '0')}`;
+    dateString = `${dateString}${String(currDate.getDate()).padStart(2, '0')}`;
+    dateString = `${dateString}${String(currDate.getHours()).padStart(2, '0')}`;
+    dateString = `${dateString}${String(currDate.getMinutes()).padStart(2, '0')}`;
+    dateString = `${dateString}${String(currDate.getSeconds()).padStart(2, '0')}`;
+    return dateString;
+}
+
+/* parse command aliases */
+function parseAliases(commandName, aliases) {
+    if (typeof aliases === 'string') {
+        if (aliases === commandName) return true;
+    } else if (typeof aliases === 'object') {
+        if (aliases.includes(commandName)) return true;
+    }
+    return false;
+}
+
 const parseTime = param => {
     let time = paddy(Math.floor(param) % 1000, 3);
     time = Math.floor(param / 1000) > 1 ?
@@ -71,7 +92,9 @@ function uniq(a) {
 
 module.exports = {
     bufferToStream,
+    datetime,
     getUsername,
+    parseAliases,
     parseTime,
     replaceAll,
     uniq,

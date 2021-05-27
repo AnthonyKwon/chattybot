@@ -1,13 +1,10 @@
 const GcpTts = require('@google-cloud/text-to-speech');
 const path = require('path');
 const { once } = require('events');
-const configManager = require('./configManager.js');
-const discord = require('./discord.js');
-const string = require('./stringManager.js');
+const config = require('./config.js');
+const discord = require('./discordwrapper.js');
+const localize = require('./localization.js');
 const { bufferToStream, getUsername, uniq } = require('./common');
-
-/* read config from file */
-const config = configManager.read('project_id');
 
 class TTSClass {
     constructor(arg1) {
@@ -20,7 +17,7 @@ class TTSClass {
             this._queue = [];
         this._request = {
             input: { text: 'This is a sample text.' },
-            voice: { languageCode: string.locale, ssmlGender: 'NEUTRAL' },
+            voice: { languageCode: config.locale, ssmlGender: 'NEUTRAL' },
             audioConfig: { audioEncoding: 'OGG_OPUS', speakingRate: '1.0', pitch: '0.0', volumeGainDb: '0.0' }
         };
         this._speaking = false;
@@ -32,13 +29,13 @@ class TTSClass {
     }
     set gender(code) {
         switch (code) {
-            case string.stringFromId('google.tts.gender.FEMALE'):
+            case localize.get('tts.gender.FEMALE'):
                 this._request.voice.ssmlGender = "FEMALE";
                 break;
-            case string.stringFromId('google.tts.gender.MALE'):
+            case localize.get('tts.gender.MALE'):
                 this._request.voice.ssmlGender = "MALE";
                 break;
-            case string.stringFromId('google.tts.gender.NEUTRAL'):
+            case localize.get('tts.gender.NEUTRAL'):
                 this._request.voice.ssmlGender = "NEUTRAL";
                 break;
         }
@@ -115,7 +112,7 @@ class TTSClass {
         while (this._queue.length > 0) {
             /* If message author or channel is different or authorId is not system(0), send TTS w/ prefix. */
             if (this._lastAuthor !== this._queue[0].authorId && this._queue[0].authorId !== 0) {
-                this._request.input = { ssml: '<speak>' + string.stringFromId('chattybot.tts.prefix',
+                this._request.input = { ssml: '<speak>' + localize.get('tts.speak.prefix',
                 getUsername(message, this._queue[0].authorId)) + '<break time="0.5s"/>' + this._queue[0].message + '</speak>' };
             /* If not, send just text only */
             } else this._request.input = { text: this._queue[0].message };
