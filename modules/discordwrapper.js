@@ -41,7 +41,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     const voice = voiceMap.get(oldState.guild.id);
     /* Auto-pause music player when everyone leaves voice channel */
     if (!voice || !voice.Player || !voice.Player.playState) return;
-    if (oldState.channel.members.size < 2) {
+    if (oldState.channel && oldState.channel.members.size < 2) {
         voice.Player.toggleState(voice);
         logger.log('verbose', `[discord.js] All users left channel, player auto-paused.`);
         if (message) message.channel.send(localize.get('message.music.auto_paused', voice.channel.name));
@@ -233,7 +233,7 @@ class VoiceClass {
 
     play(stream, option=undefined) {
         /* Join voice channel first if not */
-        if (this._connection.status !== 0) {
+        if (!this._connection || this._connection.status !== 0) {
             return false;
         }
         const output = this._connection.play(stream, option);
