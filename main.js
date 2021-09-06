@@ -1,6 +1,6 @@
 const winston = require('winston');
-const discord = require('./modules/discordwrapper.js');
-const logger = require('./modules/logger.js');
+const discord = require('./module/discordwrapper.js');
+const logger = require('./module/logger.js');
 
 const devFlag = process.env.NODE_ENV === 'development' ? true : false;
 

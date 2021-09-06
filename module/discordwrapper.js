@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const common = require('./common.js');
+const common = require('../module/common.js');
 const config = require('./config.js');
 const logger = require('./logger.js');
 const localize = require('./localization.js');
