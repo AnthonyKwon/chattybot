@@ -4,8 +4,7 @@ const common = require('../common.js');
 const discord = require('../discordwrapper.js');
 const localize = require('../localization.js');
 const logger = require('../logger.js');
-const PlayerClass = require('../player.js');
-const TTSClass = require('../textToSpeech.js');
+const TTSClass = require('../../class/ttsClass.js');
 
 const devFlag = process.env.NODE_ENV === 'development' ? true : false;
 const regexMention = /<(#|@!)[0-9]{18}>/g;
@@ -44,34 +43,18 @@ async function ttsSay(message, args) {
     }
     const voice = discord.voiceMap.get(message.guild.id);
     /* If TTS is not initalized, do it first */
-    if (!voice.TTS) voice.TTS = new TTSClass();
+    if (!voice.TTS) voice.TTS = new TTSClass(message, 'GcpTtsBasic', undefined);
     /* Fix message for TTS-readable */
     const text = args.join(' ');
     const fixedText = await messageFix(message, text);
     logger.log('warn', `[TTS] Message ${text} will be spoken as ${fixedText}.`);
     try {
         /* Send message and TTS to discord */
-        discord.sendWebhook(message, text);
-        //message.channel.send(localize.get('chattybot.tts.text.format', voice.channel.name, message.author, text));
+        //discord.sendWebhook(message, text);
+        message.channel.send(localize.get('chattybot.tts.text.format', voice.channel.name, message.author, text));
         /* If bot have message delete permission, delete user's request message */
         if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();
-        voice.TTS.setQueue(message.author.id, fixedText);
-        /* If TTS is already speaking, do not call TTS */
-        if (voice.TTS.speaking === true) return;
-        /* If music is playing, destroy it first */
-        let playtime = 0, queue = [], voiceDestroyed = false;
-        if (voice.Player) {
-            playtime = voice.Player.getPlaytime(voice);
-            queue = voice.Player.queue;
-            voice.Player.stop(voice);
-            voiceDestroyed = true;
-        }
-        await voice.TTS.speak(message);
-        if (voiceDestroyed === true) {
-            voice.Player = new PlayerClass(queue);
-            voice.Player.play(voice, playtime);
-            destroyed = false;
-        }
+        await voice.TTS.addQueue(message.author, fixedText);
         logger.log('verbose', `[TTS] ${message.author} spoken: ${text}`);
     } catch(err) {
         const errorReport = new discord.MessageAttachment(Buffer.from(err.stack), `report-${common.datetime()}.txt`);

@@ -1,8 +1,9 @@
 const path = require('path');
 const { Readable } = require('stream');
 
-const getUsername = (message, userId) => {
-    const username = message.client.guilds.cache.get(message.guild.id).member(userId).displayName;
+// Get server username from user's ID.
+const getUsername = (client, guild, userId) => {
+    const username = client.guilds.cache.get(guild.id).member(userId).displayName;
     return username.split('_').join(' ');
 }
 
