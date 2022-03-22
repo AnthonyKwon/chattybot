@@ -1,6 +1,7 @@
 const common = require('../module/common.js');
 const logger = require('../module/logger.js');
 const localize = require('../module/localization.js');
+const report = require('../module/errorreport/main.mod');
 const VoiceClass = require('../class/discordwrapper/VoiceClass')
 
 const devFlag = process.env.NODE_ENV === 'development' ? true : false;
@@ -41,10 +42,11 @@ async function commandJoin(message, args) {
         logger.log('verbose', `[discord.js] Joined voice channel ${channel.id}.`);
         message.channel.send(localize.get('message.discord.voice.joined', voice.channel.name));
     } catch(err) {
-        //const errorReport = new discord.MessageAttachment(Buffer.from(err.stack), `report-${common.datetime()}.txt`);
+        const result = report(err, message.author.id);
         logger.log('error', `[discord.js] Error occured while joining voice channel:\n  ${err.stack}\n`);
         /* send error message to discord channel */
-        message.channel.send(localize.get('error.generic'), errorReport);
+        message.channel.send(result);
+        //message.channel.send(localize.get('error.generic'), errorReport);
         return;
     }
     return;

@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const report = require('../errorreport/main.mod');
 const common = require('../common.js');
 const config = require('../config.js');
 const logger = require('../logger.js');
@@ -73,9 +74,9 @@ async function onCommand(message) {
     try {
         await command.execute(message, args);
     } catch (err) {
-        const errorReport = new Discord.MessageAttachment(Buffer.from(err.stack), `report-${common.datetime()}.txt`);
+        const result = report(err, message.author.id);
         logger.log('error', `[discord.js] Failed to launch requested command!\n  ${err}`);
-        message.channel.send(localize.get('error.generic'), errorReport);
+        message.channel.send(result);
     }
 }
 
