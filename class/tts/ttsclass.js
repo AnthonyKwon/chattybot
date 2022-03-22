@@ -30,7 +30,7 @@ class TTSClass {
     constructor(message, type, queue, waitForFinish=true) {
         this._client = message.client;
         this._guild = message.guild;
-        this._voice = discord.voiceMap.get(message.guild.id); //TODO: remove direct reference to discord.js
+        this._voice = message.client.voice.session.get(message.guild.id);
 
         this._lastAuthor = undefined; // last message sender
         this._queue = queue;

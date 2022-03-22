@@ -1,19 +1,19 @@
 const common = require('../common.js');
-const discord = require('../discordwrapper.js');
 const logger = require('../logger.js');
 const localize = require('../localization.js');
+const VoiceClass = require('../../class/discordwrapper/VoiceClass')
 
 const devFlag = process.env.NODE_ENV === 'development' ? true : false;
 
 async function commandJoin(message, args) {
     let channelId = undefined;
-    /* If voiceMap is not created, create it first */
-    if (!discord.voiceMap.get(message.guild.id)) discord.voiceMap.set(message.guild.id, new discord.Voice(message.guild.id));
-    const voice = discord.voiceMap.get(message.guild.id);
-    /* check if channel id is provided as argument */
+    // If voiceMap is not created, create it first
+    if (!message.client.voice.session.get(message.guild.id)) message.client.voice.session.set(message.guild.id, new VoiceClass(message.guild.id));
+    const voice = message.client.voice.session.get(message.guild.id);
+    // check if channel id is provided as argument
     if (args.length > 0) channelId = args[0];
 
-    /* check if user joined in any voice channel or passed channel id */
+    // check if user joined in any voice channel or passed channel id
     if (!channelId && !message.member.voice.channel) {
         logger.log('error', '[discord.js] Failed to join voice channel: channel id not provided');
         message.channel.send(localize.get('error.discord.voice.user_not_found', message.author));
@@ -41,7 +41,7 @@ async function commandJoin(message, args) {
         logger.log('verbose', `[discord.js] Joined voice channel ${channel.id}.`);
         message.channel.send(localize.get('message.discord.voice.joined', voice.channel.name));
     } catch(err) {
-        const errorReport = new discord.MessageAttachment(Buffer.from(err.stack), `report-${common.datetime()}.txt`);
+        //const errorReport = new discord.MessageAttachment(Buffer.from(err.stack), `report-${common.datetime()}.txt`);
         logger.log('error', `[discord.js] Error occured while joining voice channel:\n  ${err.stack}\n`);
         /* send error message to discord channel */
         message.channel.send(localize.get('error.generic'), errorReport);

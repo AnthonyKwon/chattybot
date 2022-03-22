@@ -20,10 +20,10 @@ let statusMsg = '';
 
 const cooldown = new Map();
 const webhookMap = new Map();
-const voiceMap = new Map();
 
 // On bot ready (initialized and connected)
 client.once('ready', () => {
+    client.voice.session = new Map(); // add voice session map
     logger.log('verbose', `[discord.js] Connected to ${client.user.username}!`);
     //client.user.setActivity(statusMsg, "PLAYING");
 });
@@ -34,18 +34,6 @@ client.on('message', (message) => {
 
     // Parse command from message
     commandParse(message);
-});
-
-client.on('voiceStateUpdate', (oldState, newState) => {
-    const message = oldState.member.lastMessage;
-    const voice = voiceMap.get(oldState.guild.id);
-    /* Auto-pause music player when everyone leaves voice channel */
-    if (!voice || !voice.Player || !voice.Player.playState) return;
-    if (oldState.channel && oldState.channel.members.size < 2) {
-        voice.Player.toggleState(voice);
-        logger.log('verbose', `[discord.js] All users left channel, player auto-paused.`);
-        if (message) message.channel.send(localize.get('message.music.auto_paused', voice.channel.name));
-    }
 });
 
 // Parse command from message
@@ -163,96 +151,8 @@ function initialize(devFlag) {
     client.login(config.token);
 }
 
-// voiceConnection wrapper class
-class VoiceClass {
-    constructor(guildId) {
-        this._connection = undefined;
-        this._channel = {
-            id: 0,
-            name: undefined
-        }
-        this._guildId = guildId;
-        this._player = new Map();
-        this._tts = new Map();
-        this._volume = 100;
-    }
-
-    get channel() {
-        return this._channel;
-    }
-
-    /* return connection dispatcher if available */
-    get dispatcher() {
-        if (this._connection.status !== 0) return undefined;
-        return this._connection.dispatcher;
-    }
-
-    /* get guild ID of class */
-    get guildId() {
-        return this.guildId;
-    }
-
-    /* set-get Player map (to passed value) */
-    set Player(value) {
-        this._player.set(this._guildId, value);
-    }
-    get Player() {
-        return this._player.get(this._guildId);
-    }
-
-    /* set-get TTS map (to passed value) */
-    set TTS(value) {
-        this._tts.set(this._guildId, value);
-    }
-    get TTS() {
-        return this._tts.get(this._guildId);
-    }
-
-    /* get-set voice volume */
-    get volume() {
-        return this._volume;
-    }
-    set volume(rate) {
-        if (rate <= 200 && rate >= 0) {
-            this._volume = rate;
-            if (this._connection.dispatcher)
-                this._connection.dispatcher.setVolume(this._volume / 100);
-        }
-    }
-
-    /* join discord voice connection */
-    async join(channel) {
-        this._connection = await channel.join();
-        /* Set speaking status to none */
-        this._connection.setSpeaking(0);
-        /* set channel info */
-        this._channel.id = this._connection.channel.id;
-        this._channel.name = this._connection.channel.name;
-        return true;
-    }
-
-    play(stream, option=undefined) {
-        /* Join voice channel first if not */
-        if (!this._connection || this._connection.status !== 0) {
-            return false;
-        }
-        const output = this._connection.play(stream, option);
-        this._connection.dispatcher.setVolume(this._volume / 100);
-        return output;
-    }
-
-    /* leave discord voice connection */
-    async leave() {
-        if (this._connection.status !== 0) return;
-        this._connection.disconnect();
-        return true;
-    }
-}
-
 module.exports = {
-    voiceMap,
     init: initialize,
     sendWebhook,
     MessageAttachment: Discord.MessageAttachment,
-    Voice: VoiceClass
 }
