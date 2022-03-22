@@ -25,7 +25,7 @@ const voiceMap = new Map();
 // On bot ready (initialized and connected)
 client.once('ready', () => {
     logger.log('verbose', `[discord.js] Connected to ${client.user.username}!`);
-    client.user.setActivity(statusMsg, "PLAYING");
+    //client.user.setActivity(statusMsg, "PLAYING");
 });
 
 client.on('message', (message) => {
