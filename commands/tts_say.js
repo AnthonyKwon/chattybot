@@ -6,7 +6,7 @@ const localize = require('../module/localization.js');
 const logger = require('../module/logger.js');
 const TTSClass = require('../class/tts/ttsclass.js');
 
-const devFlag = process.env.NODE_ENV === 'development' ? true : false;
+const devFlag = process.env.NODE_ENV === 'maintenance' ? true : false;
 const regexMention = /<(#|@!)[0-9]{18}>/g;
 const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~<>\#\\\=\(]/gi;
 
@@ -37,20 +37,24 @@ function messageFix(message, content) {
 }
 
 async function ttsSay(message, args) {
-    /* If not joined to voice channel, join first */
-    if (!message.client.voice.session.get(message.guild.id)) {
-        await join.execute(message, []);
+    let voice = message.client.voice.session.get(message.guild.id);
+
+    // check if bot joined to the voice channel and join if not
+    if (!voice || !voice.dispatcher) {
+        const result = await join.execute(message, []);
+        if (!result) return false; // join failed, stop function
+        voice = message.client.voice.session.get(message.guild.id); // re-define voice value
     }
-    const voice = message.client.voice.session.get(message.guild.id);
+
     /* If TTS is not initalized, do it first */
-    if (!voice.TTS) voice.TTS = new TTSClass(message, 'GcpTtsBasic', undefined);
+    if (!voice.TTS) voice.TTS = new TTSClass(message, 'GcpTtsWaveNet');
     /* Fix message for TTS-readable */
     const text = args.join(' ');
     const fixedText = await messageFix(message, text);
     logger.log('warn', `[TTS] Message ${text} will be spoken as ${fixedText}.`);
     try {
         /* Send message and TTS to discord */
-        message.channel.send(localize.get('chattybot.tts.text.format', voice.channel.name, message.author, text));
+        message.channel.send(localize.get('tts.speak.text', voice.channel.name, message.author, text));
         /* If bot have message delete permission, delete user's request message */
         if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();
         await voice.TTS.addQueue(message.author, fixedText);
@@ -60,7 +64,7 @@ async function ttsSay(message, args) {
         logger.log('error', `[TTS] Error occured while synthesizing:\n  ${err.stack}\n`);
         message.channel.send(result);
     }
-    return;
+    return true;
 }
 
 module.exports = {
