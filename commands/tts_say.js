@@ -1,5 +1,6 @@
 const util = require('util');
 const join = require('./basic_join.js');
+const report = require('../module/errorreport/main.mod');
 const common = require('../module/common.js');
 const localize = require('../module/localization.js');
 const logger = require('../module/logger.js');
@@ -55,9 +56,9 @@ async function ttsSay(message, args) {
         await voice.TTS.addQueue(message.author, fixedText);
         logger.log('verbose', `[TTS] ${message.author} spoken: ${text}`);
     } catch(err) {
-        //const errorReport = new discord.MessageAttachment(Buffer.from(err.stack), `report-${common.datetime()}.txt`);
+        const result = report(err, message.author.id);
         logger.log('error', `[TTS] Error occured while synthesizing:\n  ${err.stack}\n`);
-        message.channel.send(localize.get('error.generic'), errorReport);
+        message.channel.send(result);
     }
     return;
 }
