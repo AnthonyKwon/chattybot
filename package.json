@@ -1,12 +1,13 @@
 {
   "name": "chattybot",
   "version": "1.0.0",
-  "description": "An Discord Text-To-Speech and Music Bot. (Discord.js v12 version)",
+  "description": "An Discord Text-To-Speech and Music Bot (classic version)",
   "main": "main.js",
   "scripts": {
-    "start": "NODE_ENV=production node .",
-    "dev": "npm run development",
-    "development": "NODE_ENV=development nodemon --inspect ."
+    "start": "npm run normal",
+    "dev": "npm run maintenance",
+    "normal": "node .",
+    "maintenance": "NODE_ENV=maintenance nodemon --inspect ."
   },
   "repository": {
     "type": "git",
