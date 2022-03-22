@@ -4,7 +4,7 @@ const { once } = require('events');
 const config = require('../module/config.js');
 const discord = require('../module/discordwrapper.js');
 const localize = require('../module/localization.js');
-const { bufferToStream, getUsername } = require('../module/common');
+const { bufferToStream } = require('../module/common');
 
 // Get server username from user's ID.
 const getUsername = (client, guild, userId) => {
