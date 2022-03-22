@@ -1,0 +1,12 @@
+[Unit]
+Description=An Discord Text-To-Speech Bot (classic version)
+After=network.target
+Wants=network-online.target
+
+[Service]
+Restart=always
+Type=simple
+ExecStart=/usr/bin/node /path/to/your/chattybot
+
+[Install]
+WantedBy=multi-user.target 
