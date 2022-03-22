@@ -32,13 +32,15 @@
     "error.discord.ongoing_cooldown": ":timer:  **{0}초** 후에 이 명령어를 다시 사용할 수 있습니다.",
     "error.discord.unknown_channel": ":grey_question: 알수 없는 채널입니다. *ID*를 **재대로 입력**하셨나요?",
     "error.discord.unknown_command": ":information_source: :no_entry_sign: **알수 없는** 명령어입니다. 재대로 입력했는지 **다시 확인**해 주세요.",
+    "error.discord.voice.already_joined": ":loud_sound: :door: **{0}** 채널에 이미 들어가 있습니다.",
     "error.discord.voice.no_permission": ":loud_sound: :octagonal_sign: **{0}**에 들어 갈 **권한**이 없습니다.",
     "error.discord.voice.not_joined": ":loud_sound: :x: 봇이 현재 *음성 채널* 에 들어가 있지 않습니다.",
     "error.discord.voice.user_not_found": ":loud_sound:  :no_entry_sign: {0}님이 있는 채널을 찾지 못했습니다. *음성 채널* 에 **들어가 주세요.**",
     "error.help.dm_failed": ":book: {0}님에게 **개인 메시지**를 보내지 못했습니다. *개인정보 보호 설정* **을 확인**해주세요.",
     "error.generic": [
         ":octagonal_sign: 명령어를 실행하는 도중 **오류**가 발생했습니다!",
-        "이 오류 보고 파일을 개발자에게 보내주세요."
+        "아래의 오류 ID를 개발자에게 알려주세요.",
+        "**오류 ID:** {0}"
     ],
     "error.music.not_playing": ":musical_note: :octagonal_sign: 현재 노래가 **재생중이지 않습니다**. 먼저 노래를 재생해 주세요.",
     "message.discord.voice.joined": ":loud_sound: **{0}** 채널에 들어갔습니다.",
@@ -78,5 +80,6 @@
     "tts.gender.FEMALE": "여성",
     "tts.gender.MALE": "남성",
     "tts.gender.NEUTRAL": "중성",
-    "tts.speak.prefix": "{0}님이 말해요."
+    "tts.speak.prefix": "{0}님이 말해요.",
+    "tts.speak.text": "{0} >> {1}"
 }

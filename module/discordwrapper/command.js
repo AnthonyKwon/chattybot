@@ -76,7 +76,7 @@ async function onCommand(message) {
     } catch (err) {
         const result = report(err, message.author.id);
         logger.log('error', `[discord.js] Failed to launch requested command!\n  ${err}`);
-        message.channel.send(result);
+        message.channel.send(localize.get('error.generic', result));
     }
 }
 

@@ -1,9 +1,9 @@
-const Discord = require('discord.js');
+const { Client, Intents } = require('discord.js');
 const config = require('../config.js');
 const logger = require('../logger.js');
 const onCommand = require('./command');
 
-const client = new Discord.Client();
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
 
 client.once('ready', () => {
     // create voice session map
@@ -11,7 +11,7 @@ client.once('ready', () => {
     logger.log('verbose', `[discord.js] Connected to ${client.user.username}!`);
 });
 
-client.on('message', async message => {
+client.on('messageCreate', async message => {
     await onCommand(message);
 });
 

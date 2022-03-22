@@ -1,3 +1,4 @@
+const { Permissions } = require('discord.js');
 const util = require('util');
 const join = require('./basic_join.js');
 const report = require('../module/errorreport/main.mod');
@@ -56,13 +57,14 @@ async function ttsSay(message, args) {
         /* Send message and TTS to discord */
         message.channel.send(localize.get('tts.speak.text', voice.channel.name, message.author, text));
         /* If bot have message delete permission, delete user's request message */
-        if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();
+        const permissions = message.channel.permissionsFor(message.client.user);
+        if (permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) message.delete();
         await voice.TTS.addQueue(message.author, fixedText);
         logger.log('verbose', `[TTS] ${message.author} spoken: ${text}`);
     } catch(err) {
         const result = report(err, message.author.id);
         logger.log('error', `[TTS] Error occured while synthesizing:\n  ${err.stack}\n`);
-        message.channel.send(result);
+        message.channel.send(localize.get('error.generic', result));
     }
     return true;
 }
