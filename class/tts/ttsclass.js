@@ -1,73 +1,47 @@
-const GcpTtsExt = require('@google-cloud/text-to-speech');
-const path = require('path');
 const { once } = require('events');
-const config = require('../module/config.js');
-const discord = require('../module/discordwrapper.js');
-const localize = require('../module/localization.js');
-const { bufferToStream } = require('../module/common');
+const discord = require('../../module/discordwrapper'); //TODO: remove direct access to discord module
+//TODO: implement voice class
 
-// Get server username from user's ID.
+// get Subclass dynamically
+const getSubClass = name => {
+    const fs = require('fs');
+    const path = require('path');
+    const scripts = fs.readdirSync(__dirname).filter(file => file.match('^tts-.*\.js$'));
+
+    for (const file of scripts) {
+        const subClass = require(path.join(__dirname, file));
+        try {
+            if (subClass[name] && subClass[name].ttsAvailable)
+                return new subClass[name];
+        } catch(err) {
+            // TTS not available
+            console.error(err.stack);
+        }
+    }
+}
+
+// Get server username from user's ID
 const getUsername = (client, guild, userId) => {
-    const username = client.guilds.cache.get(guild.id).member(userId).displayName;
+	const username = client.guilds.cache.get(guild.id).member(userId).displayName;
     return username.split('_').join(' ');
 }
 
-// Google Cloud Text-to-Speech Engine Class
-class GcpTts {
-    constructor(locale, type, gender, speed, pitch, volumeGain) {
-        this._client = new GcpTtsExt.TextToSpeechClient({ projectId: config.projectId, keyFilename: path.join(__dirname, '../configs/gcp-credentials.json') });
-        this._request = {
-            input: { text: 'Hello world! This is a test sentence for TTS engine. If you heard this and not an geek programmer, it might be something wrong.' },
-            voice: { languageCode: locale, name: type, ssmlGender: gender },
-            audioConfig: { audioEncoding: 'OGG_OPUS', speakingRate: speed, pitch: pitch, volumeGainDb: volumeGain }
-        };
-    }
-
-    async speak(message, readAuthor=true) {
-        /* If message author or channel is different or authorId is not system(0), send TTS w/ prefix. */
-        if (readAuthor) {
-            this._request.input = { ssml: '<speak><prosody pitch="-3st">' + localize.get('tts.speak.prefix',
-                message.author.name) + '</prosody><break time="0.5s"/>' + message.content + '</speak>' };
-        } else {
-            this._request.input = { text: message.content };
-        }
-        const [response] = await this._client.synthesizeSpeech(this._request);
-        /* Google sends response as buffer. We need to convert it as ReadableStream. */
-        const stream = bufferToStream(response.audioContent);
-        return stream;
-    }
-}
-class GcpTtsBasic extends GcpTts {
-    constructor() {
-        super('ko-KR', 'ko-KR-Standard-A', 'NEUTRAL', '1.0', '0.0', '0.0');
-    }
-}
-class GcpTtsWaveNet extends GcpTts {
-    constructor() {
-        super('ko-KR', 'ko-KR-Wavenet-A', 'NEUTRAL', '1.0', '0.0', '0.0');
-    }
-}
-
-// Class Map for Dynamic Calling
-const ClassMap = { GcpTtsBasic, GcpTtsWaveNet }
-
-// Text-To-Speech Class
 class TTSClass {
     constructor(message, type, queue, waitForFinish=true) {
         this._client = message.client;
         this._guild = message.guild;
-        this._voice = discord.voiceMap.get(message.guild.id);
+        this._voice = discord.voiceMap.get(message.guild.id); //TODO: remove direct reference to discord.js
 
-        this._lastAuthor = undefined;
+        this._lastAuthor = undefined; // last message sender
         this._queue = queue;
-        this._speaking = false;
-        this._type = new ClassMap[type];
-        this._waitForFinish = waitForFinish;
+        this._speaking = false; // bot speaking check flag
+        this._type = getSubClass(type); // TTS type
+        this._waitForFinish = waitForFinish; // decide wait or inturrupt when next message has received while speaking 
     }
 
     // (static) Generate Queue Array: Create and return queue array
     static genQueueArr(...queueArgs) {
-        const authorInfo = queueArgs.filter((element, index) => index % 2 === 0);
+        const authorInfo = queueArgs.filter((element, index) => index % 2  === 0);
         const message = queueArgs.filter((element, index) => index % 2 === 1);
         const queueArr = [];
         for (let i = 0; i < authorId.length; i++) {

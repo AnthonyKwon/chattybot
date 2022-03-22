@@ -4,7 +4,7 @@ const common = require('../common.js');
 const discord = require('../discordwrapper.js');
 const localize = require('../localization.js');
 const logger = require('../logger.js');
-const TTSClass = require('../../class/ttsClass.js');
+const TTSClass = require('../../class/tts/ttsclass.js');
 
 const devFlag = process.env.NODE_ENV === 'development' ? true : false;
 const regexMention = /<(#|@!)[0-9]{18}>/g;
