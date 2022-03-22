@@ -12,7 +12,7 @@ async function commandHelp(message, args) {
             '*' + commands.join(', ') + '*', config.prefix, localize.command(this.name, 'name'), localize.command(this.name, 'usage')));
         try {
             /* try to send DM to message author */
-            const resposne = await message.author.send(reply, {split:true});
+            const response = await message.author.send(reply.join('\n'));
             message.channel.send(localize.get('message.help.dm_sent', message.author));
             logger.log('verbose', `[discord.js] Sent help DM to ${message.author}.`);
         } catch (err) {
