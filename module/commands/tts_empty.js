@@ -1,6 +1,6 @@
 const discord = require('../discordwrapper.js');
 const localize = require('../localization.js');
-const TTSClass = require('../../class/ttsClass.js');
+const TTSClass = require('../../class/tts/ttsclass.js');
 
 async function ttsEmpty(message) {
     /* This command only can be used after TTS is initialized */
