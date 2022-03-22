@@ -6,7 +6,8 @@ Wants=network-online.target
 [Service]
 Restart=always
 Type=simple
-ExecStart=/usr/bin/node /path/to/your/chattybot
+ExecStart=/usr/bin/npm run normal
+WorkingDirectory=/path/to/your/chattybot
 
 [Install]
 WantedBy=multi-user.target 
