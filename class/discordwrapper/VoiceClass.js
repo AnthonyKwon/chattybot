@@ -1,3 +1,6 @@
+const voice = require('@discordjs/voice');
+const logger = require('../../module/logger');
+
 class VoiceClass {
     constructor(guildId) {
         this._connection = undefined;
@@ -15,8 +18,9 @@ class VoiceClass {
 
     /* return connection dispatcher if available */
     get dispatcher() {
-        if (!this.connection || this._connection.status !== 0) return undefined;
-        return this._connection.dispatcher;
+        logger.log('warn', '[discord.js] This function is deprecated and removed in upstream, and will be removed in future updates downstream.');
+        if (!this.connection || !this._connection.state) return undefined;
+        return 'deprecated';
     }
 
     /* get guild ID of class */
@@ -36,31 +40,41 @@ class VoiceClass {
         }
     }
 
-    /* join discord voice connection */
+    // join discord voice connection
     async join(channel) {
-        this._connection = await channel.join();
-        /* Set speaking status to none */
+        // create voice connection and wait for it
+        this._connection = await voice.joinVoiceChannel({
+            channelId: channel.id,
+            guildId: channel.guild.id,
+            adapterCreator: channel.guild.voiceAdapterCreator
+        });
+        await voice.entersState(this._connection, voice.VoiceConnectionStatus.Ready, 5_000);
+
+        // set speaking status to none
         this._connection.setSpeaking(0);
-        /* set channel info */
-        this._channel.id = this._connection.channel.id;
-        this._channel.name = this._connection.channel.name;
+        // set channel info
+        this._channel.id = channel.id;
+        this._channel.name = channel.name;
         return true;
+        
     }
 
     play(stream, option=undefined) {
-        /* Join voice channel first if not */
-        if (!this._connection || this._connection.status !== 0) {
-            return false;
-        }
-        const output = this._connection.play(stream, option);
-        this._connection.dispatcher.setVolume(this._volume / 100);
-        return output;
+        //TODO: check if bot joined voice channel first
+        const player = voice.createAudioPlayer({ behaviors: { noSubscriber: voice.NoSubscriberBehavior.Stop }});
+        const resource = voice.createAudioResource(stream, { inputType: voice.StreamType.OggOpus });
+
+        this._connection.subscribe(player);
+        player.play(resource);
+
+        //TODO: set volume
+        return voice.entersState(player, voice.AudioPlayerStatus.Playing, 5_000);
     }
 
     /* leave discord voice connection */
     async leave() {
-        if (this._connection.status !== 0) return;
-        this._connection.disconnect();
+        //TODO: check if bot join voice channel first
+        this._connection.destroy();
         return true;
     }
 }

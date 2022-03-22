@@ -1,3 +1,4 @@
+const { Permissions } = require('discord.js');
 const common = require('../module/common.js');
 const logger = require('../module/logger.js');
 const localize = require('../module/localization.js');
@@ -36,7 +37,7 @@ async function commandJoin(message, args) {
     }
     // check if bot has permission to join target channel
     const permissions = channel.permissionsFor(message.client.user);
-    if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
+    if (!permissions.has(Permissions.FLAGS.CONNECT) || !permissions.has(Permissions.FLAGS.SPEAK)) {
         logger.log('error', '[discord.js] Failed to join voice channel: bot has no permission to access channel');
         message.channel.send(localize.get('error.discord.bot_no_permission'));
         return false;
@@ -45,14 +46,14 @@ async function commandJoin(message, args) {
     // try to join voice channel w/ provided channel id or used joined
     try {
         message.client.voice.session.set(message.guild.id, voice); // add voice object to voice session map
-        await voice.join(channel);
+        const result = await voice.join(channel);
         logger.log('verbose', `[discord.js] Joined voice channel ${channel.id}.`);
         message.channel.send(localize.get('message.discord.voice.joined', voice.channel.name));
     } catch(err) {
         const result = report(err, message.author.id);
         logger.log('error', `[discord.js] Error occured while joining voice channel:\n  ${err.stack}\n`);
         // send error message to discord channel
-        message.channel.send(result);
+        message.channel.send(localize.get('error.generic', result));
         return false;
     }
     return true;

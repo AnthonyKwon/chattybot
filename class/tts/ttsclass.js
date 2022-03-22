@@ -1,4 +1,4 @@
-const { once } = require('events');
+const { on } = require('events');
 
 // get Subclass dynamically
 const getSubClass = name => {
@@ -20,7 +20,7 @@ const getSubClass = name => {
 
 // Get server username from user's ID
 const getUsername = (client, guild, userId) => {
-	const username = client.guilds.cache.get(guild.id).member(userId).displayName;
+	const username = guild.members.cache.get(userId).displayName;
     return username.split('_').join(' ');
 }
 
@@ -88,15 +88,14 @@ class TTSClass {
         do {
             // If message author or channel has changed, send TTS with prefix
             let stream = undefined;
-            if (this._lastAuthor !== this._queue[0].author.id && this._queue[0].author.id !== 0)
+            if (this._lastAuthor !== this._queue[0].author.id)
                 stream = await this._type.speak(this._queue[0], true);
             else stream = await this._type.speak(this._queue[0], false);
             this._lastAuthor = this._queue[0].author.id;
-            const result = this._voice.play(stream, { type: 'ogg/opus' });
+            const result = await this._voice.play(stream, { type: 'ogg/opus' });
             //TODO: check if result got return value false (failed to play audio)
             /* await until voice.play finishes (https://stackoverflow.com/a/43084615) */
-            console.log(result);
-            if (this._waitForFinish === true) await once(result, 'finish');
+            if (this._waitForFinish === true) await on(result, 'idle');
             this._queue.shift();
         } while(this._queue.length > 0)
         this._speaking = false;
