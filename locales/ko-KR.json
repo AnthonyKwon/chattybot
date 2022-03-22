@@ -10,7 +10,7 @@
     "command.leave.desc": "현재 들어가 있는 음성 채널에서 나가게 합니다.",
     "command.empty.name": "비우기",
     "command.empty.desc": "읽어주기 목록을 비우고 TTS를 초기화 합니다.",
-    "command.say.name": "말하기",
+    "command.say.name": "말",
     "command.say.desc": "음성 채널에 입력한 텍스트를 읽어줍니다.",
     "command.say.usage": "<텍스트...>",
     "command.pause.name": "일시정지",
@@ -80,6 +80,6 @@
     "tts.gender.FEMALE": "여성",
     "tts.gender.MALE": "남성",
     "tts.gender.NEUTRAL": "중성",
-    "tts.speak.prefix": "{0}님이 말해요.",
-    "tts.speak.text": "{0} >> {1}"
+    "tts.speak.prefix": "{0}님의 말,",
+    "tts.speak.text": "{0} :loud_sound:  {1}"
 }

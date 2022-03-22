@@ -5,7 +5,7 @@ const report = require('../module/errorreport/main.mod');
 const common = require('../module/common.js');
 const localize = require('../module/localization.js');
 const logger = require('../module/logger.js');
-const TTSClass = require('../class/tts/ttsclass.js');
+const TTSClass = require('../class/tts/ttsclass');
 
 const devFlag = process.env.NODE_ENV === 'maintenance' ? true : false;
 const regexMention = /<(#|@!)[0-9]{18}>/g;
@@ -27,10 +27,10 @@ function messageFix(message, content) {
     });
 
     /* Replace TTS unreadable charater to whitespace */
-    finalMsg = common.replaceAll(finalMsg, '@', localize.get('cattybot.tts.replacement.@'));
+    finalMsg = common.replaceAll(finalMsg, '@', localize.get('tts.replacement.@'));
 
     /* Replace TTS unreadable charater to whitespace */
-    finalMsg = common.replaceAll(finalMsg, '&', localize.get('cattybot.tts.replacement.&'));
+    finalMsg = common.replaceAll(finalMsg, '&', localize.get('tts.replacement.&'));
 
     /* Replace TTS unreadable charater to whitespace */
     finalMsg = common.replaceAll(finalMsg, regExSpecial, ' ');
@@ -55,7 +55,7 @@ async function ttsSay(message, args) {
     logger.log('warn', `[TTS] Message ${text} will be spoken as ${fixedText}.`);
     try {
         /* Send message and TTS to discord */
-        message.channel.send(localize.get('tts.speak.text', voice.channel.name, message.author, text));
+        message.channel.send(localize.get('tts.speak.text', message.author, text));
         /* If bot have message delete permission, delete user's request message */
         const permissions = message.channel.permissionsFor(message.client.user);
         if (permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)) message.delete();

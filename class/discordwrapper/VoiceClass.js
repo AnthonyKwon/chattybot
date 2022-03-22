@@ -9,6 +9,7 @@ class VoiceClass {
             name: undefined
         }
         this._guildId = guildId;
+        this._tts = undefined;
         this._volume = 100;
     }
 
@@ -19,13 +20,21 @@ class VoiceClass {
     /* return connection dispatcher if available */
     get dispatcher() {
         logger.log('warn', '[discord.js] This function is deprecated and removed in upstream, and will be removed in future updates downstream.');
-        if (!this.connection || !this._connection.state) return undefined;
+        if (!this._connection || !this._connection.state) return undefined;
         return 'deprecated';
     }
 
     /* get guild ID of class */
     get guildId() {
         return this.guildId;
+    }
+
+    // get-set TTS class
+    get TTS() {
+        return this._tts;
+    }
+    set TTS(value) {
+        this._tts = value;
     }
 
     /* get-set voice volume */
