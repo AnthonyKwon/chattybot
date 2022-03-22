@@ -1,6 +1,4 @@
 const { once } = require('events');
-const discord = require('../../module/discordwrapper'); //TODO: remove direct access to discord module
-//TODO: implement voice class
 
 // get Subclass dynamically
 const getSubClass = name => {

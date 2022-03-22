@@ -1,10 +1,9 @@
 const util = require('util');
 const join = require('./basic_join.js');
-const common = require('../common.js');
-const discord = require('../discordwrapper.js');
-const localize = require('../localization.js');
-const logger = require('../logger.js');
-const TTSClass = require('../../class/tts/ttsclass.js');
+const common = require('../module/common.js');
+const localize = require('../module/localization.js');
+const logger = require('../module/logger.js');
+const TTSClass = require('../class/tts/ttsclass.js');
 
 const devFlag = process.env.NODE_ENV === 'development' ? true : false;
 const regexMention = /<(#|@!)[0-9]{18}>/g;
@@ -50,14 +49,13 @@ async function ttsSay(message, args) {
     logger.log('warn', `[TTS] Message ${text} will be spoken as ${fixedText}.`);
     try {
         /* Send message and TTS to discord */
-        //discord.sendWebhook(message, text);
         message.channel.send(localize.get('chattybot.tts.text.format', voice.channel.name, message.author, text));
         /* If bot have message delete permission, delete user's request message */
         if (message.guild.me.hasPermission('MANAGE_MESSAGES')) message.delete();
         await voice.TTS.addQueue(message.author, fixedText);
         logger.log('verbose', `[TTS] ${message.author} spoken: ${text}`);
     } catch(err) {
-        const errorReport = new discord.MessageAttachment(Buffer.from(err.stack), `report-${common.datetime()}.txt`);
+        //const errorReport = new discord.MessageAttachment(Buffer.from(err.stack), `report-${common.datetime()}.txt`);
         logger.log('error', `[TTS] Error occured while synthesizing:\n  ${err.stack}\n`);
         message.channel.send(localize.get('error.generic'), errorReport);
     }

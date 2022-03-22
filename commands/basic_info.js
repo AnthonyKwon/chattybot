@@ -1,5 +1,5 @@
-const localize = require('../localization.js');
-const info = require('../../package.json');
+const localize = require('../module/localization.js');
+const info = require('../package.json');
 
 const devFlag = process.env.NODE_ENV === 'development' ? true : false;
 
