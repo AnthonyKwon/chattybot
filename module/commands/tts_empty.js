@@ -4,7 +4,7 @@ const TTSClass = require('../../class/tts/ttsclass.js');
 
 async function ttsEmpty(message) {
     /* This command only can be used after TTS is initialized */
-    const voice = discord.voiceMap.get(message.guild.id);
+    const voice = message.client.voice.session.get(message.guild.id);
     if (!voice || !voice.TTS) {
         message.channel.send(localize.get('error.discord.voice.not_joined'));
         return;

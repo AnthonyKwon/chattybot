@@ -38,10 +38,10 @@ function messageFix(message, content) {
 
 async function ttsSay(message, args) {
     /* If not joined to voice channel, join first */
-    if (!discord.voiceMap.get(message.guild.id)) {
+    if (!message.client.voice.session.get(message.guild.id)) {
         await join.execute(message, []);
     }
-    const voice = discord.voiceMap.get(message.guild.id);
+    const voice = message.client.voice.session.get(message.guild.id);
     /* If TTS is not initalized, do it first */
     if (!voice.TTS) voice.TTS = new TTSClass(message, 'GcpTtsBasic', undefined);
     /* Fix message for TTS-readable */
