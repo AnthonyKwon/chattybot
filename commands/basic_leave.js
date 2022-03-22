@@ -1,5 +1,5 @@
-const localize = require('../localization.js');
-const VoiceClass = require('../../class/discordwrapper/VoiceClass');
+const localize = require('../module/localization.js');
+const VoiceClass = require('../class/discordwrapper/VoiceClass');
 
 async function commandLeave(message) {
     // If not joined to voice channel, show error message

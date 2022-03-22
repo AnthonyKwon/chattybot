@@ -1,12 +1,6 @@
 const path = require('path');
 const { Readable } = require('stream');
 
-// Get server username from user's ID.
-const getUsername = (client, guild, userId) => {
-    const username = client.guilds.cache.get(guild.id).member(userId).displayName;
-    return username.split('_').join(' ');
-}
-
 /* Implement format() in javascript
    https://stackoverflow.com/a/18405800 */
 if (!String.prototype.format) {
@@ -94,7 +88,6 @@ function uniq(a) {
 module.exports = {
     bufferToStream,
     datetime,
-    getUsername,
     parseAliases,
     parseTime,
     replaceAll,

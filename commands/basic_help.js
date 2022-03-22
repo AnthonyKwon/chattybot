@@ -1,7 +1,7 @@
-const common = require('../common.js');
-const config = require('../config.js');
-const localize = require('../localization.js');
-const logger = require('../logger.js');
+const common = require('../module/common.js');
+const config = require('../module/config.js');
+const localize = require('../module/localization.js');
+const logger = require('../module/logger.js');
 
 async function commandHelp(message, args) {
     const reply = [];

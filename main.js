@@ -1,5 +1,5 @@
 const winston = require('winston');
-const discord = require('./module/discordwrapper.js');
+const wrapper_init = require('./module/discordwrapper/main.mod');
 const logger = require('./module/logger.js');
 
 const devFlag = process.env.NODE_ENV === 'development' ? true : false;
@@ -11,4 +11,4 @@ if (devFlag === true) {
     }));
 }
 
-discord.init(devFlag);
+wrapper_init();

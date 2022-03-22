@@ -1,7 +1,7 @@
-const common = require('../common.js');
-const logger = require('../logger.js');
-const localize = require('../localization.js');
-const VoiceClass = require('../../class/discordwrapper/VoiceClass')
+const common = require('../module/common.js');
+const logger = require('../module/logger.js');
+const localize = require('../module/localization.js');
+const VoiceClass = require('../class/discordwrapper/VoiceClass')
 
 const devFlag = process.env.NODE_ENV === 'development' ? true : false;
 
