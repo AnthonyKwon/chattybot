@@ -6,7 +6,6 @@ class VoiceClass {
             name: undefined
         }
         this._guildId = guildId;
-        //this._tts = undefined;
         this._volume = 100;
     }
 
@@ -16,7 +15,7 @@ class VoiceClass {
 
     /* return connection dispatcher if available */
     get dispatcher() {
-        if (this._connection.status !== 0) return undefined;
+        if (!this.connection || this._connection.status !== 0) return undefined;
         return this._connection.dispatcher;
     }
 
@@ -24,16 +23,6 @@ class VoiceClass {
     get guildId() {
         return this.guildId;
     }
-
-	/*
-    set TTS(ttsObject) {
-	    console.log(ttsObject); // debug
-        //this._tts = ttsObject;
-    }
-    get TTS() {
-        return this._tts;
-    }
-    */
 
     /* get-set voice volume */
     get volume() {

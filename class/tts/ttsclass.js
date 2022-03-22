@@ -25,7 +25,7 @@ const getUsername = (client, guild, userId) => {
 }
 
 class TTSClass {
-    constructor(message, type, queue, waitForFinish=true) {
+    constructor(message, type, queue=undefined, waitForFinish=true) {
         this._client = message.client;
         this._guild = message.guild;
         this._voice = message.client.voice.session.get(message.guild.id);
@@ -82,18 +82,20 @@ class TTSClass {
         this._type = new ClassMap[value];
     }
 
-    // Speak as TTS: call specified TTS engine and read text (in queue if enabled)
+    // Speak as TTS: call specified TTS engine and read text (in queue)
     async speak() {
         this._speaking = true;
         do {
-            /* If message author or channel is different or authorId is not system(0), send TTS w/ prefix. */
+            // If message author or channel has changed, send TTS with prefix
             let stream = undefined;
             if (this._lastAuthor !== this._queue[0].author.id && this._queue[0].author.id !== 0)
                 stream = await this._type.speak(this._queue[0], true);
             else stream = await this._type.speak(this._queue[0], false);
             this._lastAuthor = this._queue[0].author.id;
             const result = this._voice.play(stream, { type: 'ogg/opus' });
+            //TODO: check if result got return value false (failed to play audio)
             /* await until voice.play finishes (https://stackoverflow.com/a/43084615) */
+            console.log(result);
             if (this._waitForFinish === true) await once(result, 'finish');
             this._queue.shift();
         } while(this._queue.length > 0)
