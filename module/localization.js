@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const config = require('./config.js');
-const logger = require('./logger.js');
+const logger = require('./logger/main.mod.js');
 
 function isLocalizedCommandAvailable(cmdMsg, name) {
     try {
@@ -13,7 +13,7 @@ function isLocalizedCommandAvailable(cmdMsg, name) {
         else
             return false;
     } catch (err) {
-        logger.log('error', `[Localization] Failed to check if localized command name avaliable:\n  ${err.stack}`);
+        logger.error('i18n', `Failed to check if localized command name avaliable:\n  ${err.stack}`);
         return false;
     }
 }
@@ -28,7 +28,7 @@ function getCommandInfofromId(id, type) {
             return id;
         }
     } catch (err) {
-        logger.log('error', `[Localization] Failed to parse string from id:\n  ${err.stack}`);
+        logger.error('i18n', `Failed to parse string from id:\n  ${err.stack}`);
     }
 }
 
@@ -44,7 +44,7 @@ function getLocalizedStringfromId(id) {
         else
             return `${config.locale}.${id}`;
     } catch (err) {
-        logger.log('error', `[Localization] Failed to parse string from id:\n  ${err.stack}`);
+        logger.log('i18n', `Failed to parse string from id:\n  ${err.stack}`);
     }
 
     if (arguments.length > 1) {
