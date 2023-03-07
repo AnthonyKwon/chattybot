@@ -1,5 +1,9 @@
-const winston = require('winston');
-const wrapper_init = require('./module/discordwrapper/main.mod');
-const logger = require('./module/logger.js');
+const discord = require('./module/discordwrapper/main.mod');
+const logger = require('./module/logger/main.mod.js');
+const package = require('./package.json');
 
-wrapper_init();
+// initialize logger module for main
+logger.info(package.name, `version ${package.version}`);
+
+// initialize discord module
+discord.init();

@@ -1,5 +1,5 @@
 const voice = require('@discordjs/voice');
-const logger = require('../../module/logger');
+const logger = require('../../module/logger/main.mod.js');
 
 class VoiceClass {
     constructor(guildId) {
@@ -19,7 +19,7 @@ class VoiceClass {
 
     /* return connection dispatcher if available */
     get dispatcher() {
-        logger.log('warn', '[discord.js] This function is deprecated and removed in upstream, and will be removed in future updates downstream.');
+        logger.warn('discord.js', 'This function is deprecated and removed in upstream, and will be removed in future updates downstream.');
         if (!this._connection || !this._connection.state) return undefined;
         return 'deprecated';
     }
