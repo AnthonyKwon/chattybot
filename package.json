@@ -7,7 +7,7 @@
     "start": "npm run normal",
     "dev": "npm run maintenance",
     "normal": "node .",
-    "maintenance": "NODE_ENV=maintenance nodemon --inspect ."
+    "maintenance": "DEVMODE=1 nodemon --inspect ."
   },
   "repository": {
     "type": "git",
