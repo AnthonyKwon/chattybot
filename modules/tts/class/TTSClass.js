@@ -4,7 +4,7 @@ const { on } = require('events');
 const getSubClass = name => {
     const fs = require('fs');
     const path = require('path');
-    const scripts = fs.readdirSync(__dirname).filter(file => file.match('^tts-.*\.js$'));
+    const scripts = fs.readdirSync(__dirname).filter(file => file.match('^.*ProviderClass\.js$'));
 
     for (const file of scripts) {
         const subClass = require(path.join(__dirname, file));

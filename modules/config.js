@@ -1,5 +1,5 @@
 const fs = require('fs');
- const path = require('path');
+const path = require('path');
 
 function initialize() {
     const files = fs.readdirSync(path.join(__dirname, '../configs'));
