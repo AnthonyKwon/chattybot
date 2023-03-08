@@ -1,7 +1,9 @@
+const path = require('node:path');
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const slash = require('./slashCommand.js');
 const config = require('../config.js');
-const logger = require('../logger/main.mod.js');
+const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
+const i18n = require('../i18n/main.mod.js');
 
 const client = new Client({ intents: [
     GatewayIntentBits.Guilds
@@ -19,6 +21,11 @@ client.once(Events.ClientReady, c => {
 
     // load registered slash commands
     slash.load(c);
+
+    //
+    c.guilds.cache.forEach(guild => {
+        guild.i18n = new i18n.GuildI18n(guild.id);
+    });
 });
 
 client.on(Events.InteractionCreate, interaction => {

@@ -1,4 +1,3 @@
-const path = require('path');
 const { Readable } = require('stream');
 
 /* Implement format() in javascript

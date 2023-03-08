@@ -1,4 +1,3 @@
-const { Colors } = require('discord.js');
 const path = require('path');
 const winston = require('winston');
 

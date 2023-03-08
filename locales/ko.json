@@ -1,18 +1,19 @@
 {
     "command.help.name": "도움말",
     "command.help.desc": "이 봇에 대한 도움말을 보여줍니다.",
-    "command.help.usage": "[명령어]",
+    "command.help.opt1.name": "명령어",
     "command.info.name": "정보",
     "command.info.desc": "이 봇에 대한 정보를 보여줍니다.",
     "command.join.name": "들어가기",
     "command.join.desc": "유저가 입장해 있는 음성 채널에 들어갑니다.",
+    "command.join.opt1.name": "채널id",
     "command.leave.name": "나가기",
     "command.leave.desc": "현재 들어가 있는 음성 채널에서 나가게 합니다.",
     "command.empty.name": "비우기",
     "command.empty.desc": "읽어주기 목록을 비우고 TTS를 초기화 합니다.",
     "command.say.name": "말",
     "command.say.desc": "음성 채널에 입력한 텍스트를 읽어줍니다.",
-    "command.say.usage": "<텍스트...>",
+    "command.say.opt1.name": "텍스트",
     "command.pause.name": "일시정지",
     "command.pause.desc": "플레이어를 일시정지 하거나 이어서 재생합니다.",
     "command.play.name": "재생",
@@ -42,16 +43,13 @@
         "아래의 오류 ID를 개발자에게 알려주세요.",
         "**오류 ID:** {0}"
     ],
-    "error.music.not_playing": ":musical_note: :octagonal_sign: 현재 노래가 **재생중이지 않습니다**. 먼저 노래를 재생해 주세요.",
     "message.discord.voice.joined": ":loud_sound: **{0}** 채널에 들어갔습니다.",
     "message.discord.voice.left": ":loud_sound: :wave: **{0}**에서 나갔습니다.",
-    "message.music.auto_paused": ":musical_note: :wave: 모든 유저가 :loud_sound: **{0}** 채널을 나갔습니다. 노래가 **일시정지**됩니다.",
-    "message.help.dm_sent": ":book: {0}님의 **개인 메시지**로 도움말을 보냈습니다!",
     "message.help.dm": [
         ":information_source: **채팅 TTS**나 **음악 봇** 기능을 제공하는 봇입니다.",
         "**기본 제공 명령어**는 아래가 있습니다:",
         "{0}",
-        ":information_source: `{1}{2} {3}`를 치시면 **자세히** 알아볼 수 있습니다."
+        ":information_source: `/{1} {2}`를 치시면 **자세히** 알아볼 수 있습니다."
     ],
     "message.help.detail": [
         ":information_source: *필수: <>    선택: []  (괄호 빼고 적음)*",

@@ -1,7 +1,7 @@
 const { Collection, REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
-const logger = require('../logger/main.mod.js');
+const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
 
 const commandsPath = path.join(path.dirname(require.main.filename), 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -62,6 +62,9 @@ async function SlashCommandHandler(interaction) {
 	}
 
 	try {
+        // defer reply and wait for command to write any message
+        await interaction.deferReply({ ephemeral: command.extra.ephemeral || false });
+        // launch command
 		await command.execute(interaction);
 	} catch (error) {
 		console.error(error);
