@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
+// parse date-time for filename
 const datetime = () => {
     const currDate = new Date();
     let dateString = String(currDate.getFullYear()).padStart(4, '0');

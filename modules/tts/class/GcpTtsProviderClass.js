@@ -1,8 +1,8 @@
 const GcpTtsExt = require('@google-cloud/text-to-speech');
-const path = require('path');
-const { Readable } = require('stream');
-const config = require('../../module/config.js');
-const localize = require('../../module/localization.js');
+const path = require('node:path');
+const { Readable } = require('node:stream');
+const config = require(path.join(path.dirname(require.main.filename), 'modules', 'config.js'));
+const i18n = require(path.join(path.dirname(require.main.filename), 'modules', 'i18n', 'main.mod.js'));
 
 /*
  * @param binary Buffer
@@ -41,8 +41,8 @@ class GcpTts {
     async speak(message, readAuthor=true) {
         /* If message author or channel is different or authorId is not system(0), send TTS w/ prefix. */
         if (readAuthor) {
-            this._request.input = { ssml: '<speak><prosody pitch="-3st">' + localize.get('tts.speak.prefix',
-                message.author.name) + '</prosody><break time="0.5s"/>' + message.content + '</speak>' };
+            this._request.input = { ssml: '<speak><prosody pitch="-3st">' + i18n.get('ko', 'tts.speak.prefix')
+                .format(message.author.name) + '</prosody><break time="0.5s"/>' + message.content + '</speak>' };
         } else {
             this._request.input = { text: message.content };
         }
@@ -54,12 +54,12 @@ class GcpTts {
 }
 class GcpTtsBasic extends GcpTts {
     constructor() {
-        super('ko-KR', 'ko-KR-Standard-A', 'NEUTRAL', '1.0', '0.0', '0.0');
+        super('ko', 'ko-Standard-A', 'NEUTRAL', '1.0', '0.0', '0.0');
     }
 }
 class GcpTtsWaveNet extends GcpTts {
     constructor() {
-        super('ko-KR', 'ko-KR-Wavenet-A', 'NEUTRAL', '1.0', '0.0', '0.0');
+        super('ko', 'ko-Wavenet-A', 'NEUTRAL', '1.0', '0.0', '0.0');
     }
 }
 
