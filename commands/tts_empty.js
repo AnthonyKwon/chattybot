@@ -1,24 +1,30 @@
-const localize = require('../module/localization.js');
-const TTSClass = require('../class/tts/ttsclass.js');
+const path = require('node:path');
+const { SlashCommandBuilder } = require('discord.js');
+const i18n = require(path.join(path.dirname(require.main.filename), 'modules', 'i18n', 'main.mod.js'));
+const TTSClass = require(path.join(path.dirname(require.main.filename), 'modules', 'tts', 'class', 'TTSClass'));
 
-async function ttsEmpty(message) {
+async function commandHandler(interaction) {
+    const locale = interaction.guild.i18n.locale;
     /* This command only can be used after TTS is initialized */
-    const voice = message.client.voice.session.get(message.guild.id);
+    const voice = interaction.client.voice.session.get(interaction.guild.id);
     if (!voice || !voice.TTS) {
-        message.channel.send(localize.get('error.discord.voice.not_joined'));
+        interaction.editReply(i18n.get(locale, 'error.discord.voice.not_joined'));
         return;
     }
 
     /* Re-initialize TTSClass with empty queue */
-    voice.TTS = new TTSClass('GcpTtsWaveNet', TTSClass.genQueueArr(undefined, localize.get('speak.tts_queue.empty')));
+    voice.TTS = new TTSClass('GcpTtsWaveNet', TTSClass.genQueueArr(undefined, i18n.get(locale, 'speak.tts_queue.empty')));
     /* Notify to user */
-    message.channel.send(localize.get('message.tts_queue.empty'));
+    interaction.editReply(i18n.get(locale, 'message.tts_queue.empty'));
     await voice.TTS.speak(message);
 }
 
 module.exports = {
-    name: 'empty',
-    argsRequired: false,
-    cooldown: 15,
-    execute: ttsEmpty
+    data: new SlashCommandBuilder()
+        .setName(i18n.get('en-US', 'command.empty.name'))
+        .setNameLocalizations(i18n.get('command.empty.name'))
+        .setDescription(i18n.get('en-US', 'command.empty.desc'))
+        .setDescriptionLocalizations(i18n.get('command.empty.desc')),
+    extra: { },
+    execute: commandHandler
 }

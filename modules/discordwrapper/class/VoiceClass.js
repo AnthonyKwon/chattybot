@@ -1,5 +1,6 @@
+const path = require('node:path');
 const voice = require('@discordjs/voice');
-const logger = require('../../module/logger');
+const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
 
 class VoiceClass {
     constructor(guildId) {
@@ -15,13 +16,6 @@ class VoiceClass {
 
     get channel() {
         return this._channel;
-    }
-
-    /* return connection dispatcher if available */
-    get dispatcher() {
-        logger.log('warn', '[discord.js] This function is deprecated and removed in upstream, and will be removed in future updates downstream.');
-        if (!this._connection || !this._connection.state) return undefined;
-        return 'deprecated';
     }
 
     /* get guild ID of class */
@@ -57,7 +51,8 @@ class VoiceClass {
             guildId: channel.guild.id,
             adapterCreator: channel.guild.voiceAdapterCreator
         });
-        await voice.entersState(this._connection, voice.VoiceConnectionStatus.Ready, 5_000);
+        // upstream made some weird change, so we can't check connection status
+        //await voice.entersState(this._connection, voice.VoiceConnectionStatus.Ready, 5_000);
 
         // set speaking status to none
         this._connection.setSpeaking(0);

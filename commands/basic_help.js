@@ -1,56 +1,51 @@
-const common = require('../module/common.js');
-const config = require('../module/config.js');
-const localize = require('../module/localization.js');
-const logger = require('../module/logger.js');
+const { SlashCommandBuilder } = require('discord.js');
+const common = require('../modules/common.js');
+const config = require('../modules/config.js');
+const i18n = require('../modules/i18n/main.mod.js');
+const logger = require('../modules/logger/main.mod.js');
 
-async function commandHelp(message, args) {
-    const reply = [];
-    if (args.length === 0) {
-        const commands = message.client.commands.map(cmd => '\\' + config.prefix + localize.command(cmd.name, 'name'));
-        /* If no argument provided, send full help to DM */
-        reply.push(localize.get('message.help.dm',
-            '*' + commands.join(', ') + '*', config.prefix, localize.command(this.name, 'name'), localize.command(this.name, 'usage')));
-        try {
-            /* try to send DM to message author */
-            const response = await message.author.send(reply.join('\n'));
-            message.channel.send(localize.get('message.help.dm_sent', message.author));
-            logger.log('verbose', `[discord.js] Sent help DM to ${message.author}.`);
-        } catch (err) {
-            /* DM failed. send error to channel */
-            message.channel.send(localize.get('error.help.dm_failed', message.author));
-            logger.log('error', `[discord.js] Failed to send DM to ${message.author}!\n${err.stack}\n`);
-        }
-    } else {
-        const commandName = args[0];
+async function commandHandler(interaction) {
+    const commands = interaction.client.commands;
+    const requestedCommand = interaction.options.getString(i18n.get('en-US', 'command.help.opt1.name'));
 
-        const command = message.client.commands.get(commandName)
-            || message.client.commands.find(cmd => localize.commandCheck(commandName, cmd.name))
-            || message.client.commands.find(cmd => common.parseAliases(commandName, cmd.aliases));
+    // get guild-specific locale
+    const locale = interaction.guild.i18n.locale;
+
+    // test if user requested for specific-command help
+    if (requestedCommand) {
+        // show help page for specific command
+        const command = commands.get(requestedCommand) ||
+                            commands.find(cmd => i18n.test(locale, cmd.data.name_localizations[locale]));
 
         // Show unknown command message and return
         if (!command) {
-            message.channel.send(localize.get('error.discord.unknown_command'));
+            interaction.editReply(i18n.get(locale, 'error.discord.unknown_command'));
             return;
         }
 
-        let usage = localize.command(command.name, 'usage');
-        let description = localize.command(command.name, 'desc');
+        interaction.editReply(i18n.get(locale, 'message.help.detail'));
 
-        if (usage === command.name)
-            usage = '';
-        if (description === command.name)
-            description = localize.get('message.help.no_desc');
-
-        message.channel.send(localize.get('message.help.detail',
-                config.prefix, localize.command(command.name, 'name'), usage, description));
+    } else {
+        // show help page for all commands
+        const commandList = Array.from(commands.keys());
+        console.log();
+        interaction.editReply(i18n.get(locale, 'message.help.all').format(commandList.join(', '),
+                                commands.get(i18n.get('en-US', 'command.help.name')).data.name_localizations[locale],
+                                i18n.get(locale, 'command.help.opt1.desc')));
     }
-    return;
 }
 
 module.exports = {
-    name: 'help',
-    argsRequired: false,
-    cooldown: 15,
-    execute: commandHelp
+    data: new SlashCommandBuilder()
+        .setName(i18n.get('en-US', 'command.help.name'))
+        .setNameLocalizations(i18n.get('command.help.name'))
+        .setDescription(i18n.get('en-US', 'command.help.desc'))
+        .setDescriptionLocalizations(i18n.get('command.help.desc'))
+        .addStringOption(option => option.setName(i18n.get('en-US', 'command.help.opt1.name'))
+                                         .setNameLocalizations(i18n.get('command.help.opt1.name'))
+                                         .setDescription(i18n.get('en-US', 'command.help.opt1.desc'))
+                                         .setDescriptionLocalizations(i18n.get('command.help.opt1.desc'))
+                                         .setRequired(false)),
+    extra: { ephemeral: true },
+    execute: commandHandler
 }
-
