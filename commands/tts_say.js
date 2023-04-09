@@ -63,7 +63,7 @@ async function commandHandler(interaction) {
     } catch(err) {
         const result = report(err, interaction.user.id);
         logger.verbose('tts', `Error occured while synthesizing:\n  ${err.stack}\n`);
-        interaction.editReply(i18n.get('error.generic').format(result));
+        interaction.editReply(i18n.get(locale, 'error.generic').format(result));
     }
     return;
 }
