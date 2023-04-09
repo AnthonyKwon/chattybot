@@ -54,12 +54,14 @@ class GcpTts {
 }
 class GcpTtsBasic extends GcpTts {
     constructor() {
-        super('ko', 'ko-Standard-A', 'NEUTRAL', '1.0', '0.0', '0.0');
+        //TODO: get parameters properly
+        super('ko-KR', 'ko-KR-Standard-A', 'NEUTRAL', '1.0', '0.0', '0.0');
     }
 }
 class GcpTtsWaveNet extends GcpTts {
     constructor() {
-        super('ko', 'ko-Wavenet-A', 'NEUTRAL', '1.0', '0.0', '0.0');
+        //TODO: get parameters properly
+        super('ko-KR', 'ko-KR-Wavenet-A', 'NEUTRAL', '1.0', '0.0', '0.0');
     }
 }
 
