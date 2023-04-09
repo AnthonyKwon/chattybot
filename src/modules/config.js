@@ -2,14 +2,14 @@ const fs = require('fs');
 const path = require('path');
 
 function initialize() {
-    const files = fs.readdirSync(path.join(__dirname, '../configs'));
+    const files = fs.readdirSync(path.join(path.dirname(require.main.filename), '../configs'));
     const configArray = {};
     
     for (file of files) {
         /* Read file only with ".json" extension. */
         if (!file.endsWith('.json')) continue;
 
-        const currFile = fs.readFileSync(path.join(__dirname, '../configs', file));
+        const currFile = fs.readFileSync(path.join(path.dirname(require.main.filename), '../configs', file));
         Object.assign(configArray, JSON.parse(currFile));
     }
     return configArray;
