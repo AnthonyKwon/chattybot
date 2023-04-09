@@ -23,8 +23,8 @@ const winston = require('winston');
 });
 
 // test if development mode is set
-if (process.env.DEVMODE == 1) {
-    logger.isDevMode = true;
+if (process.env.MAINTENANCE == 1) {
+    logger.maintenance = true;
     logger.add(new winston.transports.Console({ 
         format: winston.format.combine(
             winston.format.colorize(),
@@ -33,7 +33,7 @@ if (process.env.DEVMODE == 1) {
         level: 'verbose'
     }));
 } else {
-    logger.isDevMode = false;
+    logger.isMAINTENANCE = false;
     logger.add(new winston.transports.Console({
         format: winston.format.combine(
             winston.format.colorize(),
