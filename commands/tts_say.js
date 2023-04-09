@@ -8,7 +8,6 @@ const logger = require(path.join(path.dirname(require.main.filename), 'modules',
 const report = require(path.join(path.dirname(require.main.filename), 'modules', 'errorreport', 'main.mod.js'));
 const TTSClass = require(path.join(path.dirname(require.main.filename), 'modules', 'tts', 'class', 'TTSClass'));
 
-const devFlag = process.env.NODE_ENV === 'maintenance' ? true : false;
 const regexMention = /<(#|@!)[0-9]{18}>/g;
 const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~<>\#\\\=\(]/gi;
 
