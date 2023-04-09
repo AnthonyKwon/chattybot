@@ -1,7 +1,5 @@
 .vscode
-configs/*.json
-*_old
-_commands_preconvert
-logs
 node_modules
-**/*.bak
+out/
+configs/*.json
+logs

@@ -2,8 +2,9 @@
   "name": "chattybot",
   "version": "2.0.0-alpha.0",
   "description": "Discord Text-To-Speech Bot",
-  "main": "main.js",
+  "main": "./out/main.js",
   "scripts": {
+    "build": "tsc",
     "start": "node .",
     "debug": "NODE_ENV=maintenance nodemon --inspect ."
   },
@@ -20,6 +21,7 @@
     "discord.js": "^14.7.1",
     "nodemon": "^2.0.7",
     "sodium": "^3.0.2",
+    "typescript": "^5.0.4",
     "winston": "^3.3.3"
   }
 }
