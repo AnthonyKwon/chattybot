@@ -1,8 +1,5 @@
-const { SlashCommandBuilder } = require('discord.js');
-const common = require('../modules/common.js');
-const config = require('../modules/config.js');
-const i18n = require('../modules/i18n/main.mod.js');
-const logger = require('../modules/logger/main.mod.js');
+import { SlashCommandBuilder } from 'discord.js';
+import * as i18n from '@modules/i18n/main.mod.js';
 
 async function commandHandler(interaction) {
     const commands = interaction.client.commands;

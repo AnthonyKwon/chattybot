@@ -1,9 +1,8 @@
-const path = require('node:path');
-const { Client, Events, GatewayIntentBits } = require('discord.js');
-const slash = require('./slashCommand.js');
-const config = require('../config.js');
-const logger = require('../logger/main.mod');
-const i18n = require('../i18n/main.mod');
+import { Client, Events, GatewayIntentBits } from 'discord.js';
+import config from '@modules/config';
+import logger from '@modules/logger/main.mod';
+import i18n from '@modules/i18n/main.mod';
+import slash from './slashCommand.js';
 
 const client = new Client({ intents: [
     GatewayIntentBits.Guilds,
@@ -34,7 +33,7 @@ client.on(Events.InteractionCreate, interaction => {
     slash.handler(interaction);
 });
 
-async function init() {
+export async function init() {
     await client.login(config.token);
 }
 

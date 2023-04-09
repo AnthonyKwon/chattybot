@@ -1,8 +1,6 @@
-const path = require('node:path');
-const voice = require('@discordjs/voice');
-const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
+import * as voice from '@discordjs/voice';
 
-class VoiceClass {
+export default class VoiceClass {
     constructor(guildId) {
         this._connection = undefined;
         this._channel = {
@@ -46,13 +44,13 @@ class VoiceClass {
     // join discord voice connection
     async join(channel) {
         // create voice connection and wait for it
-        this._connection = await voice.joinVoiceChannel({
+        this._connection = voice.joinVoiceChannel({
             channelId: channel.id,
             guildId: channel.guild.id,
             adapterCreator: channel.guild.voiceAdapterCreator
         });
         // upstream made some weird change, so we can't check connection status
-        //await voice.entersState(this._connection, voice.VoiceConnectionStatus.Ready, 5_000);
+        await voice.entersState(this._connection, voice.VoiceConnectionStatus.Ready, 5_000);
 
         // set speaking status to none
         this._connection.setSpeaking(0);
@@ -82,5 +80,3 @@ class VoiceClass {
         return true;
     }
 }
-
-module.exports = VoiceClass;

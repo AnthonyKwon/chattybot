@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node .",
-    "debug": "NODE_ENV=maintenance nodemon --inspect ."
+    "debug": "NODE_ENV=maintenance nodemon --exec 'node --inspect --require ts-node/register ./src/main.ts'"
   },
   "repository": {
     "type": "git",
@@ -14,13 +14,19 @@
   },
   "author": "Anthony Kwon",
   "license": "GPL-2.0-or-later",
+  "_moduleAliases": {
+    "@commands": "./src/commands",
+    "@modules": "./src/modules"
+  },
   "dependencies": {
     "@discordjs/opus": "github:discordjs/opus",
     "@discordjs/voice": "^0.8.0",
     "@google-cloud/text-to-speech": "^3.2.0",
     "discord.js": "^14.7.1",
+    "module-alias": "^2.2.2",
     "nodemon": "^2.0.7",
     "sodium": "^3.0.2",
+    "ts-node": "^10.9.1",
     "typescript": "^5.0.4",
     "winston": "^3.3.3"
   }

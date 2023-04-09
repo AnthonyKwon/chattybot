@@ -1,6 +1,6 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod'));
+import fs from 'node:fs';
+import path from 'node:path';
+import logger from '@modules/logger/main.mod';
 const config = require.main.require('../configs/settings.json');
 
 class GuildI18nClass {

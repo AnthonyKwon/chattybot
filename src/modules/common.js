@@ -1,4 +1,4 @@
-const { Readable } = require('stream');
+import { Readable } from 'node:stream';
 
 /* Implement format() in javascript
    https://stackoverflow.com/a/18405800 */

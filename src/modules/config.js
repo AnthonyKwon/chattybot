@@ -1,11 +1,11 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 function initialize() {
     const files = fs.readdirSync(path.join(path.dirname(require.main.filename), '../configs'));
     const configArray = {};
     
-    for (file of files) {
+    for (const file of files) {
         /* Read file only with ".json" extension. */
         if (!file.endsWith('.json')) continue;
 

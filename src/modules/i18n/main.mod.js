@@ -1,8 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
-
-const GuildI18n = require('./class/GuildI18nClass.js');
+import fs from 'node:fs';
+import path from 'node:path';
+import logger from '@modules/logger/main.mod';
+import GuildI18n from './class/GuildI18nClass.js';
 
 /**
  * i18n.get(): get i18n string from id
@@ -28,7 +27,8 @@ const GuildI18n = require('./class/GuildI18nClass.js');
 function test(locale, string) {
     try {
         // read locale file
-        const localeData = JSON.parse(fs.readFileSync(path.join(path.dirname(require.main.filename), 'locales', `${locale}.json`)));
+        
+        const localeData = JSON.parse(fs.readFileSync(path.join(path.dirname(require.main.filename), '../locales', `${locale}.json`)));
         // test if file contains string
         if (Object.values(localeData).includes(string)) return true;  // file has it
         else return false;  // file doesn't have it
@@ -42,7 +42,7 @@ function test(locale, string) {
 function getSingle(locale, id) {
     try {
         // read locale file
-        const localeData = JSON.parse(fs.readFileSync(path.join(path.dirname(require.main.filename), 'locales', `${locale}.json`)));
+        const localeData = JSON.parse(fs.readFileSync(path.join(path.dirname(require.main.filename), '../locales', `${locale}.json`)));
         // test if field is multi-lined
         if (Array.isArray(localeData[id])) return localeData[id].join('\n');  // multi-line field
         else if (typeof localeData[id] === 'string') return localeData[id];  // single-line field
@@ -54,7 +54,7 @@ function getSingle(locale, id) {
 
 function getAll(id) {
     // read locales directory
-    const localeFiles = fs.readdirSync(path.join(path.dirname(require.main.filename), 'locales')).filter(file => file.endsWith('.json'));
+    const localeFiles = fs.readdirSync(path.join(path.dirname(require.main.filename), '../locales')).filter(file => file.endsWith('.json'));
     const result = {};
 
     for (const file of localeFiles) {

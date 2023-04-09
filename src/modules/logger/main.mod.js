@@ -1,5 +1,5 @@
-const path = require('path');
-const winston = require('winston');
+import path from 'node:path';
+import winston from 'winston';
 
 // initialize logger
     const logger = winston.createLogger({
@@ -12,11 +12,11 @@ const winston = require('winston');
     topic: undefined,
     transports: [
         new winston.transports.File({
-            filename: path.join(__dirname, '../../logs/error.log'),
+            filename: path.join(path.dirname(require.main.filename), '../logs/error.log'),
             level: 'error'
         }),
         new winston.transports.File({
-            filename: path.join(__dirname, '../../logs/verbose.log'),
+            filename: path.join(path.dirname(require.main.filename), '../logs/verbose.log'),
             level: 'verbose'
         })
     ]
@@ -33,7 +33,7 @@ if (process.env.NODE_ENV == "maintenance") {
         level: 'verbose'
     }));
 } else {
-    logger.isMAINTENANCE = false;
+    logger.maintenance = false;
     logger.add(new winston.transports.Console({
         format: winston.format.combine(
             winston.format.colorize(),
@@ -55,6 +55,6 @@ function verbose(topic, message) { log(topic, 'verbose', message) }
 function debug(topic, message) { log(topic, 'debug', message) }
 function silly(topic, message) { log(topic, 'silly', message) }
 
-module.exports = {
+export default {
     log, error, warn, info, http, verbose, debug, silly
 };

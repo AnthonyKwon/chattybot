@@ -1,9 +1,8 @@
-const path = require('node:path');
-const { PermissionsBitField, SlashCommandBuilder } = require('discord.js');
-const i18n = require(path.join(path.dirname(require.main.filename), 'modules', 'i18n', 'main.mod.js'));
-const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
-const report = require(path.join(path.dirname(require.main.filename), 'modules', 'errorreport', 'main.mod.js'));
-const VoiceClass = require(path.join(path.dirname(require.main.filename), 'modules', 'discordwrapper', 'class', 'VoiceClass'));
+import { PermissionsBitField, SlashCommandBuilder } from 'discord.js';
+import i18n from '@modules/i18n/main.mod';
+import logger from '@modules/logger/main.mod';
+import report from '@modules/errorreport/main.mod';
+import VoiceClass from '@modules/discordwrapper/class/VoiceClass';
 
 async function commandHandler(interaction) {
     const locale = interaction.guild.i18n.locale;

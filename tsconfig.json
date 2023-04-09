@@ -4,7 +4,11 @@
       "allowJs": true,
       "target": "es6",
       "module": "commonjs",
-      "esModuleInterop": true
+      "esModuleInterop": true,
+      "paths": {
+        "@commands/*": ["./src/commands/*"],
+        "@modules/*": ["./src/modules/*"]
+      }
     },
     "include": ["./src/**/*"]
 }

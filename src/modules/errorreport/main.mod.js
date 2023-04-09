@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 // parse date-time for filename
 const datetime = () => {
@@ -20,12 +20,12 @@ function createReport(error, uid=undefined) {
     const data = { date: new Date(), uid, errorId: error.name, errorStack: error.stack };
 
     // check if report directory exists and create if not
-    if (!fs.existsSync(path.join(path.dirname(require.main.filename), '/logs/report/'))) {
-        fs.mkdirSync(path.join(path.dirname(require.main.filename), '/logs/report/'));
+    if (!fs.existsSync(path.join(path.dirname(require.main.filename), '../logs/report/'))) {
+        fs.mkdirSync(path.join(path.dirname(require.main.filename), '../logs/report/'));
     }
 
     // save report to file
-    fs.writeFileSync(path.join(path.dirname(require.main.filename), '/logs/report/', filename), JSON.stringify(data));
+    fs.writeFileSync(path.join(path.dirname(require.main.filename), '../logs/report/', filename), JSON.stringify(data));
 
     // return error id
     return errorid;

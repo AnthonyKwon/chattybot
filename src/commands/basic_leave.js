@@ -1,6 +1,5 @@
-const path = require('node:path');
-const { SlashCommandBuilder } = require('discord.js');
-const i18n = require(path.join(path.dirname(require.main.filename), 'modules', 'i18n', 'main.mod.js'));
+import { SlashCommandBuilder } from 'discord.js';
+import i18n from '@modules/i18n/main.mod';
 
 async function commandHandler(interaction) {
     const locale = interaction.guild.i18n.locale;

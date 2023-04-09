@@ -1,12 +1,11 @@
-const path = require('node:path');
-const util = require('node:util');
-const { SlashCommandBuilder } = require('discord.js');
-const join = require('./basic_join.js');
-const common = require(path.join(path.dirname(require.main.filename), 'modules', 'common.js'));
-const i18n = require(path.join(path.dirname(require.main.filename), 'modules', 'i18n', 'main.mod.js'));
-const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
-const report = require(path.join(path.dirname(require.main.filename), 'modules', 'errorreport', 'main.mod.js'));
-const TTSClass = require(path.join(path.dirname(require.main.filename), 'modules', 'tts', 'class', 'TTSClass'));
+import { SlashCommandBuilder } from 'discord.js';
+import TTSClass from '@modules/tts/class/TTSClass';
+import util from 'node:util';
+import common from '@modules/common';
+import i18n from '@modules/i18n/main.mod';
+import logger from '@modules/logger/main.mod';
+import report from '@modules/errorreport/main.mod';
+import join from '@commands/basic_join';
 
 const regexMention = /<(#|@!)[0-9]{18}>/g;
 const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~<>\#\\\=\(]/gi;
