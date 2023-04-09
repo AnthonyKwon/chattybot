@@ -1,17 +1,15 @@
 {
   "name": "chattybot",
   "version": "2.0.0",
-  "description": "An Discord Text-To-Speech Bot (classic version)",
+  "description": "Discord Text-To-Speech Bot",
   "main": "main.js",
   "scripts": {
-    "start": "npm run normal",
-    "dev": "npm run maintenance",
-    "normal": "node .",
-    "maintenance": "DEVMODE=1 nodemon --inspect ."
+    "start": "node .",
+    "debug": "DEBUG=true nodemon --inspect ."
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/AnthonyKwon/chattybot-classic.git"
+    "url": "https://github.com/AnthonyKwon/chattybot.git"
   },
   "author": "Anthony Kwon",
   "license": "GPL-2.0-or-later",
