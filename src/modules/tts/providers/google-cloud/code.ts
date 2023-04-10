@@ -16,12 +16,6 @@ module.exports = class TTSProviderClass {
     private request: RequestBody;  // request object
     private client: TextToSpeechClient;
 
-    // property 'busy': mark if provider is working on something
-    private _busy: boolean;
-    get busy(): boolean {
-        return this._busy;
-    }
-
     constructor(params: ProviderParams) {
         // get project id from keyfile
         const projectId: string = json.read(path.join(path.dirname(require.main.filename), '..', params.keyfile))['projectId'];
@@ -55,13 +49,14 @@ module.exports = class TTSProviderClass {
         else this.request.input.text = input;               // set input text (as plain text if chosen)
     }
 
+    //TODO: pitch conversion
+    //TODO: speed conversion
+
     async synthesize(input: string): Promise<ReadableStream<any>>{
-        this._busy = true;  // mark as busy
         this.setRequestBody(input);  // get request body
         const [response] = await this.client.synthesizeSpeech(Object.assign(this.request));
         // Google sends response as buffer. We need to convert it as ReadableStream
         const stream = bufferToStream(response.audioContent);  // convert buffer output(UInt8) to ReadableStream
-        this._busy = false; // unmark as busy
         return stream;
     }
 }

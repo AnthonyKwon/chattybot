@@ -12,5 +12,7 @@ function create(locale: string, provider?: string): TTSClass {
     const selectedProvider: Array<string> = fs.readdirSync(path.join(__dirname, './tts/providers/'));  // get TTS provider dirname from id
     if (!selectedProvider) throw new Error('Not a valid TTS provider!');  // test if chosen tts provider is valid
 
+    //TODO: implement safety tests (write required test here)
+
     return new TTSClass(actualProvider, locale);
 }

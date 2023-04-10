@@ -1,14 +1,14 @@
 import path from 'node:path';
 import fs from 'node:fs';
-import { on } from 'node:events';
 import json from '@modules/util/json';
 import * as config from '@modules/config';
 import { TTSMessage, ProviderDefInterface, ProviderParams } from './Interfaces';
 
 export default class TTSClass {
+    private busy: boolean;  // mark if provider is working on something
     private queue: Array<TTSMessage> = [];  // message queue
     private providerObj;  // TTS provider class object
-    
+
     // property 'locale': origin(application) locale <=> TTS locale
     private _locale: string;
     get locale(): string {
@@ -38,6 +38,7 @@ export default class TTSClass {
 
     constructor(provider: string, locale: string) {
         this._provider = provider;  // define service provider
+        this.busy = false;
         this.locale = locale;  // set locale of tts
         this.provider = provider;  // initialize service provider
     }
@@ -65,22 +66,32 @@ export default class TTSClass {
     addMsg(message: TTSMessage): void {
         /**
          * add message to synthesize queue, and synthesize if not working
+         * 
+         * @param message - author and content of the message
          */
         this.queue.push(message);  // add message to queue
     }
 
-    async synthesize(voice: any): Promise<void> {
+    synthesize(voice: any): void {
         /**
          * synthesize voice from chat
+         * 
+         * @param voice - VoiceClass object
          */
-        if (this.providerObj.busy === true) return;  // ignore if tts provider is busy
-        //TODO: implement playback queue
-        //TODO: implement tone-based user identifying
-        //name-based user identifying(ex: ~님의 말) is moved to command level
-        const currentMessage: TTSMessage = this.queue.shift();
-        const stream: ReadableStream = await this.providerObj.speak(currentMessage.message);  // synthesize text to audio
-        const result = await voice.play(stream, { type: 'ogg/opus' });  // play audio to voice channel
-        //TODO: check if result got return value false (failed to play audio)
-        await on(result, 'idle'); // wait until voice.play finishes (https://stackoverflow.com/a/43084615)
+        if (this.busy === true) return;  // ignore if tts provider is busy
+        this.busy = true;  // mark as busy
+
+        (async(): Promise<void> => {
+            while (this.queue.length > 0) {
+                //TODO: implement tone-based user identifying
+                //name-based user identifying(ex: ~님의 말) is moved to command level
+                const currentMessage: TTSMessage = this.queue.shift();
+                const stream: ReadableStream = await this.providerObj.synthesize(currentMessage.message);  // synthesize text to audio
+                const audioPlayer = await voice.play(stream, { type: 'ogg/opus' });  // play audio to voice channel
+                //TODO: check if result got return value false (failed to play audio)
+                await new Promise(resolve => audioPlayer.on('idle', resolve));  // wait until voice.play finishes (https://stackoverflow.com/a/43084615)
+            }
+            this.busy = false;  // mark as free
+        })();
     }
 }

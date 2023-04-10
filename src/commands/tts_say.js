@@ -43,7 +43,7 @@ async function commandHandler(interaction) {
     let voice = interaction.client.voice.session.get(interaction.guild.id);
 
     // check if bot joined to the voice channel and join if not
-    if (!voice || !voice.dispatcher) {
+    if (!voice) {
         const result = await join.execute(interaction);
         if (!result) return false; // join failed, stop function
         voice = interaction.client.voice.session.get(interaction.guild.id); // re-define voice value
@@ -51,7 +51,6 @@ async function commandHandler(interaction) {
 
     // If TTS is not initalized, do it first
     if (!voice.TTS) voice.TTS = tts.create(locale);  // create TTS class object if not available
-    //if (!voice.TTS) voice.TTS = new TTSClass(interaction, 'GcpTtsWaveNet');
     /* Fix message for TTS-readable */
     const text = interaction.options.getString(i18n.get('en-US', 'command.say.opt1.name'));
     const fixedText = await messageFix(interaction, text);
@@ -60,8 +59,7 @@ async function commandHandler(interaction) {
     try {
         /* Send message and TTS to discord */
         interaction.editReply(i18n.get(locale, 'tts.speak.text').format(interaction.user, text));
-        //await voice.TTS.addQueue(interaction.user, fixedText);
-        await voice.TTS.synthesize(voice);  // synthesize and play voice to channel
+        voice.TTS.synthesize(voice);  // synthesize and play voice to channel
         logger.verbose('tts', `${interaction.user} spoken: ${text}`);
     } catch(err) {
         const result = report(err, interaction.user.id);
