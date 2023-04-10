@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js';
 import i18n from '@modules/i18n/main.mod';
-import TTSClass from '@modules/tts-deprecated/class/TTSClass';
+import tts from '@modules/tts';
 
 async function commandHandler(interaction) {
     const locale = interaction.guild.i18n.locale;
@@ -11,8 +11,8 @@ async function commandHandler(interaction) {
         return;
     }
 
-    /* Re-initialize TTSClass with empty queue */
-    voice.TTS = new TTSClass('GcpTtsWaveNet', TTSClass.genQueueArr(undefined, i18n.get(locale, 'speak.tts_queue.empty')));
+    // Re-initialize TTSClass with empty queue\
+    voice.TTS = tts.create(locale);
     /* Notify to user */
     interaction.editReply(i18n.get(locale, 'message.tts_queue.empty'));
     await voice.TTS.speak(message);
