@@ -38,7 +38,7 @@ module.exports = class TTSProviderClass {
             voice: {
                 languageCode: this.locale,  // set synthesized locale
                 name: `${this.locale}-${this.useNeural ? 'Wavenet' : 'Standard'}-${this.voiceType}`,  // set voice name based on options
-                ssmlGender: this.gender
+                ssmlGender: this.gender  // set gender of the voice
             },
             audioConfig: {
                 audioEncoding: this.audioFormat,  // set audio format 
@@ -54,8 +54,9 @@ module.exports = class TTSProviderClass {
 
     async synthesize(input: string): Promise<ReadableStream<any>>{
         this.setRequestBody(input);  // get request body
-        const [response] = await this.client.synthesizeSpeech(Object.assign(this.request));
-        // Google sends response as buffer. We need to convert it as ReadableStream
+        const [response] = await this.client.synthesizeSpeech(Object.assign(this.request));  // send synthesize request to google
+
+        // Google sends response as buffer. We need to convert it as ReadableStream for @discordjs/voice
         const stream = bufferToStream(response.audioContent);  // convert buffer output(UInt8) to ReadableStream
         return stream;
     }
