@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js';
 import i18n from '@modules/i18n/main.mod';
-import TTSClass from '@modules/tts/class/TTSClass';
+import TTSClass from '@modules/tts-deprecated/class/TTSClass';
 
 async function commandHandler(interaction) {
     const locale = interaction.guild.i18n.locale;

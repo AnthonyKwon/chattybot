@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import TTSClass from '@modules/tts/class/TTSClass';
+import TTSClass from '@modules/tts-deprecated/class/TTSClass';
 import util from 'node:util';
 import common from '@modules/common';
 import i18n from '@modules/i18n/main.mod';
