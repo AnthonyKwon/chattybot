@@ -5,6 +5,7 @@
   "main": "./out/main.js",
   "scripts": {
     "build": "tsc",
+    "postbuild": "copyfiles -u 1 ./src/**/*.json ./bin/",
     "start": "node .",
     "debug": "NODE_ENV=maintenance nodemon --exec 'node --inspect --require ts-node/register ./src/main.ts'"
   },
@@ -15,8 +16,8 @@
   "author": "Anthony Kwon",
   "license": "GPL-2.0-or-later",
   "_moduleAliases": {
-    "@commands": "./src/commands",
-    "@modules": "./src/modules"
+    "@commands": "./bin/commands",
+    "@modules": "./bin/modules"
   },
   "dependencies": {
     "@discordjs/opus": "github:discordjs/opus",
@@ -26,8 +27,12 @@
     "module-alias": "^2.2.2",
     "nodemon": "^2.0.7",
     "sodium": "^3.0.2",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.0.4",
     "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.4.1",
+    "cpy-cli": "^4.2.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
   }
 }

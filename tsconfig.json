@@ -1,10 +1,11 @@
 {
     "compilerOptions": {
-      "outDir": "./out",
+      "outDir": "./bin",
       "allowJs": true,
       "target": "es6",
       "module": "commonjs",
       "esModuleInterop": true,
+      "sourceMap": true,
       "paths": {
         "@commands/*": ["./src/commands/*"],
         "@modules/*": ["./src/modules/*"]

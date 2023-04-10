@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js';
-import TTSClass from '@modules/tts-deprecated/class/TTSClass';
+//import TTSClass from '@modules/tts-deprecated/class/TTSClass';
+import tts from '@modules/tts';
 import util from 'node:util';
 import common from '@modules/common';
 import i18n from '@modules/i18n/main.mod';
@@ -48,16 +49,19 @@ async function commandHandler(interaction) {
         voice = interaction.client.voice.session.get(interaction.guild.id); // re-define voice value
     }
 
-    /* If TTS is not initalized, do it first */
-    if (!voice.TTS) voice.TTS = new TTSClass(interaction, 'GcpTtsWaveNet');
+    // If TTS is not initalized, do it first
+    if (!voice.TTS) voice.TTS = tts.create(locale);  // create TTS class object if not available
+    //if (!voice.TTS) voice.TTS = new TTSClass(interaction, 'GcpTtsWaveNet');
     /* Fix message for TTS-readable */
     const text = interaction.options.getString(i18n.get('en-US', 'command.say.opt1.name'));
     const fixedText = await messageFix(interaction, text);
+    voice.TTS.addMsg({ author: interaction.user ,message: fixedText });  // add message to queue
     logger.warn('tts', `Message ${text} will be spoken as ${fixedText}.`);
     try {
         /* Send message and TTS to discord */
         interaction.editReply(i18n.get(locale, 'tts.speak.text').format(interaction.user, text));
-        await voice.TTS.addQueue(interaction.user, fixedText);
+        //await voice.TTS.addQueue(interaction.user, fixedText);
+        await voice.TTS.synthesize(voice);  // synthesize and play voice to channel
         logger.verbose('tts', `${interaction.user} spoken: ${text}`);
     } catch(err) {
         const result = report(err, interaction.user.id);

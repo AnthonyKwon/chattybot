@@ -1,0 +1,8 @@
+{
+    "keyfile": "configs/gcp-credentials.json",
+    "ssml": true,
+    "neural": true,
+    "gain": true,
+    "pitch": true,
+    "speed": true
+}
