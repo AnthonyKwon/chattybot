@@ -22,7 +22,7 @@ const bufferToStream = (binary) => {
 // Google Cloud Text-to-Speech Engine Class
 class GcpTts {
     constructor(locale, type, gender, speed, pitch, volumeGain) {
-        this._client = new GcpTtsExt.TextToSpeechClient({ projectId: config.projectId, keyFilename: path.join(__dirname, '../../configs/gcp-credentials.json') });
+        this._client = new GcpTtsExt.TextToSpeechClient({ projectId: config.projectId, keyFilename: path.join(path.dirname(require.main.filename), 'configs/gcp-credentials.json') });
         this._request = {
             input: { text: 'Hello world! This is a test sentence for TTS engine. If you heard this and not an geek programmer, it might be something wrong.' },
             voice: { languageCode: locale, name: type, ssmlGender: gender },
@@ -54,12 +54,14 @@ class GcpTts {
 }
 class GcpTtsBasic extends GcpTts {
     constructor() {
-        super('ko', 'ko-Standard-A', 'NEUTRAL', '1.0', '0.0', '0.0');
+        //TODO: get parameters properly
+        super('ko-KR', 'ko-KR-Standard-A', 'NEUTRAL', '1.0', '0.0', '0.0');
     }
 }
 class GcpTtsWaveNet extends GcpTts {
     constructor() {
-        super('ko', 'ko-Wavenet-A', 'NEUTRAL', '1.0', '0.0', '0.0');
+        //TODO: get parameters properly
+        super('ko-KR', 'ko-KR-Wavenet-A', 'NEUTRAL', '1.0', '0.0', '0.0');
     }
 }
 
