@@ -6,7 +6,8 @@ const logger = require(path.join(path.dirname(require.main.filename), 'modules',
 const i18n = require('../i18n/main.mod.js');
 
 const client = new Client({ intents: [
-    GatewayIntentBits.Guilds
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildVoiceStates
 ]});
 
 client.once(Events.ClientReady, c => {
@@ -37,6 +38,6 @@ async function init() {
     await client.login(config.token);
 }
 
-module.exports = { 
+module.exports = {
     init
 };
