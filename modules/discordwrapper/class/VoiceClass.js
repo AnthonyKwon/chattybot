@@ -51,8 +51,7 @@ class VoiceClass {
             guildId: channel.guild.id,
             adapterCreator: channel.guild.voiceAdapterCreator
         });
-        // upstream made some weird change, so we can't check connection status
-        //await voice.entersState(this._connection, voice.VoiceConnectionStatus.Ready, 5_000);
+        await voice.entersState(this._connection, voice.VoiceConnectionStatus.Ready, 5_000);
 
         // set speaking status to none
         this._connection.setSpeaking(0);

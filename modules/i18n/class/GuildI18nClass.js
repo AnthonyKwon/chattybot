@@ -8,8 +8,8 @@ class GuildI18nClass {
         // read guild locale file
         const locData = readGuildLocaleFile();
         // test if current guild set own locale
-        if (locData[guildId])  this._locale = locData[guildId];  // set to guild's own locale
-        else  this._locale = config.defaultLocale;  // set to default locale defined in configuration
+        if (locData && locData[guildId])  this._locale = locData[guildId];  // set to guild's own locale
+        else this._locale = config.defaultLocale;  // set to default locale defined in configuration
         this.guildId = guildId;
     }
 

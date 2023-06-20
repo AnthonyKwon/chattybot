@@ -41,7 +41,7 @@ function SlashCommandRegister(token, client) {
             // The put method is used to fully refresh all commands in the guild with the current set
             const data = await rest.put(
                 Routes.applicationCommands(client.user.id),
-                { body: commandList },
+                { body: commandList }
             );
 
             logger.verbose('discord.js', `Successfully reloaded ${data.length} application (/) commands.`);
