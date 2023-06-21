@@ -1,13 +1,11 @@
-const path = require('node:path');
 const { SlashCommandBuilder } = require('discord.js');
 const i18n = require('../modules/i18n/main.mod.js');
-const package = require(path.join(path.dirname(require.main.filename), 'package.json'));
+const package = require('../package.json');
+const config = require('../modules/config.js');
 
 async function commandHandler(interaction) {
-    // get guild-specific locale
-    const locale = interaction.guild.i18n.locale;
-    let reply = i18n.get(locale, 'message.info.maintenance').format(interaction.client.user) + '\n';
-    reply += i18n.get(locale, 'message.info').format(interaction.client.user, package.version, package.repository.url);
+    let reply = i18n.get(config.locale, 'message.info.maintenance').format(interaction.client.user) + '\n';
+    reply += i18n.get(config.locale, 'message.info').format(interaction.client.user, package.version, package.repository.url);
     interaction.editReply(reply);
 }
 

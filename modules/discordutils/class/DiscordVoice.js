@@ -1,21 +1,24 @@
 const voice = require('@discordjs/voice');
 
-class VoiceClass {
+class DiscordVoice {
     constructor(guildId) {
         this._guildId = guildId;
-        this._tts = undefined;
     }
 
-    // get channel id
-    get channel() {
+    // (getter) return if object connected into voice channel
+    get connected() {
         // get bot's current voice connection on guild
-        const connection = voice.getVoiceConnection(this.guildId);
-        return connection.joinConfig.channelId;
+        const connection = voice.getVoiceConnection(this._guildId);
+        return connection ? true : false;
     }
-    
-    // get-set TTS class
-    get TTS()  { return this._tts; }
-    set TTS(value)  { this._tts = value; }
+
+    // (getter) return current joined channel id
+    get channelId() {
+        // get bot's current voice connection on guild
+        const connection = voice.getVoiceConnection(this._guildId);
+        // return channel id if available, if not, return undefined
+        return connection ? connection.joinConfig.channelId : undefined;
+    }
 
     // join into specified voice channel
     async join(channel) {
@@ -25,27 +28,24 @@ class VoiceClass {
             guildId: channel.guild.id,
             adapterCreator: channel.guild.voiceAdapterCreator
         });
+        // wait until connected to voice channel
         await voice.entersState(connection, voice.VoiceConnectionStatus.Ready, 5_000);
-
         // set speaking status to none
         connection.setSpeaking(0);
-
-        return true;
     }
 
     // play voice stream to voice channel
     play(stream) {
         // get bot's current voice connection on guild
-        const connection = voice.getVoiceConnection(this.guildId);
-
-        //TODO: check if bot joined voice channel first
-        if (!connection) return false;
-
+        const connection = voice.getVoiceConnection(this._guildId);
+        // check if bot joined voice channel first
+        if (!connection) return;
+        
+        // create audio player and resource
         const player = voice.createAudioPlayer({ behaviors: { noSubscriber: voice.NoSubscriberBehavior.Stop }});
         const resource = voice.createAudioResource(stream, { inputType: voice.StreamType.OggOpus });
-
-        connection.subscribe(player);
-        player.play(resource);
+        connection.subscribe(player);  // link player to connection
+        player.play(resource);  // play audio
 
         return voice.entersState(player, voice.AudioPlayerStatus.Playing, 5_000);
     }
@@ -53,14 +53,12 @@ class VoiceClass {
     // leave from currently joined voice channel
     async leave() {
         // get bot's current voice connection on guild
-        const connection = voice.getVoiceConnection(this.guildId);
-
-        //TODO: check if bot joined voice channel first
-        if (!connection) return false;
-
+        const connection = voice.getVoiceConnection(this._guildId);
+        // check if bot joined voice channel first
+        if (!connection) return;
+        // destroy(disconnect) current connection
         connection.destroy();
-        return true;
     }
 }
 
-module.exports = VoiceClass;
+module.exports = DiscordVoice;
