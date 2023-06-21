@@ -37,14 +37,14 @@ async function commandHandler(interaction) {
     // check if bot already joined to same channel
     if (voice.channelId === channel.id) {
         logger.error('discord.js', 'Failed to join voice channel: user tried to join bot into same channel currently in!');
-        interaction.editReply(i18n.get(config.locale, 'error.discord.same_channel'));
+        interaction.editReply(i18n.get(config.locale, 'error.discord.voice.already_joined'));
         return;
     }
     // check if bot has permission to join target channel
     const permissions = channel.permissionsFor(interaction.client.user);
     if (!permissions.has(PermissionsBitField.Flags.Connect) || !permissions.has(PermissionsBitField.Flags.Speak)) {
         logger.error('discord.js', `Failed to join voice channel: bot does not have permission to access channel ${channel.id}!`);
-        interaction.editReply(i18n.get(locale, 'error.discord.bot_no_permission'));
+        interaction.editReply(i18n.get(locale, 'error.discord.voice.no_permission'));
         return;
     }
 
