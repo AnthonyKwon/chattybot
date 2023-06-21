@@ -86,6 +86,5 @@ module.exports = {
                                          .setDescription(i18n.get('en-US', 'command.say.opt1.desc'))
                                          .setDescriptionLocalizations(i18n.get('command.say.opt1.desc'))
                                          .setRequired(true)),
-    extra: { },
     execute: commandHandler
 }
