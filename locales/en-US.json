@@ -25,6 +25,7 @@
     ],
     "message.discord.voice.joined": ":loud_sound: Joined **{0}** channel.",
     "message.discord.voice.left": ":loud_sound: :wave: Left **{0}** channel.",
+    "error.discord.tts.text_too_long": ":loud_sound:  :page_with_curl: Text too long. Write within {0} letter(s).",
     "message.info": [
         ":information_source: {0} Discord TTS bot **version {1}**",
         ":scroll: This program is licensed under the GNU General Public License, version 2.",

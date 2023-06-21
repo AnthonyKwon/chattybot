@@ -3,5 +3,6 @@
     "inviteLink": "paste-your-bot-link-here",
     "locale": "en-US",
     "status": "purrr...",
+    "ttsMaxLength": "500",
     "ttsProvider": "GcpTtsWaveNet"
 }

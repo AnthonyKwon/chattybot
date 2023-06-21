@@ -42,6 +42,13 @@ function messageFix(interaction, content) {
 async function commandHandler(interaction) {
     let voice = new DiscordVoice(interaction.guild.id);
 
+    // check if message text length is less than 1000
+    const text = interaction.options.getString(i18n.get('en-US', 'command.say.opt1.name'));
+    if (text.length > config.ttsMaxLength) {
+        interaction.editReply(i18n.get(config.locale, 'error.discord.tts.text_too_long').format(config.ttsMaxLength));
+        return;
+    }
+
     // check if bot joined to the voice channel and join if not
     if (!voice.connected) {
         voice = await join.execute(interaction);
@@ -52,7 +59,6 @@ async function commandHandler(interaction) {
     let tts = TTSClass.get(interaction.guild.id);
     if (!tts) tts = await TTSClass.create(interaction.guild.id, 'GcpTtsWaveNet');
     /* Fix message for TTS-readable */
-    const text = interaction.options.getString(i18n.get('en-US', 'command.say.opt1.name'));
     const fixedText = await messageFix(interaction, text);
     logger.warn('tts', `Message ${text} will be spoken as ${fixedText}.`);
     try {
