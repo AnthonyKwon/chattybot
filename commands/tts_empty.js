@@ -25,6 +25,5 @@ module.exports = {
         .setNameLocalizations(i18n.get('command.empty.name'))
         .setDescription(i18n.get('en-US', 'command.empty.desc'))
         .setDescriptionLocalizations(i18n.get('command.empty.desc')),
-    extra: { },
     execute: commandHandler
 }
