@@ -28,7 +28,7 @@
     "message.info": [
         ":information_source: {0} Discord TTS bot **version {1}**",
         ":scroll: This program is licensed under the GNU General Public License, version 2.",
-        ":scroll: **License information:** https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html",
+        ":scroll: **License information:** <https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html>",
         ":floppy_disk: **Repository:** {2}"
     ],
     "message.info.maintenance": ":tools: Currently running as **maintenance mode**.",

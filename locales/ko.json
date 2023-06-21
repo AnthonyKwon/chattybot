@@ -28,7 +28,7 @@
     "message.info": [
         ":information_source: {0} 디스코드 TTS 봇 **버전 {1}**",
         ":scroll: 본 프로그램은 GNU 일반 공중 사용 허가서 2.0을 따릅니다.",
-        ":scroll: **라이선스 정보:** <http://korea.gnu.org/documents/copyleft/gpl.ko.html>",
+        ":scroll: **라이선스 정보:** <https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html>",
         ":floppy_disk: **레포지토리:** <{2}>"
     ],
     "message.info.maintenance": ":tools: 현재 **점검 모드**로 실행 중입니다.",
