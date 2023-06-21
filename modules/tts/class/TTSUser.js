@@ -4,6 +4,7 @@ const getGuildUsername = (guild, userId) => {
     return username.split('_').join(' ');
 }
 
+//TODO: change this class to type
 class TTSUserClass {
     constructor(discordUser, guild=undefined) {
         this._id = discordUser.id;

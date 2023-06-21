@@ -1,7 +1,7 @@
 const TTSMap = new Map();
 
-// get Subclass dynamically
-const getSubClass = name => {
+// get provider subclass dynamically
+const getProvider = name => {
     const fs = require('fs');
     const path = require('path');
     const scripts = fs.readdirSync(__dirname).filter(file => file.match('^.*TtsProvider\.js$'));
@@ -18,17 +18,16 @@ const getSubClass = name => {
     }
 }
 
-class TTSClass {
-    constructor(type, queue=undefined) {
+class TextToSpeech {
+    constructor(providerId, queue=undefined) {
         this._prevQueue = undefined; // previous message queue
         this._queue = queue;
-        this._busy = false; // bot speaking check flag
-        this._type = getSubClass(type); // TTS type
+        this._provider = getProvider(providerId); // TTS provider
     }
 
     // (static) create TTS object from guild
     static create(guildId, type, queue=undefined) {
-        const TTSobject = new TTSClass(type, queue);
+        const TTSobject = new TextToSpeech(type, queue);
         TTSMap.set(guildId, TTSobject);
         return TTSobject;
     }
@@ -45,6 +44,7 @@ class TTSClass {
     }
 
     // (getter,setter) Queue: Get/Set an queue array
+    //TODO: create TTSUser and TTSQueue type on typescript transform
     async addQueue(ttsUser, message) {
         // If queue is not initialize, initialize it first
         if (!this._queue) this._queue = [];
@@ -54,44 +54,35 @@ class TTSClass {
                 content: message 
             });
         // if TTS is not speaking, make it speak
-        if (this._speaking === false) await this.speak();
+        //if (this._speaking === false) await this.speak();
     }
-    get queue() {
-        return this._queue;
-    }
-
+    get queue()  { return this._queue; }
     // (getter,setter) Type: Get/Set an type of TTS engine
-    get type() {
-        return this._type;
-    }
-    set type(value) {
-        this._type = new ClassMap[value];
-    }
+    get provider()  { return this._provider; }
 
-    // (getter) return TTS busy checker
-    get isBusy()  { return this._busy; }
+    // request TTS provider to synthesize and stream to callback
+    requestSpeak(voiceCallback) {
+        // check if queue if empty (prevent simultaneous execution)
+        if (this.queue.length > 1) return;
+        return this.speak(voiceCallback);
+    }
 
     // Speak as TTS: call specified TTS engine and read text (in queue)
-    async speak() {
-        this._busy = true; // set speaking marker to true
-        let stream = [];
+    async speak(voiceCallback) {
         do {
             // check if previous speaker and current speaker in queue is same (will decide to speak header)
-            const willSpeakHeader = true;
-            if (this.prevQueue && this._prevQueue.author.id == this.queue[0].author.id)
+            let willSpeakHeader = true;
+            if (this._prevQueue && this._prevQueue.author.id == this.queue[0].author.id)
                 willSpeakHeader = false;
 
-            // generate speech and add to array
-            stream.push(await this._type.speak(this._queue[0], willSpeakHeader));
+            // generate speech and send it to voice callback
+            const stream = await this._provider.speak(this._queue[0], willSpeakHeader);
+            await voiceCallback(stream);
             
             // shift queue array and save previous queue to other variable (for author comparison)
             this._prevQueue = this._queue.shift();
         } while(this._queue.length > 0);
-
-        this._busy = false; // set busy marker to false
-        // return array of stream
-        return stream;
     }
 }
 
-module.exports = TTSClass;
+module.exports = TextToSpeech;

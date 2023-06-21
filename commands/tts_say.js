@@ -51,7 +51,7 @@ async function commandHandler(interaction) {
 
     /* If TTS is not initalized, do it first */
     let tts = TTSClass.get(interaction.guild.id);
-    if (!tts) tts = TTSClass.create(interaction, 'GcpTtsWaveNet');
+    if (!tts) tts = TTSClass.create(interaction.guild.id, 'GcpTtsWaveNet');
     /* Fix message for TTS-readable */
     const text = interaction.options.getString(i18n.get('en-US', 'command.say.opt1.name'));
     const fixedText = await messageFix(interaction, text);
@@ -60,11 +60,13 @@ async function commandHandler(interaction) {
         /* Send message and TTS to discord */
         interaction.editReply(i18n.get(config.locale, 'tts.speak.text').format(interaction.user, text));
         tts.addQueue(new TTSUser(interaction.user, interaction.guild), fixedText);
-        let result = undefined;
-        if (!tts.isBusy) result = await tts.speak();
-        for (audio of result) {
-            await voice.play(audio);
+        const voiceCallback = async function(stream) {
+            // play audio stream
+            const player = await voice.play(stream);
+            // wait until player finish playing stream
+            await new Promise(resolve => player.on('stateChange', () => resolve()));
         }
+        await tts.requestSpeak(voiceCallback);
         logger.verbose('tts', `${interaction.user} spoken: ${text}`);
     } catch(err) {
         const result = report(err, interaction.user.id);
