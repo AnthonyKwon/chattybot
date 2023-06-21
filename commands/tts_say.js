@@ -6,8 +6,9 @@ const common = require(path.join(path.dirname(require.main.filename), 'modules',
 const i18n = require(path.join(path.dirname(require.main.filename), 'modules', 'i18n', 'main.mod.js'));
 const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
 const report = require(path.join(path.dirname(require.main.filename), 'modules', 'errorreport', 'main.mod.js'));
-const TTSClass = require(path.join(path.dirname(require.main.filename), 'modules', 'tts', 'class', 'TTSClass'));
-const VoiceClass = require('../modules/discordwrapper/class/VoiceClass.js');
+const TTSClass = require('../modules/tts/class/TextToSpeech.js');
+const TTSUser = require('../modules/tts/class/TTSUser.js');
+const DiscordVoice = require('../modules/discordwrapper/class/DiscordVoice.js');
 
 const regexMention = /<(#|@!)[0-9]{18}>/g;
 const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~<>\#\\\=\(]/gi;
@@ -41,7 +42,7 @@ function messageFix(interaction, content) {
 
 async function commandHandler(interaction) {
     const locale = interaction.guild.i18n.locale;
-    let voice = new VoiceClass(interaction.guild.id);
+    let voice = new DiscordVoice(interaction.guild.id);
 
     // check if bot joined to the voice channel and join if not
     if (!voice.connected) {
@@ -51,7 +52,7 @@ async function commandHandler(interaction) {
 
     /* If TTS is not initalized, do it first */
     let tts = TTSClass.get(interaction.guild.id);
-    if (!tts) tts = TTSClass.create(interaction.guild.id, interaction, 'GcpTtsWaveNet');
+    if (!tts) tts = TTSClass.create(interaction, 'GcpTtsWaveNet');
     /* Fix message for TTS-readable */
     const text = interaction.options.getString(i18n.get('en-US', 'command.say.opt1.name'));
     const fixedText = await messageFix(interaction, text);
@@ -59,7 +60,7 @@ async function commandHandler(interaction) {
     try {
         /* Send message and TTS to discord */
         interaction.editReply(i18n.get(locale, 'tts.speak.text').format(interaction.user, text));
-        tts.addQueue(interaction.user, fixedText);
+        tts.addQueue(new TTSUser(interaction.user, interaction.guild), fixedText);
         let result = undefined;
         if (!tts.isBusy) result = await tts.speak();
         for (audio of result) {

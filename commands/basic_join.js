@@ -3,7 +3,7 @@ const { PermissionsBitField, SlashCommandBuilder } = require('discord.js');
 const i18n = require(path.join(path.dirname(require.main.filename), 'modules', 'i18n', 'main.mod.js'));
 const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
 const report = require(path.join(path.dirname(require.main.filename), 'modules', 'errorreport', 'main.mod.js'));
-const VoiceClass = require(path.join(path.dirname(require.main.filename), 'modules', 'discordwrapper', 'class', 'VoiceClass'));
+const DiscordVoice = require('../modules/discordwrapper/class/DiscordVoice.js');
 
 async function commandHandler(interaction) {
     const locale = interaction.guild.i18n.locale;
@@ -49,7 +49,7 @@ async function commandHandler(interaction) {
 
     // try to join voice channel w/ provided channel id or used joined
     try {
-        const voice = new VoiceClass(interaction.guild.id);
+        const voice = new DiscordVoice(interaction.guild.id);
         interaction.client.voice.session.set(interaction.guild.id, voice); // add voice object to voice session map
         const result = await voice.join(channel);
         logger.verbose('discord.js', `Joined voice channel ${channel.id}.`);
