@@ -1,14 +1,13 @@
-const path = require('node:path');
 const util = require('node:util');
 const { SlashCommandBuilder } = require('discord.js');
 const join = require('./basic_join.js');
-const common = require(path.join(path.dirname(require.main.filename), 'modules', 'common.js'));
-const i18n = require(path.join(path.dirname(require.main.filename), 'modules', 'i18n', 'main.mod.js'));
-const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
-const report = require(path.join(path.dirname(require.main.filename), 'modules', 'errorreport', 'main.mod.js'));
+const common = require('../modules/common.js');
+const i18n = require('../modules/i18n/main.mod.js');
+const logger = require('../modules/logger/main.mod.js');
+const report = require('../modules/errorreport/main.mod.js');
 const TTSClass = require('../modules/tts/class/TextToSpeech.js');
 const TTSUser = require('../modules/tts/class/TTSUser.js');
-const DiscordVoice = require('../modules/discordwrapper/class/DiscordVoice.js');
+const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
 const config = require('../modules/config.js');
 
 const regexMention = /<(#|@!)[0-9]{18}>/g;

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
+const logger = require('../logger/main.mod.js');
 
 /**
  * i18n.get(): get i18n string from id

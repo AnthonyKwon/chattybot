@@ -1,6 +1,5 @@
-const path = require('node:path');
 const { SlashCommandBuilder } = require('discord.js');
-const DiscordVoice = require('../modules/discordwrapper/class/DiscordVoice.js');
+const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const config = require('../modules/config.js');
 

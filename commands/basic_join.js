@@ -1,9 +1,8 @@
-const path = require('node:path');
 const { PermissionsBitField, SlashCommandBuilder } = require('discord.js');
-const i18n = require(path.join(path.dirname(require.main.filename), 'modules', 'i18n', 'main.mod.js'));
-const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
-const report = require(path.join(path.dirname(require.main.filename), 'modules', 'errorreport', 'main.mod.js'));
-const DiscordVoice = require('../modules/discordwrapper/class/DiscordVoice.js');
+const i18n = require('../modules/i18n/main.mod.js');
+const logger = require('../modules/logger/main.mod.js');
+const report = require('../modules/errorreport/main.mod.js');
+const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
 const config = require('../modules/config.js');
 
 async function commandHandler(interaction) {
