@@ -54,14 +54,14 @@ async function commandHandler(interaction) {
         const result = await voice.join(channel);
         logger.verbose('discord.js', `Joined voice channel ${channel.id}.`);
         interaction.editReply(i18n.get(locale, 'message.discord.voice.joined').format(voice.channel.name));
+        return voice;
     } catch(err) {
         const result = report(err, interaction.user.id);
         logger.error('discord.js', `Error occured while joining voice channel:\n  ${err.stack}\n`);
         // send error message to discord channel
         interaction.editReply(i18n.get(locale, 'error.generic').format(result));
-        return false;
+        return undefined;
     }
-    return true;
 }
 
 module.exports = {
