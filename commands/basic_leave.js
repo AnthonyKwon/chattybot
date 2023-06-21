@@ -1,11 +1,11 @@
 const path = require('node:path');
 const { SlashCommandBuilder } = require('discord.js');
-const VoiceClass = require('../modules/discordwrapper/class/VoiceClass');
+const DiscordVoice = require('../modules/discordwrapper/class/DiscordVoice.js');
 const i18n = require(path.join(path.dirname(require.main.filename), 'modules', 'i18n', 'main.mod.js'));
 
 async function commandHandler(interaction) {
     const locale = interaction.guild.i18n.locale;
-    const voice = new VoiceClass(interaction.guild.id);
+    const voice = new DiscordVoice(interaction.guild.id);
     
     // If not joined to voice channel, show error message
     if (!voice) {

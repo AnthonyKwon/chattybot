@@ -1,23 +1,22 @@
 const path = require('node:path');
 const { SlashCommandBuilder } = require('discord.js');
-const i18n = require(path.join(path.dirname(require.main.filename), 'modules', 'i18n', 'main.mod.js'));
-const TTSClass = require(path.join(path.dirname(require.main.filename), 'modules', 'tts', 'class', 'TTSClass'));
-const VoiceClass = require('../modules/discordwrapper/class/VoiceClass.js');
+const i18n = require('../modules/i18n/main.mod.js');
+const TextToSpeech = require('../modules/tts/class/TextToSpeech.js');
+const DiscordVoice = require('../modules/discordwrapper/class/DiscordVoice.js');
 
 async function commandHandler(interaction) {
     const locale = interaction.guild.i18n.locale;
-    /* This command only can be used after TTS is initialized */
-    const voice = new VoiceClass(interaction.guild.id);
-    const tts = TTSClass.get(interaction.guild.id);
+    // This command only can be used after TTS is initialized
+    const voice = new DiscordVoice(interaction.guild.id);
+    const tts = TextToSpeech.get(interaction.guild.id);
     if (!voice.connected || !tts) {
         interaction.editReply(i18n.get(locale, 'error.discord.voice.not_joined'));
         return;
     }
 
-    /* Re-initialize TTSClass with empty queue */
-    //voice.TTS = new TTSClass('GcpTtsWaveNet', TTSClass.genQueueArr(undefined, i18n.get(locale, 'speak.tts_queue.empty')));
-    TTSClass.delete(interaction.guild.id);
-    /* Notify to user */
+    // Re-initialize TTSClass with empty queue
+    TextToSpeech.delete(interaction.guild.id);
+    // Notify to user
     interaction.editReply(i18n.get(locale, 'message.tts_queue.empty'));
 }
 

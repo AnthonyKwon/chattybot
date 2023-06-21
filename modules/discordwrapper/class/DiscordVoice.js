@@ -1,6 +1,6 @@
 const voice = require('@discordjs/voice');
 
-class VoiceClass {
+class DiscordVoice {
     constructor(guildId) {
         this._guildId = guildId;
     }
@@ -60,4 +60,4 @@ class VoiceClass {
     }
 }
 
-module.exports = VoiceClass;
+module.exports = DiscordVoice;
