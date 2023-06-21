@@ -1,8 +1,8 @@
 const GcpTtsExt = require('@google-cloud/text-to-speech');
 const path = require('node:path');
 const { Readable } = require('node:stream');
-const config = require(path.join(path.dirname(require.main.filename), 'modules', 'config.js'));
-const i18n = require(path.join(path.dirname(require.main.filename), 'modules', 'i18n', 'main.mod.js'));
+const config = require('../../config.js');
+const i18n = require('../../i18n/main.mod.js');
 
 /*
  * @param binary Buffer

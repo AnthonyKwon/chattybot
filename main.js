@@ -1,5 +1,5 @@
 const { Client, Events, GatewayIntentBits } = require('discord.js');
-const slash = require('./modules/discordwrapper/slashCommand.js');
+const slash = require('./modules/discordutils/slashCommand.js');
 const config = require('./modules/config.js');
 const i18n = require('./modules/i18n/main.mod.js');
 const logger = require('./modules/logger/main.mod.js');
