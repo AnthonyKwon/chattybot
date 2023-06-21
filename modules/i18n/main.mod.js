@@ -2,8 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
 
-const GuildI18n = require('./class/GuildI18nClass.js');
-
 /**
  * i18n.get(): get i18n string from id
  * this function uses dynamic arguments: locale and id
@@ -69,4 +67,4 @@ function getAll(id) {
     return result;
 }
 
-module.exports = { GuildI18n, get, test }
+module.exports = { get, test }

@@ -8,9 +8,6 @@ async function commandHandler(interaction) {
     const commands = interaction.client.commands;
     const requestedCommand = interaction.options.getString(i18n.get('en-US', 'command.help.opt1.name'));
 
-    // get guild-specific locale
-    const locale = interaction.guild.i18n.locale;
-
     // test if user requested for specific-command help
     if (requestedCommand) {
         // show help page for specific command
@@ -28,10 +25,9 @@ async function commandHandler(interaction) {
     } else {
         // show help page for all commands
         const commandList = Array.from(commands.keys());
-        console.log();
-        interaction.editReply(i18n.get(locale, 'message.help.all').format(commandList.join(', '),
-                                commands.get(i18n.get('en-US', 'command.help.name')).data.name_localizations[locale],
-                                i18n.get(locale, 'command.help.opt1.desc')));
+        interaction.editReply(i18n.get(config.locale, 'message.help.all').format(commandList.join(', '),
+                                commands.get(i18n.get('en-US', 'command.help.name')).data.name_localizations[config.locale],
+                                i18n.get(config.locale, 'command.help.opt1.desc')));
     }
 }
 

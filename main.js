@@ -28,11 +28,6 @@ client.once(Events.ClientReady, c => {
 
     // load registered slash commands
     slash.load(c);
-
-    // set localization per guild (WIP)
-    c.guilds.cache.forEach(guild => {
-        guild.i18n = new i18n.GuildI18n(guild.id);
-    });
 });
 
 client.on(Events.InteractionCreate, interaction => {
