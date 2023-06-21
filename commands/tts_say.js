@@ -14,7 +14,7 @@ const regexMention = /<(#|@!)[0-9]{18}>/g;
 const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~<>\#\\\=\(]/gi;
 
 function messageFix(interaction, content) {
-    /* replace raw mention id to discord mention */
+    // replace raw mention id to discord mention
     let finalMsg = content.replace(regexMention, (match, $1) => {
         let id = common.replaceAll(match, /[<>]/g, '');
         if (id.includes('@!')) {
@@ -28,13 +28,13 @@ function messageFix(interaction, content) {
         }
     });
 
-    /* Replace TTS unreadable charater to whitespace */
+    // Replace TTS unreadable charater to whitespace
     finalMsg = common.replaceAll(finalMsg, '@', i18n.get('tts.replacement.@'));
 
-    /* Replace TTS unreadable charater to whitespace */
+    // Replace TTS unreadable charater to whitespace
     finalMsg = common.replaceAll(finalMsg, '&', i18n.get('tts.replacement.&'));
 
-    /* Replace TTS unreadable charater to whitespace */
+    // Replace TTS unreadable charater to whitespace
     finalMsg = common.replaceAll(finalMsg, regExSpecial, ' ');
     return finalMsg;
 }
@@ -55,14 +55,14 @@ async function commandHandler(interaction) {
         if (!voice) return; // join failed, stop function
     }
 
-    /* If TTS is not initalized, do it first */
+    // If TTS is not initalized, do it first
     let tts = TTSClass.get(interaction.guild.id);
     if (!tts) tts = await TTSClass.create(interaction.guild.id, 'GcpTtsWaveNet');
-    /* Fix message for TTS-readable */
+    // Fix message for TTS-readable
     const fixedText = await messageFix(interaction, text);
-    logger.warn('tts', `Message ${text} will be spoken as ${fixedText}.`);
+    if (fixedText !== text) logger.warn('tts', `Message ${text} will be spoken as ${fixedText}.`);
     try {
-        /* Send message and TTS to discord */
+        // Send message and TTS to discord
         interaction.editReply(i18n.get(config.locale, 'tts.speak.text').format(interaction.user, text));
         tts.addQueue(new TTSUser(interaction.user, interaction.guild), fixedText);
         const voiceCallback = async function(stream) {
