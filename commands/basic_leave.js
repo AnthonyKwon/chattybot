@@ -1,24 +1,22 @@
 const path = require('node:path');
 const { SlashCommandBuilder } = require('discord.js');
+const VoiceClass = require('../modules/discordwrapper/class/VoiceClass');
 const i18n = require(path.join(path.dirname(require.main.filename), 'modules', 'i18n', 'main.mod.js'));
 
 async function commandHandler(interaction) {
     const locale = interaction.guild.i18n.locale;
+    const voice = new VoiceClass(interaction.guild.id);
+    
     // If not joined to voice channel, show error message
-    if (!interaction.client.voice.session.get(interaction.guild.id)) {
+    if (!voice) {
         interaction.reply(i18n.get(locale, 'error.discord.voice.not_joined'));
         return;
     }
-    const voice = interaction.client.voice.session.get(interaction.guild.id);
-    const response = await voice.leave();
-    if (response) {
-        interaction.editReply(i18n.get(locale, 'message.discord.voice.left').format(voice.channel.name));
-        interaction.client.voice.session.delete(interaction.guild.id);
-    } else {
-        /* Is there a case that failed to leave voice channel? */
-        throw new Error();
-    }
-    return;
+
+    // leave from voice channel
+    const channel = interaction.client.channels.cache.get(voice.channelId);
+    await voice.leave();
+    interaction.editReply(i18n.get(locale, 'message.discord.voice.left').format(channel.name));
 }
 
 module.exports = {

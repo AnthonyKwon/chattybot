@@ -12,12 +12,11 @@ class VoiceClass {
         return connection ? true : false;
     }
 
-    // get channel id
-    get channel() {
+    // (getter) return current joined channel id
+    get channelId() {
         // get bot's current voice connection on guild
         const connection = voice.getVoiceConnection(this._guildId);
-        //return connection.joinConfig.channelId;
-        return 0;
+        return connection.joinConfig.channelId;
     }
 
     // join into specified voice channel
@@ -28,28 +27,24 @@ class VoiceClass {
             guildId: channel.guild.id,
             adapterCreator: channel.guild.voiceAdapterCreator
         });
+        // wait until connected to voice channel
         await voice.entersState(connection, voice.VoiceConnectionStatus.Ready, 5_000);
-
         // set speaking status to none
         connection.setSpeaking(0);
-
-        return true;
     }
 
     // play voice stream to voice channel
     play(stream) {
         // get bot's current voice connection on guild
         const connection = voice.getVoiceConnection(this._guildId);
+        // check if bot joined voice channel first
+        if (!connection) return;
         
-        //TODO: check if bot joined voice channel first
-        if (!connection) return false;
-
-
+        // create audio player and resource
         const player = voice.createAudioPlayer({ behaviors: { noSubscriber: voice.NoSubscriberBehavior.Stop }});
         const resource = voice.createAudioResource(stream, { inputType: voice.StreamType.OggOpus });
-
-        connection.subscribe(player);
-        player.play(resource);
+        connection.subscribe(player);  // link player to connection
+        player.play(resource);  // play audio
 
         return voice.entersState(player, voice.AudioPlayerStatus.Playing, 5_000);
     }
@@ -58,12 +53,10 @@ class VoiceClass {
     async leave() {
         // get bot's current voice connection on guild
         const connection = voice.getVoiceConnection(this._guildId);
-
-        //TODO: check if bot joined voice channel first
-        if (!connection) return false;
-
+        // check if bot joined voice channel first
+        if (!connection) return;
+        // destroy(disconnect) current connection
         connection.destroy();
-        return true;
     }
 }
 

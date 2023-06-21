@@ -53,7 +53,7 @@ async function commandHandler(interaction) {
         interaction.client.voice.session.set(interaction.guild.id, voice); // add voice object to voice session map
         const result = await voice.join(channel);
         logger.verbose('discord.js', `Joined voice channel ${channel.id}.`);
-        interaction.editReply(i18n.get(locale, 'message.discord.voice.joined').format(voice.channel.name));
+        interaction.editReply(i18n.get(locale, 'message.discord.voice.joined').format(channel.name));
         return voice;
     } catch(err) {
         const result = report(err, interaction.user.id);
