@@ -26,8 +26,9 @@ class TextToSpeech {
     }
 
     // (static) create TTS object from guild
-    static create(guildId, type, queue=undefined) {
+    static async create(guildId, type, queue=undefined) {
         const TTSobject = new TextToSpeech(type, queue);
+        await TTSobject._provider.init();
         TTSMap.set(guildId, TTSobject);
         return TTSobject;
     }

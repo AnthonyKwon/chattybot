@@ -21,11 +21,13 @@ const bufferToStream = (binary) => {
 
 // Google Cloud Text-to-Speech Engine Class
 class GcpTts {
-    constructor(locale, type, gender, speed, pitch, volumeGain) {
+    constructor(locale, type, speed, pitch, volumeGain) {
         this._client = new GcpTtsExt.TextToSpeechClient({ projectId: config.projectId, keyFilename: path.join(path.dirname(require.main.filename), 'configs/gcp-credentials.json') });
+        this._locale = locale;
+        this._type = type;
         this._request = {
             input: { text: 'Hello world! This is a test sentence for TTS engine. If you heard this and not an geek programmer, it might be something wrong.' },
-            voice: { languageCode: locale, name: type, ssmlGender: gender },
+            voice: { languageCode: 'ko-KR', name: 'ko-KR-Standard-A', ssmlGender: 'NEUTRAL' },
             audioConfig: { audioEncoding: 'OGG_OPUS', speakingRate: speed, pitch: pitch, volumeGainDb: volumeGain }
         };
     }
@@ -38,14 +40,27 @@ class GcpTts {
         return true;
     }
 
-    async speak(message, readAuthor=true) {
-        /* If message author or channel is different or authorId is not system(0), send TTS w/ prefix. */
-        if (readAuthor) {
-            this._request.input = { ssml: '<speak><prosody pitch="-3st">' + i18n.get('ko', 'tts.speak.prefix')
-                .format(message.author.name) + '</prosody><break time="0.5s"/>' + message.content + '</speak>' };
-        } else {
-            this._request.input = { text: message.content };
-        }
+    // TTS initalization function
+    // this function must be defined
+    async init() {
+        // get voice list of Google Cloud TTS
+        const voiceList = await this._client.listVoices();
+        // looking for matching voice profile with current bot setting
+        const currentVoice = voiceList[0].voices.find(voice =>
+            voice.languageCodes[0].includes(this._locale) &&
+            voice.name.includes(this._type) &&
+            voice.ssmlGender.toLowerCase() === config.gender.toLowerCase()
+            );
+        // set current voice to matched voice profile
+        this._request.voice.languageCode = currentVoice.languageCodes[0];
+        this._request.voice.name = currentVoice.name;
+        this._request.voice.ssmlGender = currentVoice.ssmlGender;
+    }
+
+    async speak(message) {
+        // If message author or channel is different or authorId is not system(0), send TTS w/ prefix.
+        this._request.input = { ssml: '<speak><prosody pitch="-3st">' + i18n.get(config.locale, 'tts.speak.prefix')
+            .format(await message.author.getUsername()) + '</prosody><break time="0.5s"/>' + message.content + '</speak>' };
         
         const [response] = await this._client.synthesizeSpeech(this._request);
         /* Google sends response as buffer. We need to convert it as ReadableStream. */
@@ -55,12 +70,12 @@ class GcpTts {
 }
 class GcpTtsBasic extends GcpTts {
     constructor() {
-        super('ko-KR', 'ko-KR-Standard-A', 'NEUTRAL', '1.0', '0.0', '0.0');
+        super(config.locale, 'Standard', '1.0', '0.0', '0.0');
     }
 }
 class GcpTtsWaveNet extends GcpTts {
     constructor() {
-        super('ko-KR', 'ko-KR-Wavenet-A', 'NEUTRAL', '1.0', '0.0', '0.0');
+        super(config.locale, 'Wavenet', '1.0', '0.0', '0.0');
     }
 }
 
