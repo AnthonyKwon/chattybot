@@ -1,7 +1,7 @@
 const { Collection, REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
-const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
+const logger = require('../logger/main.mod.js');
 
 const commandsPath = path.join(path.dirname(require.main.filename), 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
