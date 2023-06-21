@@ -3,6 +3,7 @@
     "inviteLink": "paste-your-bot-link-here",
     "locale": "en-US",
     "status": "purrr...",
+    "ttsGender": "female",
     "ttsMaxLength": "500",
     "ttsProvider": "GcpTtsWaveNet"
 }
