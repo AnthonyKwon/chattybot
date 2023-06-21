@@ -50,7 +50,7 @@ async function commandHandler(interaction) {
 
     /* If TTS is not initalized, do it first */
     let tts = TTSClass.get(interaction.guild.id);
-    if (!tts) tts = TTSClass.create(interaction.guild.id, 'GcpTtsWaveNet');
+    if (!tts) tts = await TTSClass.create(interaction.guild.id, 'GcpTtsWaveNet');
     /* Fix message for TTS-readable */
     const text = interaction.options.getString(i18n.get('en-US', 'command.say.opt1.name'));
     const fixedText = await messageFix(interaction, text);
