@@ -60,7 +60,7 @@ class GcpTts {
     async speak(message, readAuthor=true) {
         // If message author or channel is different or authorId is not system(0), send TTS w/ prefix.
         if (readAuthor) {
-            this._request.input = { ssml: '<speak><prosody pitch="-3st">' + i18n.get('ko', 'tts.speak.prefix')
+            this._request.input = { ssml: '<speak><prosody pitch="-3st">' + i18n.get(config.locale, 'tts.speak.prefix')
                 .format(await message.author.getUsername()) + '</prosody><break time="0.5s"/>' + message.content + '</speak>' };
         } else {
             this._request.input = { text: message.content };
