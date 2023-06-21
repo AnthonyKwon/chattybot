@@ -49,7 +49,7 @@ class GcpTts {
         const currentVoice = voiceList[0].voices.find(voice =>
             voice.languageCodes[0].includes(this._locale) &&
             voice.name.includes(this._type) &&
-            voice.ssmlGender.toLowerCase() === config.gender.toLowerCase()
+            voice.ssmlGender.toLowerCase() === config.ttsGender.toLowerCase()
             );
         // set current voice to matched voice profile
         this._request.voice.languageCode = currentVoice.languageCodes[0];
