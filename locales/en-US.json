@@ -8,7 +8,7 @@
     "command.leave.name": "leave",
     "command.leave.desc": "Leave from the currently joined voice channel.",
     "command.empty.name": "clear",
-    "command.empty.desc": "Reset and clear Text-to-speech engine.",
+    "command.empty.desc": "Reset and clear Text-to-speech engine. Currently speaking text will not stopped.",
     "command.say.name": "say",
     "command.say.desc": "Speak entered text into voice channel.",
     "command.say.opt1.name": "text",
@@ -18,6 +18,7 @@
     "error.discord.voice.no_permission": ":loud_sound: :octagonal_sign: I don't have permission to join in **{0}**!",
     "error.discord.voice.not_joined": ":loud_sound: :x: I don't joined in any voice channel now.",
     "error.discord.voice.user_not_found": ":loud_sound:  :no_entry_sign: I can't find {0} in any voice channel. Please join voice channel first.",
+    "error.discord.tts.text_too_long": ":loud_sound:  :page_with_curl: Text too long. Write within {0} letter(s).",
     "error.generic": [
         ":octagonal_sign: Error occured while launching command!",
         "Please send this Error ID to developer.",
@@ -25,7 +26,6 @@
     ],
     "message.discord.voice.joined": ":loud_sound: Joined **{0}** channel.",
     "message.discord.voice.left": ":loud_sound: :wave: Left **{0}** channel.",
-    "error.discord.tts.text_too_long": ":loud_sound:  :page_with_curl: Text too long. Write within {0} letter(s).",
     "message.info": [
         ":information_source: {0} Discord TTS bot **version {1}**",
         ":scroll: This program is licensed under the GNU General Public License, version 2.",
@@ -33,6 +33,7 @@
         ":floppy_disk: **Repository:** {2}"
     ],
     "message.info.maintenance": ":tools: Currently running as **maintenance mode**.",
+    "message.tts_queue.empty": ":loud_sound:  :page_with_curl: Successfully reset Text-to-speech engine!",
     "tts.gender.FEMALE": "FEMALE",
     "tts.gender.MALE": "MALE",
     "tts.gender.NEUTRAL": "NEUTRAL",
