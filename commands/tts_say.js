@@ -9,12 +9,12 @@ const report = require(path.join(path.dirname(require.main.filename), 'modules',
 const TTSClass = require('../modules/tts/class/TextToSpeech.js');
 const TTSUser = require('../modules/tts/class/TTSUser.js');
 const DiscordVoice = require('../modules/discordwrapper/class/DiscordVoice.js');
+const config = require('../modules/config.js');
 
 const regexMention = /<(#|@!)[0-9]{18}>/g;
 const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~<>\#\\\=\(]/gi;
 
 function messageFix(interaction, content) {
-    const locale = interaction.guild.i18n.locale;
     /* replace raw mention id to discord mention */
     let finalMsg = content.replace(regexMention, (match, $1) => {
         let id = common.replaceAll(match, /[<>]/g, '');
@@ -41,7 +41,6 @@ function messageFix(interaction, content) {
 }
 
 async function commandHandler(interaction) {
-    const locale = interaction.guild.i18n.locale;
     let voice = new DiscordVoice(interaction.guild.id);
 
     // check if bot joined to the voice channel and join if not
@@ -59,7 +58,7 @@ async function commandHandler(interaction) {
     logger.warn('tts', `Message ${text} will be spoken as ${fixedText}.`);
     try {
         /* Send message and TTS to discord */
-        interaction.editReply(i18n.get(locale, 'tts.speak.text').format(interaction.user, text));
+        interaction.editReply(i18n.get(config.locale, 'tts.speak.text').format(interaction.user, text));
         tts.addQueue(new TTSUser(interaction.user, interaction.guild), fixedText);
         let result = undefined;
         if (!tts.isBusy) result = await tts.speak();
@@ -70,7 +69,7 @@ async function commandHandler(interaction) {
     } catch(err) {
         const result = report(err, interaction.user.id);
         logger.verbose('tts', `Error occured while synthesizing:\n  ${err.stack}\n`);
-        interaction.editReply(i18n.get(locale, 'error.generic').format(result));
+        interaction.editReply(i18n.get(config.locale, 'error.generic').format(result));
     }
     return;
 }

@@ -4,9 +4,9 @@ const i18n = require(path.join(path.dirname(require.main.filename), 'modules', '
 const logger = require(path.join(path.dirname(require.main.filename), 'modules', 'logger', 'main.mod.js'));
 const report = require(path.join(path.dirname(require.main.filename), 'modules', 'errorreport', 'main.mod.js'));
 const DiscordVoice = require('../modules/discordwrapper/class/DiscordVoice.js');
+const config = require('../modules/config.js');
 
 async function commandHandler(interaction) {
-    const locale = interaction.guild.i18n.locale;
     // define channelId variable and get from option (if available)
     let channel = interaction.options.getString(i18n.get('en-US', 'command.join.opt1.name'));
 
@@ -17,7 +17,7 @@ async function commandHandler(interaction) {
         if (!channel) {
             // channel is not valid
             logger.error('discord.js', 'Failed to join voice channel: unknown channel id');
-            interaction.editReply(i18n.get(locale, 'error.discord.unknown_channel'));
+            interaction.editReply(i18n.get(config.locale, 'error.discord.unknown_channel'));
             return false;
         }
     }
@@ -28,7 +28,7 @@ async function commandHandler(interaction) {
     else if (!channel && !interaction.member.voice.channel) {
         // user does not provided any channel id, neither joined any voice channel, show error and exit
         logger.error('discord.js', 'Failed to join voice channel: channel id not provided');
-        interaction.editReply(i18n.get(locale, 'error.discord.voice.user_not_found').format(interaction.user));
+        interaction.editReply(i18n.get(config.locale, 'error.discord.voice.user_not_found').format(interaction.user));
         return false;
     }
 
@@ -36,7 +36,7 @@ async function commandHandler(interaction) {
     const currSession = interaction.client.voice.session.get(interaction.guild.id);
     if (currSession && currSession.channel === channel.id) {
         logger.error('discord.js', 'Failed to join voice channel: user tried to join bot into same channel currently in!');
-        interaction.editReply(i18n.get(locale, 'error.discord.same_channel'));
+        interaction.editReply(i18n.get(config.locale, 'error.discord.same_channel'));
         return false;
     }
     // check if bot has permission to join target channel
@@ -53,13 +53,13 @@ async function commandHandler(interaction) {
         interaction.client.voice.session.set(interaction.guild.id, voice); // add voice object to voice session map
         const result = await voice.join(channel);
         logger.verbose('discord.js', `Joined voice channel ${channel.id}.`);
-        interaction.editReply(i18n.get(locale, 'message.discord.voice.joined').format(channel.name));
+        interaction.editReply(i18n.get(config.locale, 'message.discord.voice.joined').format(channel.name));
         return voice;
     } catch(err) {
         const result = report(err, interaction.user.id);
         logger.error('discord.js', `Error occured while joining voice channel:\n  ${err.stack}\n`);
         // send error message to discord channel
-        interaction.editReply(i18n.get(locale, 'error.generic').format(result));
+        interaction.editReply(i18n.get(config.locale, 'error.generic').format(result));
         return undefined;
     }
 }
