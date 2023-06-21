@@ -1,7 +1,6 @@
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const slash = require('./modules/discordutils/slashCommand.js');
 const config = require('./modules/config.js');
-const i18n = require('./modules/i18n/main.mod.js');
 const logger = require('./modules/logger/main.mod.js');
 const package = require('./package.json');
 
@@ -16,9 +15,7 @@ const client = new Client({ intents: [
 
 client.once(Events.ClientReady, c => {
     // create voice session map
-    //TODO: this implemented in discord.js side, remove it
     logger.info('discord.js', `Connected to ${client.user.username}!`);
-    c.voice.session = new Map();
     c.user.setActivity(`${config.status} — /help`);
 
     // register slash commands
