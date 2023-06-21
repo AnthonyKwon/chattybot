@@ -1,7 +1,7 @@
 {
     "token": "paste_your_token_here",
-    "inviteLink": "https://discord.com/api/oauth2/authorize?client_id=645933319787380736&permissions=3145728&scope=bot",
-    "defaultLocale": "en-US",
+    "inviteLink": "paste-your-bot-link-here",
+    "locale": "en-US",
     "status": "purrr...",
     "ttsProvider": "GcpTtsWaveNet"
 }
