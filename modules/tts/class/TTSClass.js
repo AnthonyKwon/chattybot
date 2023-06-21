@@ -1,4 +1,4 @@
-const { on } = require('events');
+const TTSMap = new Map();
 
 // get Subclass dynamically
 const getSubClass = name => {
@@ -28,11 +28,9 @@ class TTSClass {
     constructor(message, type, queue=undefined, waitForFinish=true) {
         this._client = message.client;
         this._guild = message.guild;
-        this._voice = message.client.voice.session.get(message.guild.id);
-
-        this._lastAuthor = undefined; // last message sender
+        this._prevQueue = undefined; // previous message queue
         this._queue = queue;
-        this._speaking = false; // bot speaking check flag
+        this._busy = false; // bot speaking check flag
         this._type = getSubClass(type); // TTS type
         this._waitForFinish = waitForFinish; // decide wait or inturrupt when next message has received while speaking 
     }
@@ -55,7 +53,25 @@ class TTSClass {
         return queueArr;
     }
 
-    // Get/Set Queue: Get/Set an queue array
+    // (static) create TTS object from guild
+    static create(guildId, message, type, queue=undefined, waitForFinish=true) {
+        const TTSobject = new TTSClass(message, type, queue, waitForFinish);
+        TTSMap.set(guildId, TTSobject);
+        return TTSobject;
+    }
+
+    // (static) get TTS object from guild
+    static get(guildId) {
+        const TTSobject = TTSMap.get(guildId);
+        return TTSobject;
+    }
+
+    // (static) delete TTS object from guild
+    static delete(guildId) {
+        TTSMap.delete(guildId);
+    }
+
+    // (getter,setter) Queue: Get/Set an queue array
     async addQueue(author, message) {
         // If queue is not initialize, initialize it first
         if (!this._queue) this._queue = [];
@@ -74,7 +90,7 @@ class TTSClass {
         return this._queue;
     }
 
-    // Get/Set Type: Get/Set an type of TTS engine
+    // (getter,setter) Type: Get/Set an type of TTS engine
     get type() {
         return this._type;
     }
@@ -82,24 +98,29 @@ class TTSClass {
         this._type = new ClassMap[value];
     }
 
+    // (getter) return TTS busy checker
+    get isBusy()  { return this._busy; }
+
     // Speak as TTS: call specified TTS engine and read text (in queue)
     async speak() {
-        this._speaking = true;
+        this._busy = true; // set speaking marker to true
+        let stream = [];
         do {
-            // If message author or channel has changed, send TTS with prefix
-            let stream = undefined;
-            if (this._lastAuthor !== this._queue[0].author.id)
-                stream = await this._type.speak(this._queue[0], true);
-            else stream = await this._type.speak(this._queue[0], false);
-            this._lastAuthor = this._queue[0].author.id;
-            const result = await this._voice.play(stream, { type: 'ogg/opus' });
-            //TODO: check if result got return value false (failed to play audio)
-            /* await until voice.play finishes (https://stackoverflow.com/a/43084615) */
-            if (this._waitForFinish === true) await on(result, 'idle');
-            this._queue.shift();
-        } while(this._queue.length > 0)
-        this._speaking = false;
-        return;
+            // check if previous speaker and current speaker in queue is same (will decide to speak header)
+            const willSpeakHeader = true;
+            if (this.prevQueue && this._prevQueue.author.id == this.queue[0].author.id)
+                willSpeakHeader = false;
+
+            // generate speech and add to array
+            stream.push(await this._type.speak(this._queue[0], willSpeakHeader));
+            
+            // shift queue array and save previous queue to other variable (for author comparison)
+            this._prevQueue = this._queue.shift();
+        } while(this._queue.length > 0);
+
+        this._busy = false; // set busy marker to false
+        // return array of stream
+        return stream;
     }
 }
 

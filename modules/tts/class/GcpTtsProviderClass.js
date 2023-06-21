@@ -46,6 +46,7 @@ class GcpTts {
         } else {
             this._request.input = { text: message.content };
         }
+        
         const [response] = await this._client.synthesizeSpeech(this._request);
         /* Google sends response as buffer. We need to convert it as ReadableStream. */
         const stream = bufferToStream(response.audioContent);
@@ -54,12 +55,12 @@ class GcpTts {
 }
 class GcpTtsBasic extends GcpTts {
     constructor() {
-        super('ko', 'ko-Standard-A', 'NEUTRAL', '1.0', '0.0', '0.0');
+        super('ko-KR', 'ko-KR-Standard-A', 'NEUTRAL', '1.0', '0.0', '0.0');
     }
 }
 class GcpTtsWaveNet extends GcpTts {
     constructor() {
-        super('ko', 'ko-Wavenet-A', 'NEUTRAL', '1.0', '0.0', '0.0');
+        super('ko-KR', 'ko-KR-Wavenet-A', 'NEUTRAL', '1.0', '0.0', '0.0');
     }
 }
 
