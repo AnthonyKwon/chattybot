@@ -16,7 +16,8 @@ class DiscordVoice {
     get channelId() {
         // get bot's current voice connection on guild
         const connection = voice.getVoiceConnection(this._guildId);
-        return connection.joinConfig.channelId;
+        // return channel id if available, if not, return undefined
+        return connection ? connection.joinConfig.channelId : undefined;
     }
 
     // join into specified voice channel

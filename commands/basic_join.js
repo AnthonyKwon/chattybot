@@ -17,7 +17,7 @@ async function commandHandler(interaction) {
             // channel is not valid
             logger.error('discord.js', 'Failed to join voice channel: unknown channel id');
             interaction.editReply(i18n.get(config.locale, 'error.discord.unknown_channel'));
-            return false;
+            return;
         }
     }
     else if (!channel && interaction.member.voice.channel) {
@@ -28,29 +28,29 @@ async function commandHandler(interaction) {
         // user does not provided any channel id, neither joined any voice channel, show error and exit
         logger.error('discord.js', 'Failed to join voice channel: channel id not provided');
         interaction.editReply(i18n.get(config.locale, 'error.discord.voice.user_not_found').format(interaction.user));
-        return false;
+        return;
     }
 
+    // create voice object of current guild
+    const voice = new DiscordVoice(interaction.guild.id);
+
     // check if bot already joined to same channel
-    const currSession = interaction.client.voice.session.get(interaction.guild.id);
-    if (currSession && currSession.channel === channel.id) {
+    if (voice.channelId === channel.id) {
         logger.error('discord.js', 'Failed to join voice channel: user tried to join bot into same channel currently in!');
         interaction.editReply(i18n.get(config.locale, 'error.discord.same_channel'));
-        return false;
+        return;
     }
     // check if bot has permission to join target channel
     const permissions = channel.permissionsFor(interaction.client.user);
     if (!permissions.has(PermissionsBitField.Flags.Connect) || !permissions.has(PermissionsBitField.Flags.Speak)) {
         logger.error('discord.js', `Failed to join voice channel: bot does not have permission to access channel ${channel.id}!`);
         interaction.editReply(i18n.get(locale, 'error.discord.bot_no_permission'));
-        return false;
+        return;
     }
 
     // try to join voice channel w/ provided channel id or used joined
     try {
-        const voice = new DiscordVoice(interaction.guild.id);
-        interaction.client.voice.session.set(interaction.guild.id, voice); // add voice object to voice session map
-        const result = await voice.join(channel);
+        await voice.join(channel);
         logger.verbose('discord.js', `Joined voice channel ${channel.id}.`);
         interaction.editReply(i18n.get(config.locale, 'message.discord.voice.joined').format(channel.name));
         return voice;
@@ -59,7 +59,7 @@ async function commandHandler(interaction) {
         logger.error('discord.js', `Error occured while joining voice channel:\n  ${err.stack}\n`);
         // send error message to discord channel
         interaction.editReply(i18n.get(config.locale, 'error.generic').format(result));
-        return undefined;
+        return;
     }
 }
 
@@ -74,6 +74,5 @@ module.exports = {
                                          .setDescription(i18n.get('en-US', 'command.join.opt1.desc'))
                                          .setDescriptionLocalizations(i18n.get('command.join.opt1.desc'))
                                          .setRequired(false)),
-    extra: { },
     execute: commandHandler
 }
