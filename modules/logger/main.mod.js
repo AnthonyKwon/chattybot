@@ -23,8 +23,7 @@ const winston = require('winston');
 });
 
 // test if development mode is set
-if (process.env.NODE_ENV == "maintenance") {
-    logger.maintenance = true;
+if (process.env.NODE_ENV == "development") {
     logger.add(new winston.transports.Console({ 
         format: winston.format.combine(
             winston.format.colorize(),
@@ -33,7 +32,6 @@ if (process.env.NODE_ENV == "maintenance") {
         level: 'verbose'
     }));
 } else {
-    logger.isMAINTENANCE = false;
     logger.add(new winston.transports.Console({
         format: winston.format.combine(
             winston.format.colorize(),
