@@ -26,7 +26,7 @@ client.once(Events.ClientReady, async c => {
     }
 
     // set bot activity message
-    c.user.setActivity(`${config.status} — /help`);
+    c.user.setActivity(`${config.status} — /say`);
 
     // register slash commands
     //TODO: cache command data and register only when updated
