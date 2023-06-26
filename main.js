@@ -16,6 +16,16 @@ const client = new Client({ intents: [
 client.once(Events.ClientReady, c => {
     // create voice session map
     logger.info('discord.js', `Connected to ${client.user.username}!`);
+
+    // check if user launched bot to unregister commands
+    if (process.env.UNREGISTER_SLASH == 'yes') {
+        // unregister slash commands
+        logger.warn('discord.js', 'Unregistering slash commands...');
+        slash.register(config.token, c, true);
+        process.exit();
+    }
+
+    // set bot activity message
     c.user.setActivity(`${config.status} — /help`);
 
     // register slash commands
