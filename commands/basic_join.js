@@ -30,10 +30,10 @@ async function commandHandler(interaction) {
         interaction.editReply(i18n.get(config.locale, 'error.discord.voice.user_not_found').format(interaction.user));
         return;
     }
-
+    
     // create voice object of current guild
     const voice = new DiscordVoice(interaction.guild.id);
-
+    
     // check if bot already joined to same channel
     if (voice.channelId === channel.id) {
         logger.error('discord.js', 'Failed to join voice channel: user tried to join bot into same channel currently in!');
@@ -42,12 +42,12 @@ async function commandHandler(interaction) {
     }
     // check if bot has permission to join target channel
     const permissions = channel.permissionsFor(interaction.client.user);
-    if (!permissions.has(PermissionsBitField.Flags.Connect) || !permissions.has(PermissionsBitField.Flags.Speak)) {
+    if (!permissions.has(PermissionsBitField.Flags.Connect) || !permissions.has(PermissionsBitField.Flags.Speak) || !channel.joinable) {
         logger.error('discord.js', `Failed to join voice channel: bot does not have permission to access channel ${channel.id}!`);
         interaction.editReply(i18n.get(config.locale, 'error.discord.voice.no_permission').format(channel));
         return;
     }
-
+    
     // try to join voice channel w/ provided channel id or used joined
     try {
         await voice.join(channel);
