@@ -13,9 +13,19 @@ const client = new Client({ intents: [
     GatewayIntentBits.GuildVoiceStates
 ]});
 
-client.once(Events.ClientReady, c => {
+client.once(Events.ClientReady, async c => {
     // create voice session map
     logger.info('discord.js', `Connected to ${client.user.username}!`);
+
+    // check if user launched bot to unregister commands
+    if (process.env.UNREGISTER_SLASH == 'yes') {
+        // unregister slash commands
+        logger.warn('discord.js', 'Unregistering slash commands...');
+        await client.application.commands.set([]);
+        process.exit();
+    }
+
+    // set bot activity message
     c.user.setActivity(`${config.status} — /help`);
 
     // register slash commands
