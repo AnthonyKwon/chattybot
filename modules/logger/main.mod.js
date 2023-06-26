@@ -7,7 +7,7 @@ const winston = require('winston');
     format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json(),
-        winston.format.printf(info => `{"timestamp":"${info.timestamp}", "topic":"${info.topic}", "level":"${info.level}", "message":"${info.message}"}`)
+        winston.format.printf(info => `{"timestamp":"${info.timestamp}", "topic":"${logger.topic}", "level":"${info.level}", "message":"${info.message}"}`)
     ),
     topic: undefined,
     transports: [
@@ -28,7 +28,7 @@ if (process.env.NODE_ENV == "development") {
         format: winston.format.combine(
             winston.format.colorize(),
             winston.format.cli(),
-            winston.format.printf(info => `${info.timestamp} - ${info.level}/${info.topic || logger.topic}: ${info.message}`)),
+            winston.format.printf(info => `${info.timestamp} - ${info.level}/${logger.topic}: ${info.message}`)),
         level: 'verbose'
     }));
 } else {
@@ -36,7 +36,7 @@ if (process.env.NODE_ENV == "development") {
         format: winston.format.combine(
             winston.format.colorize(),
             winston.format.cli(),
-            winston.format.printf(info => `${info.timestamp} - ${info.level}/${info.topic}: ${info.message}`)),
+            winston.format.printf(info => `${info.timestamp} - ${info.level}/${logger.topic}: ${info.message}`)),
         level: 'warn'
     }));
 }
