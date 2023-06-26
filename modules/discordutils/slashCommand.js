@@ -22,13 +22,18 @@ function SlashCommandLoader(client) {
     }
 }
 
-// register slash command
-function SlashCommandRegister(token, client) {
-    const commandList = [];
-    for (const file of commandFiles) {
-        const filePath = path.join(commandsPath, file);
-        const command = require(filePath);
-        commandList.push(command.data.toJSON());
+// register/unregister slash command
+function SlashCommandRegister(token, client, unregister=false) {
+    let commandList = undefined;
+    // check if user going to register command
+    if (unregister === false) {
+        commandList = [];
+        // get command list from files
+        for (const file of commandFiles) {
+            const filePath = path.join(commandsPath, file);
+            const command = require(filePath);
+            commandList.push(command.data.toJSON());
+        }
     }
 
     const rest = new REST({ version: '10' }).setToken(token);
