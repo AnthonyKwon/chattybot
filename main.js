@@ -13,7 +13,7 @@ const client = new Client({ intents: [
     GatewayIntentBits.GuildVoiceStates
 ]});
 
-client.once(Events.ClientReady, c => {
+client.once(Events.ClientReady, async c => {
     // create voice session map
     logger.info('discord.js', `Connected to ${client.user.username}!`);
 
@@ -21,7 +21,7 @@ client.once(Events.ClientReady, c => {
     if (process.env.UNREGISTER_SLASH == 'yes') {
         // unregister slash commands
         logger.warn('discord.js', 'Unregistering slash commands...');
-        slash.register(config.token, c, true);
+        await client.application.commands.set([]);
         process.exit();
     }
 
