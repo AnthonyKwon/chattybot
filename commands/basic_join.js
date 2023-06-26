@@ -44,7 +44,7 @@ async function commandHandler(interaction) {
     const permissions = channel.permissionsFor(interaction.client.user);
     if (!permissions.has(PermissionsBitField.Flags.Connect) || !permissions.has(PermissionsBitField.Flags.Speak)) {
         logger.error('discord.js', `Failed to join voice channel: bot does not have permission to access channel ${channel.id}!`);
-        interaction.editReply(i18n.get(locale, 'error.discord.voice.no_permission').format(channel));
+        interaction.editReply(i18n.get(config.locale, 'error.discord.voice.no_permission').format(channel));
         return;
     }
 
