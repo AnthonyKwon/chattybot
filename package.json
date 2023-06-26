@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "node .",
-    "debug": "NODE_ENV=development nodemon --inspect .",
+    "dev": "npm run development",
+    "development": "NODE_ENV=development nodemon --inspect .",
     "unregister": "UNREGISTER_SLASH=yes node ."
   },
   "repository": {
