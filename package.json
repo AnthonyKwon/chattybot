@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "node .",
-    "debug": "NODE_ENV=maintenance nodemon --inspect ."
+    "debug": "NODE_ENV=maintenance nodemon --inspect .",
+    "unregister": "UNREGISTER_SLASH=yes node ."
   },
   "repository": {
     "type": "git",
