@@ -50,8 +50,4 @@ function getAll(id) {
     }
 }
 
-function test() {
-    //
-}
-
-module.exports = { get, getAll, test };
+module.exports = { get, getAll };
