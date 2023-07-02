@@ -9,14 +9,14 @@ async function commandHandler(interaction) {
     const voice = new DiscordVoice(interaction.guild.id);
     const tts = TextToSpeech.get(interaction.guild.id);
     if (!voice.connected || !tts) {
-        interaction.editReply(i18n.get(config.locale, 'error.discord.voice.not_joined'));
+        interaction.editReply(i18n.get(interaction.locale, 'error.discord.voice.not_joined'));
         return;
     }
 
     // Re-initialize TTSClass with empty queue
     TextToSpeech.delete(interaction.guild.id);
     // Notify to user
-    interaction.editReply(i18n.get(config.locale, 'message.tts_queue.empty'));
+    interaction.editReply(i18n.get(interaction.locale, 'message.tts_queue.empty'));
 }
 
 module.exports = {
