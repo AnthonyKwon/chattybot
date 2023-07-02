@@ -21,6 +21,7 @@ const getProvider = name => {
 class TextToSpeech {
     constructor(providerId, queue=undefined) {
         this._prevQueue = undefined; // previous message queue
+        this._locale = 'ko-KR';
         this._queue = queue;
         this._provider = getProvider(providerId); // TTS provider
     }
@@ -28,7 +29,7 @@ class TextToSpeech {
     // (static) create TTS object from guild
     static async create(guildId, type, queue=undefined) {
         const TTSobject = new TextToSpeech(type, queue);
-        await TTSobject._provider.init();
+        await TTSobject._provider.init(TTSobject._locale);
         TTSMap.set(guildId, TTSobject);
         return TTSobject;
     }

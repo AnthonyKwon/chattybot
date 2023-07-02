@@ -73,13 +73,13 @@ class GcpTts {
     }
 }
 class GcpTtsBasic extends GcpTts {
-    constructor() {
-        super(config.locale, 'Standard', '1.0', '0.0', '0.0');
+    constructor(locale) {
+        super(locale, 'Standard', '1.0', '0.0', '0.0');
     }
 }
 class GcpTtsWaveNet extends GcpTts {
-    constructor() {
-        super(config.locale, 'Wavenet', '1.0', '0.0', '0.0');
+    constructor(locale) {
+        super(locale, 'Wavenet', '1.0', '0.0', '0.0');
     }
 }
 
