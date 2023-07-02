@@ -84,13 +84,13 @@ async function commandHandler(interaction) {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName(i18n.get('en-US', 'command.say.name'))
-        .setNameLocalizations(i18n.get('command.say.name'))
+        .setNameLocalizations(i18n.getAll('command.say.name'))
         .setDescription(i18n.get('en-US', 'command.say.desc'))
-        .setDescriptionLocalizations(i18n.get('command.say.desc'))
+        .setDescriptionLocalizations(i18n.getAll('command.say.desc'))
         .addStringOption(option => option.setName(i18n.get('en-US', 'command.say.opt1.name'))
-                                         .setNameLocalizations(i18n.get('command.say.opt1.name'))
+                                         .setNameLocalizations(i18n.getAll('command.say.opt1.name'))
                                          .setDescription(i18n.get('en-US', 'command.say.opt1.desc'))
-                                         .setDescriptionLocalizations(i18n.get('command.say.opt1.desc'))
+                                         .setDescriptionLocalizations(i18n.getAll('command.say.opt1.desc'))
                                          .setRequired(true)),
     execute: commandHandler
 }

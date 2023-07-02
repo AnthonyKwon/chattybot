@@ -15,9 +15,9 @@ async function commandHandler(interaction) {
 module.exports = { 
     data: new SlashCommandBuilder()
         .setName(i18n.get('en-US', 'command.info.name'))
-        .setNameLocalizations(i18n.get('command.info.name'))
+        .setNameLocalizations(i18n.getAll('command.info.name'))
         .setDescription(i18n.get('en-US', 'command.info.desc'))
-        .setDescriptionLocalizations(i18n.get('command.info.desc')),
+        .setDescriptionLocalizations(i18n.getAll('command.info.desc')),
     extra: { ephemeral: true },
     execute: commandHandler
 }

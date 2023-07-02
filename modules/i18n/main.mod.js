@@ -1,70 +1,57 @@
-const fs = require('fs');
-const path = require('path');
 const logger = require('../logger/main.mod.js');
+const cache = require('./cache.js');
+const file = require('./file.js');
 
-/**
- * i18n.get(): get i18n string from id
- * this function uses dynamic arguments: locale and id
- */
- function get(args) {
-    if (arguments.length === 1) {
-        // redirect to getAll() function. argument: id
-        return getAll(arguments[0]);
-    } else if (arguments.length === 2) {
-        // redirect to getSingle() function. argument: locale, id
-        return getSingle(arguments[0], arguments[1]);
-    } else {
-        // invalid argument provided, throw error
-        throw new Error('InvalidArgumentError');
-    }
-}
-
-/**
- * test function: this will exposed to outside
- * test if specified string available
- */
-function test(locale, string) {
+// get locale data
+function getLocaleData(locale) {
+    let localeData = undefined;
     try {
-        // read locale file
-        const localeData = JSON.parse(fs.readFileSync(path.join(path.dirname(require.main.filename), 'locales', `${locale}.json`)));
-        // test if file contains string
-        if (Object.values(localeData).includes(string)) return true;  // file has it
-        else return false;  // file doesn't have it
-    } catch (err) {
-        logger.error('i18n', `Failed to check if localized command name avaliable:\n${err.stack}`);
-        return false;
+        // check if cache already have locale
+        if (cache.has(locale)) {
+            // cache have locale. get from cache
+            localeData = cache.get(locale);
+        } else {
+            // cache doesn't have locale. get from file and register to cache
+            localeData = file.read(locale);
+            cache.save(locale, localeData);
+        }
+        return localeData;
+    } catch (error) {
+        //TODO: implement errorreport
+        logger.error('i18n', `Error occured while getting locale data:\n${error}`);
     }
 }
 
-// get localized string from id
-function getSingle(locale, id) {
-    try {
-        // read locale file
-        const localeData = JSON.parse(fs.readFileSync(path.join(path.dirname(require.main.filename), 'locales', `${locale}.json`)));
-        // test if field is multi-lined
-        if (Array.isArray(localeData[id])) return localeData[id].join('\n');  // multi-line field
-        else if (typeof localeData[id] === 'string') return localeData[id];  // single-line field
-        else return `${locale}:${id}`;
-    } catch (err) {
-        logger.error('i18n', `Failed to parse string from id:\n${err.stack}`);
-    }
+// get locale string from id
+function get(locale, id) {
+    const localeData = getLocaleData(locale);
+
+    // return field to requested function
+    // multi-lined field, return as all lines joined 
+    if (Array.isArray(localeData[id])) return localeData[id].join('\n');
+    // single lined, return data as is
+    else if (typeof localeData[id] === 'string') return localeData[id];
+    // data non-existant, return dummy text instead
+    else return `${locale}:${id}`;
 }
 
+// get all locale string from id
+// cache is not used in this function as caching is not reliable in here,
+// and this is not used that much.
 function getAll(id) {
-    // read locales directory
-    const localeFiles = fs.readdirSync(path.join(path.dirname(require.main.filename), 'locales')).filter(file => file.endsWith('.json'));
-    const result = {};
-
-    for (const file of localeFiles) {
-         // get current locale from filename
-        const locale = path.basename(file, path.extname(file));
-        // get string and assign to object
-        const localizedString = getSingle(locale, id);
-        if (localizedString === `${locale}:${id}`)  continue;  // skip if result is invalid
-        const newResult = { [locale]: localizedString };
-        Object.assign(result, newResult);
+    try {
+        // redirect to file.readAll() function
+        return file.readAll(id);
+    } catch (error) {
+        //TODO: implement errorreport
+        logger.error('i18n', `Error occured while getting locale data:\n${error}`);
+        // return dummmy locale data
+        return { 'en-US': 'undefined' };
     }
-    return result;
 }
 
-module.exports = { get, test }
+function test() {
+    //
+}
+
+module.exports = { get, getAll, test };
