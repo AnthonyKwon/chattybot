@@ -45,7 +45,7 @@ async function commandHandler(interaction) {
     // check if message text length is less than 1000
     const text = interaction.options.getString(i18n.get('en-US', 'command.say.opt1.name'));
     if (text.length > config.ttsMaxLength) {
-        interaction.editReply(i18n.get(config.locale, 'error.discord.tts.text_too_long').format(config.ttsMaxLength));
+        interaction.editReply(i18n.get(interaction.locale, 'error.discord.tts.text_too_long').format(config.ttsMaxLength));
         return;
     }
 
@@ -63,7 +63,7 @@ async function commandHandler(interaction) {
     if (fixedText !== text) logger.warn('tts', `Message ${text} will be spoken as ${fixedText}.`);
     try {
         // Send message and TTS to discord
-        interaction.editReply(i18n.get(config.locale, 'tts.speak.text').format(interaction.user, text));
+        interaction.editReply(i18n.get(interaction.locale, 'tts.speak.text').format(interaction.user, text));
         tts.addQueue(new TTSUser(interaction.user, interaction.guild), fixedText);
         const voiceCallback = async function(stream) {
             // play audio stream
@@ -76,7 +76,7 @@ async function commandHandler(interaction) {
     } catch(err) {
         const result = report(err, interaction.user.id);
         logger.verbose('tts', `Error occured while synthesizing:\n  ${err.stack}\n`);
-        interaction.editReply(i18n.get(config.locale, 'error.generic').format(result));
+        interaction.editReply(i18n.get(interaction.locale, 'error.generic').format(result));
     }
     return;
 }

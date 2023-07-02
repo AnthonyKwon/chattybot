@@ -6,9 +6,9 @@ const config = require('../modules/config.js');
 async function commandHandler(interaction) {
     let reply = '';
     // add maintenance message to reply
-    if (process.env.NODE_ENV == "development") reply += i18n.get(config.locale, 'message.info.maintenance').format(interaction.client.user) + '\n';
+    if (process.env.NODE_ENV == "development") reply += i18n.get(interaction.locale, 'message.info.maintenance').format(interaction.client.user) + '\n';
     // set reply message
-    reply += i18n.get(config.locale, 'message.info').format(interaction.client.user, package.version, package.repository.url);
+    reply += i18n.get(interaction.locale, 'message.info').format(interaction.client.user, package.version, package.repository.url);
     interaction.editReply(reply);
 }
 
