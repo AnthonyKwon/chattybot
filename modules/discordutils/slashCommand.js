@@ -63,8 +63,7 @@ async function SlashCommandHandler(interaction) {
 
 	try {
         // defer reply and wait for command to write any message
-        const isEphemeral = (command.extra && command.extra.ephemeral) || false;
-        await interaction.deferReply({ ephemeral: isEphemeral });
+        await interaction.deferReply({ ephemeral: true });
         // launch command
 		await command.execute(interaction);
 	} catch (error) {
