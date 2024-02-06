@@ -21,13 +21,12 @@ const bufferToStream = (binary) => {
 
 // Google Cloud Text-to-Speech Engine Class
 class GcpTts {
-    constructor(locale, type, speed, pitch, volumeGain) {
+    constructor(type, speed, pitch, volumeGain) {
         this._client = new GcpTtsExt.TextToSpeechClient({ projectId: config.projectId, keyFilename: path.join(path.dirname(require.main.filename), 'configs/gcp-credentials.json') });
-        this._locale = locale;
         this._type = type;
         this._request = {
             input: { text: 'Hello world! This is a test sentence for TTS engine. If you heard this and not an geek programmer, it might be something wrong.' },
-            voice: { languageCode: 'ko-KR', name: 'ko-KR-Standard-A', ssmlGender: 'NEUTRAL' },
+            voice: { languageCode: 'en-US', name: 'en-US-Standard-A', ssmlGender: 'NEUTRAL' },
             audioConfig: { audioEncoding: 'OGG_OPUS', speakingRate: speed, pitch: pitch, volumeGainDb: volumeGain }
         };
     }
@@ -42,12 +41,12 @@ class GcpTts {
 
     // TTS initalization function
     // this function must be defined
-    async init() {
+    async init(locale) {
         // get voice list of Google Cloud TTS
         const voiceList = await this._client.listVoices();
         // looking for matching voice profile with current bot setting
         const currentVoice = voiceList[0].voices.find(voice =>
-            voice.languageCodes[0].includes(this._locale) &&
+            voice.languageCodes[0].includes(locale) &&
             voice.name.includes(this._type) &&
             voice.ssmlGender.toLowerCase() === config.ttsGender.toLowerCase()
             );
@@ -73,13 +72,13 @@ class GcpTts {
     }
 }
 class GcpTtsBasic extends GcpTts {
-    constructor(locale) {
-        super(locale, 'Standard', '1.0', '0.0', '0.0');
+    constructor() {
+        super('Standard', '1.0', '0.0', '0.0');
     }
 }
 class GcpTtsWaveNet extends GcpTts {
-    constructor(locale) {
-        super(locale, 'Wavenet', '1.0', '0.0', '0.0');
+    constructor() {
+        super('Wavenet', '1.0', '0.0', '0.0');
     }
 }
 
