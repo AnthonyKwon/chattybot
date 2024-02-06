@@ -39,9 +39,8 @@ class GcpTts {
         return true;
     }
 
-    // TTS initalization function
-    // this function must be defined
-    async init(locale) {
+    // set locale of the TTS engine vendor
+    async setLocale(locale) {
         // get voice list of Google Cloud TTS
         const voiceList = await this._client.listVoices();
         // looking for matching voice profile with current bot setting
@@ -54,19 +53,21 @@ class GcpTts {
         this._request.voice.languageCode = currentVoice.languageCodes[0];
         this._request.voice.name = currentVoice.name;
         this._request.voice.ssmlGender = currentVoice.ssmlGender;
+        // save current discord locale
+        this._messageLocale = locale;
     }
 
     async speak(message, readAuthor=true) {
         // If message author or channel is different or authorId is not system(0), send TTS w/ prefix.
         if (readAuthor) {
-            this._request.input = { ssml: '<speak><prosody pitch="-3st">' + i18n.get(config.locale, 'tts.speak.prefix')
+            this._request.input = { ssml: '<speak><prosody pitch="-3st">' + i18n.get(this._messageLocale, 'tts.speak.prefix')
                 .format(await message.author.getUsername()) + '</prosody><break time="0.5s"/>' + message.content + '</speak>' };
         } else {
             this._request.input = { text: message.content };
         }
         
         const [response] = await this._client.synthesizeSpeech(this._request);
-        /* Google sends response as buffer. We need to convert it as ReadableStream. */
+        // Google sends response as buffer. We need to convert it as ReadableStream.
         const stream = bufferToStream(response.audioContent);
         return stream;
     }
