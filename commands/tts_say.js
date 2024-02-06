@@ -62,9 +62,11 @@ async function commandHandler(interaction) {
     const fixedText = await messageFix(interaction, text);
     if (fixedText !== text) logger.warn('tts', `Message ${text} will be spoken as ${fixedText}.`);
     try {
+        // get account username (guild username if command used on guild && user has guild-specific username) of the user
+        const user = interaction.member ? interaction.member : interaction.user;
         // Send message and TTS to discord
         interaction.editReply(i18n.get(interaction.locale, 'tts.speak.text').format(interaction.user, text));
-        tts.addQueue(new TTSUser(interaction.user, interaction.guild), interaction.locale, fixedText);
+        tts.addQueue(new TTSUser(user), interaction.locale, fixedText);
         const voiceCallback = async function(stream) {
             // play audio stream
             const player = await voice.play(stream);
