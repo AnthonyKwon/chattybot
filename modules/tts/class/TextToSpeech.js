@@ -21,7 +21,6 @@ const getProvider = name => {
 class TextToSpeech {
     constructor(providerId, queue=undefined) {
         this._prevQueue = undefined; // previous message queue
-        this._locale = 'ko-KR';
         this._queue = queue;
         this._provider = getProvider(providerId); // TTS provider
     }
@@ -29,7 +28,6 @@ class TextToSpeech {
     // (static) create TTS object from guild
     static async create(guildId, type, queue=undefined) {
         const TTSobject = new TextToSpeech(type, queue);
-        await TTSobject._provider.init(TTSobject._locale);
         TTSMap.set(guildId, TTSobject);
         return TTSobject;
     }
@@ -47,13 +45,14 @@ class TextToSpeech {
 
     // (getter,setter) Queue: Get/Set an queue array
     //TODO: create TTSUser and TTSQueue type on typescript transform
-    async addQueue(ttsUser, message) {
+    async addQueue(ttsUser, locale, message) {
         // If queue is not initialize, initialize it first
         if (!this._queue) this._queue = [];
         this._queue.push(
             { 
                 author: ttsUser,
-                content: message 
+                locale: locale,
+                content: message
             });
         // if TTS is not speaking, make it speak
         //if (this._speaking === false) await this.speak();
@@ -72,6 +71,9 @@ class TextToSpeech {
     // Speak as TTS: call specified TTS engine and read text (in queue)
     async speak(voiceCallback) {
         do {
+            // set working locale of current TTS provider
+            await this._provider.setLocale(this.queue[0].locale);
+
             // check if previous speaker and current speaker in queue is same (will decide to speak header)
             let willSpeakHeader = true;
             if (this._prevQueue && this._prevQueue.author.id == this.queue[0].author.id)

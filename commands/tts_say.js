@@ -64,7 +64,7 @@ async function commandHandler(interaction) {
     try {
         // Send message and TTS to discord
         interaction.editReply(i18n.get(interaction.locale, 'tts.speak.text').format(interaction.user, text));
-        tts.addQueue(new TTSUser(interaction.user, interaction.guild), fixedText);
+        tts.addQueue(new TTSUser(interaction.user, interaction.guild), interaction.locale, fixedText);
         const voiceCallback = async function(stream) {
             // play audio stream
             const player = await voice.play(stream);
