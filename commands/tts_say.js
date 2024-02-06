@@ -29,10 +29,10 @@ function messageFix(interaction, content) {
     });
 
     // Replace TTS unreadable charater to whitespace
-    finalMsg = common.replaceAll(finalMsg, '@', i18n.get('tts.replacement.@'));
+    finalMsg = common.replaceAll(finalMsg, '@', i18n.get(interaction.locale, 'tts.replacement.@'));
 
     // Replace TTS unreadable charater to whitespace
-    finalMsg = common.replaceAll(finalMsg, '&', i18n.get('tts.replacement.&'));
+    finalMsg = common.replaceAll(finalMsg, '&', i18n.get(interaction.locale, 'tts.replacement.&'));
 
     // Replace TTS unreadable charater to whitespace
     finalMsg = common.replaceAll(finalMsg, regExSpecial, ' ');
