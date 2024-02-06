@@ -8,21 +8,21 @@ async function commandHandler(interaction) {
     
     // If not joined to voice channel, show error message
     if (!voice) {
-        interaction.reply(i18n.get(config.locale, 'error.discord.voice.not_joined'));
+        interaction.reply(i18n.get(interaction.locale, 'error.discord.voice.not_joined'));
         return;
     }
 
     // leave from voice channel
     const channel = interaction.client.channels.cache.get(voice.channelId);
     await voice.leave();
-    interaction.editReply(i18n.get(config.locale, 'message.discord.voice.left').format(channel));
+    interaction.editReply(i18n.get(interaction.locale, 'message.discord.voice.left').format(channel));
 }
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName(i18n.get('en-US', 'command.leave.name'))
-        .setNameLocalizations(i18n.get('command.leave.name'))
+        .setNameLocalizations(i18n.getAll('command.leave.name'))
         .setDescription(i18n.get('en-US', 'command.leave.desc'))
-        .setDescriptionLocalizations(i18n.get('command.leave.desc')),
+        .setDescriptionLocalizations(i18n.getAll('command.leave.desc')),
     execute: commandHandler
 }
