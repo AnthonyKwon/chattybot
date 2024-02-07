@@ -1,6 +1,7 @@
 const { ChannelType, PermissionsBitField, SlashCommandBuilder } = require('discord.js');
 const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
 const DiscordThread = require('../modules/discordutils/class/DiscordThread.js');
+const threads = require('../modules/discordutils/thread.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const logger = require('../modules/logger/main.mod.js');
 const report = require('../modules/errorreport/main.mod.js');
@@ -80,16 +81,23 @@ async function commandHandler(interaction) {
     
     const voice = new DiscordVoice(interaction.guild.id);  // voice class (of current guild)
     const thread = new DiscordThread(interaction.guild.id);
+
     try {
+        // leave from previous voice channel (if has one)
+        if(voice.connected) await threads.remove(thread);
+
         // try to join voice channel
         voice.locale = interaction.locale;
         await voice.join(channel);
-        logger.verbose('discord.js', `Joined voice channel ${channel}.`);
+
         // send success reply to user
+        logger.verbose('discord.js', `Joined voice channel ${channel}.`);
         interaction.editReply(i18n.get(interaction.locale, 'message.discord.voice.joined').format(channel));
+
         // send a message for starting a thread
         const epoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
         const headupMsg = await interaction.channel.send(`${channel} :ballot_box_with_check: <t:${epoch}:R>`);
+
         // create thread for conversation
         const threadIdRaw = `${interaction.client.user.username}${interaction.user.displayName}${Date.now()}`;
         const threadOpt = {
@@ -99,6 +107,18 @@ async function commandHandler(interaction) {
         }
         const newThread = await thread.create(headupMsg, threadOpt);
         logger.verbose('discord.js', `Created thread channel ${newThread}.`);
+
+        // handle disconnect event
+        voice.handleDisconnect(async () => {
+            logger.warn('discord.js', `Bot kicked from channel ${channel} by someone. Removing thread...`);
+            // remove voice thread
+            //TODO: integrate code w/ threads.remove()
+            const leaveEpoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
+            thread.headup.edit(`${channel} :wave: <t:${leaveEpoch}:R>`);
+            logger.verbose('discord.js', `Removed thread channel ${thread.get()}.`);
+            await thread.setLocked(true);
+            await thread.delete();
+        });
     } catch (err) {
         const result = report(err, interaction.user.id);
         logger.error('discord.js', `Error occured while joining voice channel:\n  ${err.stack}\n`);
