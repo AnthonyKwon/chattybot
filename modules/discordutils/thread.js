@@ -16,12 +16,11 @@ async function parse(message) {
         const tts = await TTSClass.getOrCreate(message.guild.id);
         const user = new TTSUser(message.member);  // profile of the user
         
-        //TODO: resolve all hard-coded locales
         // add message to TTS speak queue
         const text = message.content;
-        tts.addQueue(user, 'ko', text);
-        // create player callback TTS to use
         const voice = new DiscordVoice(message.guild.id);
+        tts.addQueue(user, voice.locale, text);
+        // create player callback TTS to use
         const voiceCallback = async function(stream) {
             // play audio stream
             const player = await voice.play(stream);
@@ -29,8 +28,8 @@ async function parse(message) {
             await new Promise(resolve => player.on('stateChange', () => resolve()));
         }
         // request TTS to speak
-        await tts.requestSpeak(voiceCallback);
         logger.verbose('tts', `${message.author} spoken: ${text}`);
+        await tts.requestSpeak(voiceCallback);
     } catch (err) {
         // handle error report
         const result = report(err, message.author.id);
