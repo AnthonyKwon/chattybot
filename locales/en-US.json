@@ -10,7 +10,7 @@
     "command.empty.name": "clear",
     "command.empty.desc": "Reset and clear Text-to-speech engine. Currently speaking text will not stopped.",
     "command.say.name": "say",
-    "command.say.desc": "Speak entered text into voice channel.",
+    "command.say.desc": "This command is replace and not maintained anymore. Not recommended to use.",
     "command.say.opt1.name": "text",
     "command.say.opt1.desc": "Text to speak",
     "error.discord.unknown_channel": ":grey_question: Unknown channel. Did you entered **Channel ID** correctly?",
@@ -39,5 +39,5 @@
     "tts.gender.MALE": "MALE",
     "tts.gender.NEUTRAL": "NEUTRAL",
     "tts.speak.prefix": "{0} says,",
-    "tts.speak.text": "{0} :loud_sound:  {1}"
+    "tts.speak.text": ":warning: `/say` command is not supported anymore. Please use thread instead.\n{0} :loud_sound:  {1}"
 }
