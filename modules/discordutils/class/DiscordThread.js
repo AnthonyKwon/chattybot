@@ -1,3 +1,4 @@
+const threadHeadupMap = new Map();
 const threadMap = new Map();
 
 class DiscordThread {
@@ -5,10 +6,10 @@ class DiscordThread {
         this._guildId = guildId;
     }
 
-    // (getter)
+    // (getter) get current thread
     get()  { return threadMap.get(this._guildId); }
 
-    // (setter)  
+    // (setter) set current thread
     set(newThread) {
         // if thread already exists previously, delete it first
         const oldThread = threadMap.get(this._guildId);
@@ -20,9 +21,15 @@ class DiscordThread {
         threadMap.set(this._guildId, newThread);
     }
 
+    // (get/setter) headup message for threads
+    get headup()  { return threadHeadupMap.get(this._guildId); }
+    set headup(value)  { return threadHeadupMap.set(this._guildId, value); }
+
     // create new thread from headup message
     async create(headup, threadOpt) {
         const newThread = await headup.startThread(threadOpt);
+        // save headup message to map
+        this.headup = headup;
         // save created thread to map
         threadMap.set(this._guildId, newThread);
         // return created thread
@@ -34,10 +41,10 @@ class DiscordThread {
         // get current thread
         const oldThread = threadMap.get(this._guildId);
         // exit on invalid call
-        if(!thread) return;
+        if(!oldThread) return;
 
         // delete current thread
-        await thread.delete(reason);
+        await oldThread.delete(reason);
         // remove deleted thread on map
         threadMap.delete(this._guildId);
 
