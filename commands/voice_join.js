@@ -1,5 +1,6 @@
 const { ChannelType, PermissionsBitField, SlashCommandBuilder } = require('discord.js');
 const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
+const DiscordThread = require('../modules/discordutils/class/DiscordThread.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const logger = require('../modules/logger/main.mod.js');
 const report = require('../modules/errorreport/main.mod.js');
@@ -78,6 +79,7 @@ async function commandHandler(interaction) {
     if(!verify(interaction, channel)) return;
     
     const voice = new DiscordVoice(interaction.guild.id);  // voice class (of current guild)
+    const thread = new DiscordThread(interaction.guild.id);
     try {
         // try to join voice channel
         await voice.join(channel);
@@ -92,8 +94,8 @@ async function commandHandler(interaction) {
             name: "discord.thread.title",
             rateLimitPerUser: 3
         }
-        const chatThread = await headupMsg.startThread(threadOpt);
-        //TODO: store thread info
+        const newThread = await thread.create(headupMsg, threadOpt);
+        logger.verbose('discord.js', `Created thread channel ${newThread.id}.`);
     } catch (err) {
         const result = report(err, interaction.user.id);
         logger.error('discord.js', `Error occured while joining voice channel:\n  ${err.stack}\n`);
