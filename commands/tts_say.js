@@ -1,6 +1,6 @@
 const util = require('node:util');
 const { SlashCommandBuilder } = require('discord.js');
-const join = require('./basic_join.js');
+const join = require('./voice_join.js');
 const common = require('../modules/common.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const logger = require('../modules/logger/main.mod.js');
