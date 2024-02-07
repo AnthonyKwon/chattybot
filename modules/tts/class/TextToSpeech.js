@@ -1,3 +1,4 @@
+const config = require('../../config.js');
 const TTSMap = new Map();
 
 // get provider subclass dynamically
@@ -26,8 +27,8 @@ class TextToSpeech {
     }
 
     // (static) create TTS object from guild
-    static async create(guildId, type, queue=undefined) {
-        const TTSobject = new TextToSpeech(type, queue);
+    static async create(guildId, queue=undefined) {
+        const TTSobject = new TextToSpeech(config.ttsProvider, queue);
         TTSMap.set(guildId, TTSobject);
         return TTSobject;
     }
@@ -35,6 +36,13 @@ class TextToSpeech {
     // (static) get TTS object from guild
     static get(guildId) {
         const TTSobject = TTSMap.get(guildId);
+        return TTSobject;
+    }
+
+    // (static) get object, create one if not exists
+    static async getOrCreate(guildId) {
+        let TTSobject = this.get(guildId);
+        if(!TTSobject) TTSobject = this.create(guildId);
         return TTSobject;
     }
 

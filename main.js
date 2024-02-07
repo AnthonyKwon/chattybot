@@ -1,5 +1,6 @@
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const slash = require('./modules/discordutils/slashCommand.js');
+const thread = require('./modules/discordutils/thread.js');
 const config = require('./modules/config.js');
 const logger = require('./modules/logger/main.mod.js');
 const package = require('./package.json');
@@ -10,7 +11,9 @@ logger.info(package.name, `version ${package.version}`);
 // create discord.js client object
 const client = new Client({ intents: [
     GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildVoiceStates
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
 ]});
 
 client.once(Events.ClientReady, async c => {
@@ -39,9 +42,18 @@ client.once(Events.ClientReady, async c => {
 
 client.on(Events.InteractionCreate, interaction => {
     // filter only for chat interaction
-    if (!interaction.isChatInputCommand()) return;
+    if(!interaction.isChatInputCommand()) return;
     // call slash command handler
     slash.handler(interaction);
+});
+
+// Reply to a user who mentions the bot
+client.on('messageCreate', message => {
+    // ignore message from a bot
+    if(message.author.bot) return;
+    // ignore message not from a thread
+    if(!message.channel.isThread()) return;
+    thread.parse(message);
 });
 
 // initialize discord module
