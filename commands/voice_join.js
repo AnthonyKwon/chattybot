@@ -82,20 +82,23 @@ async function commandHandler(interaction) {
     const thread = new DiscordThread(interaction.guild.id);
     try {
         // try to join voice channel
+        voice.locale = interaction.locale;
         await voice.join(channel);
-        logger.verbose('discord.js', `Joined voice channel ${channel.id}.`);
+        logger.verbose('discord.js', `Joined voice channel ${channel}.`);
         // send success reply to user
         interaction.editReply(i18n.get(interaction.locale, 'message.discord.voice.joined').format(channel));
         // send a message for starting a thread
-        const headupMsg = await interaction.channel.send("message.discord.thread.headup".format(channel));
+        const epoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
+        const headupMsg = await interaction.channel.send(`${channel} :ballot_box_with_check: <t:${epoch}:R>`);
         // create thread for conversation
+        const threadIdRaw = `${interaction.client.user.username}${interaction.user.displayName}${Date.now()}`;
         const threadOpt = {
             autoArchiveDuration: 60,
-            name: "discord.thread.title",
+            name: Buffer.from(threadIdRaw).toString('base64').substring(0, 24),
             rateLimitPerUser: 3
         }
         const newThread = await thread.create(headupMsg, threadOpt);
-        logger.verbose('discord.js', `Created thread channel ${newThread.id}.`);
+        logger.verbose('discord.js', `Created thread channel ${newThread}.`);
     } catch (err) {
         const result = report(err, interaction.user.id);
         logger.error('discord.js', `Error occured while joining voice channel:\n  ${err.stack}\n`);
