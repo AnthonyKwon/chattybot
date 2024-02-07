@@ -18,6 +18,7 @@
     "error.discord.voice.no_permission": ":loud_sound: :octagonal_sign: **{0}**에 들어 갈 **권한**이 없습니다.",
     "error.discord.voice.not_joined": ":loud_sound: :x: 봇이 현재 *음성 채널* 에 들어가 있지 않습니다.",
     "error.discord.voice.user_not_found": ":loud_sound:  :no_entry_sign: {0}님이 있는 채널을 찾지 못했습니다. *음성 채널* 에 **들어가 주세요.**",
+    "error.discord.thread.no_permission": ":thread::no_entry_sign:  봇이 현재 채널에 스레드를 생성할 권한이 없습니다!",
     "error.discord.tts.text_too_long": ":loud_sound:  :page_with_curl: 문장이 너무 깁니다. {0}자 이하로 입력해 주세요.",
     "error.generic": [
         ":octagonal_sign: 명령어를 실행하는 도중 **오류**가 발생했습니다!",

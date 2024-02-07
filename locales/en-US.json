@@ -18,6 +18,7 @@
     "error.discord.voice.no_permission": ":loud_sound: :octagonal_sign: I don't have permission to join in **{0}**!",
     "error.discord.voice.not_joined": ":loud_sound: :x: I don't joined in any voice channel now.",
     "error.discord.voice.user_not_found": ":loud_sound:  :no_entry_sign: I can't find {0} in any voice channel. Please join voice channel first.",
+    "error.discord.thread.no_permission": ":thread::no_entry_sign:  I don't have permission to create thread here!",
     "error.discord.tts.text_too_long": ":loud_sound:  :page_with_curl: Text too long. Write within {0} letter(s).",
     "error.generic": [
         ":octagonal_sign: Error occured while launching command!",
