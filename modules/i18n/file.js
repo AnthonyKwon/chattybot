@@ -32,6 +32,7 @@ function readAll(id) {
         // get current locale from filename
        const locale = path.basename(file, path.extname(file));
        // get string and assign to object
+       const localeData = read(locale);
        const localizedString = localeData[id];
        if (typeof(localizedString) !== 'string')  continue;  // skip if result is invalid
        const newResult = { [locale]: localizedString };
