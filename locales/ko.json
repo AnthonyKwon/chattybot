@@ -10,7 +10,7 @@
     "command.empty.name": "비우기",
     "command.empty.desc": "대기열을 비우고 TTS를 초기화 합니다. (출력 중인 문장은 계속 나옵니다)",
     "command.say.name": "말",
-    "command.say.desc": "입력한 문장을 음성 채널에 말합니다.",
+    "command.say.desc": "대체되어 더이상 관리되지 않는 명령어입니다. 사용을 권장하지 않습니다.",
     "command.say.opt1.name": "문장",
     "command.say.opt1.desc": "음성 채널에 말할 문장",
     "error.discord.unknown_channel": ":grey_question: 알수 없는 채널입니다. *ID*를 **재대로 입력**하셨나요?",
@@ -39,5 +39,5 @@
     "tts.gender.MALE": "남성",
     "tts.gender.NEUTRAL": "중성",
     "tts.speak.prefix": "{0}님의 말,",
-    "tts.speak.text": "{0} :loud_sound:  {1}"
+    "tts.speak.text": ":warning: `/말` 명령어의 지원이 중단되었습니다. 스레드를 이용해주세요.\n{0} :loud_sound:  {1}"
 }
