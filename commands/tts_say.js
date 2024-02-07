@@ -56,8 +56,7 @@ async function commandHandler(interaction) {
     }
 
     // If TTS is not initalized, do it first
-    let tts = TTSClass.get(interaction.guild.id);
-    if (!tts) tts = await TTSClass.create(interaction.guild.id, 'GcpTtsWaveNet');
+    const tts = await TTSClass.getOrCreate(interaction.guild.id);
     // Fix message for TTS-readable
     const fixedText = await messageFix(interaction, text);
     if (fixedText !== text) logger.warn('tts', `Message ${text} will be spoken as ${fixedText}.`);
