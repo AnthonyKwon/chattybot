@@ -1,43 +1,12 @@
-const util = require('node:util');
 const { SlashCommandBuilder } = require('discord.js');
-const join = require('./voice_join.js');
-const common = require('../modules/common.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const logger = require('../modules/logger/main.mod.js');
+const MessageFixer = require('../modules/discordutils/messageFixer.js');
 const report = require('../modules/errorreport/main.mod.js');
 const TTSClass = require('../modules/tts/class/TextToSpeech.js');
 const TTSUser = require('../modules/tts/class/TTSUser.js');
 const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
 const config = require('../modules/config.js');
-
-const regexMention = /<(#|@!)[0-9]{18}>/g;
-const regExSpecial = /[\{\}\[\]\/;:|\)*`^_~<>\#\\\=\(]/gi;
-
-function messageFix(interaction, content) {
-    // replace raw mention id to discord mention
-    let finalMsg = content.replace(regexMention, (match, $1) => {
-        let id = common.replaceAll(match, /[<>]/g, '');
-        if (id.includes('@!')) {
-            id = interaction.guild.members.cache.get(id.replace('@!', '')).displayName;
-            return id;
-        } else if (id.includes('#')) {
-            const asyncFetchChannel = util.promisify(interaction.client.channels.fetch);
-            const channel = asyncFetchChannel(id.replace('#', ''));
-            id = channel.name;
-            return id;
-        }
-    });
-
-    // Replace TTS unreadable charater to whitespace
-    finalMsg = common.replaceAll(finalMsg, '@', i18n.get(interaction.locale, 'tts.replacement.@'));
-
-    // Replace TTS unreadable charater to whitespace
-    finalMsg = common.replaceAll(finalMsg, '&', i18n.get(interaction.locale, 'tts.replacement.&'));
-
-    // Replace TTS unreadable charater to whitespace
-    finalMsg = common.replaceAll(finalMsg, regExSpecial, ' ');
-    return finalMsg;
-}
 
 async function commandHandler(interaction) {
     let voice = new DiscordVoice(interaction.guild.id);
@@ -49,16 +18,18 @@ async function commandHandler(interaction) {
         return;
     }
 
-    // check if bot joined to the voice channel and join if not
+    // does user joined voice channel?
     if (!voice.connected) {
-        voice = await join.execute(interaction);
-        if (!voice) return; // join failed, stop function
+        // NOPE: user does not joined voice channel
+        interaction.editReply(i18n.get(interaction.locale, 'error.discord.voice.not_joined'));
+        return;
     }
 
     // If TTS is not initalized, do it first
     const tts = await TTSClass.getOrCreate(interaction.guild.id);
     // Fix message for TTS-readable
-    const fixedText = await messageFix(interaction, text);
+    interaction.content = text;
+    const fixedText = await MessageFixer.fix(interaction);
     if (fixedText !== text) logger.warn('tts', `Message ${text} will be spoken as ${fixedText}.`);
     try {
         // get account username (guild username if command used on guild && user has guild-specific username) of the user
