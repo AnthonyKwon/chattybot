@@ -7,10 +7,39 @@ const i18n = require('../i18n/main.mod.js');
 const logger = require('../logger/main.mod.js');
 const report = require('../errorreport/main.mod.js');
 
+async function onArchive(thread) {
+    const threadClass = new DiscordThread(thread.guild.id);  // voice thread class
+    
+    //check if voice thread class initialized correctly
+    if(!threadClass.get()) return;
+    // check if archived thread is same as voice thread
+    if(threadClass.get().id !== thread.id) return;
+
+    // remove and leave
+    logger.warn('discord.js', `Thread ${thread} archived by someone. Removing thread and leaving voice...`);
+    remove(threadClass, false, false);
+}
+
+async function onDelete(thread) {
+    const threadClass = new DiscordThread(thread.guild.id);  // voice thread class
+    
+    //check if voice thread class initialized correctly
+    if(!threadClass.get()) return;
+    // check if deleted thread is same as voice thread
+    if(threadClass.get().id !== thread.id) return;
+
+    // remove and leave
+    logger.warn('discord.js', `Thread ${thread} removed by someone. Leaving voice...`);
+    remove(threadClass, true, false);
+}
+
 async function parse(message) {
-    const compThread = new DiscordThread(message.guild.id);  // thread to compare
-    // is message from my thread channel?
-    if(message.channel.id !== compThread.get().id) return;  // NOPE: not a same thread
+    const threadClass = new DiscordThread(message.guild.id);  // voice thread class
+
+    // check if voice thread class initialized correctly
+    if(!threadClass.get()) return;
+    // check if message come from voice thread
+    if(threadClass.get().id !== message.channel.id) return;
 
     try {
         // initialize TTS module wrapper
@@ -43,6 +72,26 @@ async function parse(message) {
     }
 }
 
-module.exports = {
-    parse
+async function remove(thread, threadDeleted=false, voiceDisconnected=false) {
+    const voice = new DiscordVoice(thread.guildId);
+    // check if bot is in voice channel
+    if(!voice.channelId) return;
+
+    // leave from voice channel
+    const voiceChannel = thread.get().client.channels.cache.get(voice.channelId);
+    if(!voiceDisconnected) {
+        await voice.leave();
+        logger.verbose('discord.js', `Left voice channel ${voiceChannel}.`);
+    }
+
+    // remove voice thread
+    const epoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
+    thread.headup.edit(`${voiceChannel} :wave: <t:${epoch}:R>`);
+    if(!threadDeleted) {
+        logger.verbose('discord.js', `Removed thread channel ${thread.get()}.`);
+        await thread.setLocked(true);
+        await thread.delete();
+    }
 }
+
+module.exports = { onArchive, onDelete, parse, remove }

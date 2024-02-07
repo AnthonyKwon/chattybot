@@ -48,12 +48,27 @@ client.on(Events.InteractionCreate, interaction => {
 });
 
 // Reply to a user who mentions the bot
-client.on('messageCreate', message => {
+client.on(Events.MessageCreate, message => {
     // ignore message from a bot
     if(message.author.bot) return;
     // ignore message not from a thread
     if(!message.channel.isThread()) return;
     thread.parse(message);
+});
+
+client.on(Events.ThreadDelete, t => {
+    // check if thread owner is same as bot user
+    if(!t.ownerId !== t.client.user.id) return;
+    // check if thread is locked
+    if(!t.locked) return;
+
+    // handle thread deletion by other factor 
+    thread.onDelete(t);
+});
+
+client.on(Events.ThreadUpdate, (oldThread, newThread) => {
+    // handle thread update by other factor
+    if(!oldThread.archived && newThread.archived) thread.onArchive(newThread);
 });
 
 // initialize discord module

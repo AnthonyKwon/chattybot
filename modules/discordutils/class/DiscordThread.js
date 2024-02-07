@@ -21,9 +21,16 @@ class DiscordThread {
         threadMap.set(this._guildId, newThread);
     }
 
+    // (getter) guild id
+    get guildId()  { return this._guildId; }
+
     // (get/setter) headup message for threads
     get headup()  { return threadHeadupMap.get(this._guildId); }
     set headup(value)  { return threadHeadupMap.set(this._guildId, value); }
+
+
+    // (static) get thread id
+    static threadId(guildId)  { return threadMap.get(guildId); }
 
     // create new thread from headup message
     async create(headup, threadOpt) {
@@ -50,6 +57,10 @@ class DiscordThread {
 
         // return deleted thread
         return oldThread;
+    }
+
+    async setLocked(locked, reason) {
+        return threadMap.get(this._guildId).setLocked(locked, reason);
     }
 }
 
