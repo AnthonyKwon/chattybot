@@ -25,13 +25,14 @@ async function commandHandler(interaction) {
     // leave from voice channel
     const voiceChannel = interaction.client.channels.cache.get(voice.channelId);
     await voice.leave();
-    logger.verbose('discord.js', `Left voice channel ${voiceChannel.id}.`);
+    logger.verbose('discord.js', `Left voice channel ${voiceChannel}.`);
     interaction.editReply(i18n.get(interaction.locale, 'message.discord.voice.left').format(voiceChannel));
 
     // remove voice thread
+    const epoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
     thread.delete();
-    thread.headup.edit('message.discord.thread.headup.done');
-    logger.verbose('discord.js', `Removed thread channel ${thread.get().id}.`);
+    thread.headup.edit(`${voiceChannel} :wave: <t:${epoch}:R>`);
+    logger.verbose('discord.js', `Removed thread channel ${thread.get()}.`);
 }
 
 module.exports = {
