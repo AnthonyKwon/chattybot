@@ -1,4 +1,5 @@
 const voice = require('@discordjs/voice');
+const localeMap = new Map();
 
 class DiscordVoice {
     constructor(guildId) {
@@ -19,6 +20,10 @@ class DiscordVoice {
         // return channel id if available, if not, return undefined
         return connection ? connection.joinConfig.channelId : undefined;
     }
+
+    // (get/setter) locale for the voice channel
+    get locale()  { return localeMap.get(this._guildId); }
+    set locale(value)  { localeMap.set(this._guildId, value); }
 
     // join into specified voice channel
     async join(channel) {
@@ -58,6 +63,8 @@ class DiscordVoice {
         if (!connection) return;
         // destroy(disconnect) current connection
         connection.destroy();
+        // remove locale data from localeMap
+        localeMap.delete(this._guildId);
     }
 }
 
