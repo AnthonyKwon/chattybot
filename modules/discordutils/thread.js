@@ -83,7 +83,8 @@ async function parse(message) {
     } catch (err) {
         // handle error report
         const result = report(err, message.author.id);
-        logger.verbose('tts', `Error occured while synthesizing:\n  ${err.stack}\n`);
+        logger.error('tts', 'Error occured while synthesizing!');
+        logger.error('tts', err.stack ? err.stack : err);
         message.channel.send(i18n.get('en-US', 'error.generic').format(result));
     }
 }

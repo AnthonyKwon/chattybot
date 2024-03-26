@@ -44,7 +44,7 @@ function SlashCommandRegister(token, client) {
     // and deploy your commands!
     (async () => {
         try {
-            logger.verbose('discord.js', `Started refreshing ${commandList.length} application (/) commands.`);
+            logger.verbose('discord.js:slash', `Started refreshing ${commandList.length} application (/) commands.`);
 
             // The put method is used to fully refresh all commands in the guild with the current set
             const data = await rest.put(
@@ -52,10 +52,11 @@ function SlashCommandRegister(token, client) {
                 { body: commandList }
             );
 
-            logger.verbose('discord.js', `Successfully reloaded ${data.length} application (/) commands.`);
-        } catch (error) {
+            logger.verbose('discord.js:slash', `Successfully reloaded ${data.length} application (/) commands.`);
+        } catch (err) {
             // And of course, make sure you catch and log any errors!
-            logger.error('discord.js', error);
+            logger.error('discord.js:slash', 'Error occured while reloading slash command!');
+            logger.error('discord.js:slash', err.stack ? err.stack : err);
         }
     })();
 }
@@ -81,13 +82,17 @@ async function SlashCommandHandler(interaction) {
         await interaction.deferReply({ ephemeral: isEphemeral });
         // launch command
         await command.execute(interaction);
-    } catch (error) {
-        console.error(error);
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({ content: 'There was an error while executing this command!\nslashCommand-exception', ephemeral: true });
-        } else {
-            await interaction.reply({ content: 'There was an error while executing this command!\nslashCommand-exception', ephemeral: true });
-        }
+    } catch (err) {
+        logger.error('discord.js:slash', `Error occured while handling slash command!`);
+        logger.error('discord.js:slash', err.stack ? err.stack : err)
+
+        const errorInteraction = { content: i18n.get(interaction.locale, 'error.generic').format(result), ephemeral: true };
+        const result = report(err, interaction.user.id);
+
+        if (interaction.replied || interaction.deferred)
+            await interaction.followUp(errorInteraction);
+        else
+            await interaction.reply(errorInteraction);
     }
 }
 

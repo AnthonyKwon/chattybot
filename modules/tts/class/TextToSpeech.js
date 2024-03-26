@@ -24,10 +24,7 @@ const getTTSProvider = (id) => {
         try {
             if (subClass[id] && subClass[id].ttsAvailable)
                 return subClass[id];
-        } catch (err) {
-            // TTS not available
-            console.error(err.stack);
-        }
+        } catch (err) { throw new Error('Specified TTS engine not available.') }
     }
 }
 
