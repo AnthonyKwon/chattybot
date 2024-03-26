@@ -46,7 +46,7 @@ class TextToSpeech {
     }
 
     // (static) parameter builder for TTS engine
-    get ParameterBuilder() { return new this._provider.ParameterBuilder }
+    get ParameterBuilder() { return this._provider.ParameterBuilder }
 
     // (static) delete TTS object from guild
     static delete(guildId) { TTSMap.delete(guildId) }
