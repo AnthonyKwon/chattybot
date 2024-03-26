@@ -1,23 +1,8 @@
 const GcpTtsExt = require('@google-cloud/text-to-speech');
 const path = require('node:path');
-const { Readable } = require('node:stream');
-const config = require('../../config.js');
-const i18n = require('../../i18n/main.mod.js');
-
-/*
- * @param binary Buffer
- * returns readableInstanceStream Readable
- * https://stackoverflow.com/a/54136803
- */
-const bufferToStream = (binary) => {
-    const readableInstanceStream = new Readable({
-        read() {
-            this.push(binary);
-            this.push(null);
-        }
-    });
-    return readableInstanceStream;
-}
+const bufferToStream = require('./bufferToStream.js');
+const config = require('../../../../config.js');
+const i18n = require('../../../../i18n/main.mod.js');
 
 // Google Cloud Text-to-Speech Engine Class
 class GcpTts {
@@ -48,7 +33,7 @@ class GcpTts {
             voice.languageCodes[0].includes(locale) &&
             voice.name.includes(this._type) &&
             voice.ssmlGender.toLowerCase() === config.ttsGender.toLowerCase()
-            );
+        );
         // set current voice to matched voice profile
         this._request.voice.languageCode = currentVoice.languageCodes[0];
         this._request.voice.name = currentVoice.name;
@@ -57,30 +42,22 @@ class GcpTts {
         this._messageLocale = locale;
     }
 
-    async speak(message, readAuthor=true) {
+    async speak(message, readAuthor = true) {
         // If message author or channel is different or authorId is not system(0), send TTS w/ prefix.
         if (readAuthor) {
-            this._request.input = { ssml: '<speak><prosody pitch="-3st">' + i18n.get(this._messageLocale, 'tts.speak.prefix')
-                .format(message.author.name) + '</prosody><break time="0.5s"/>' + message.content + '</speak>' };
+            this._request.input = {
+                ssml: '<speak><prosody pitch="-3st">' + i18n.get(this._messageLocale, 'tts.speak.prefix')
+                    .format(message.author.name) + '</prosody><break time="0.5s"/>' + message.content + '</speak>'
+            };
         } else {
             this._request.input = { text: message.content };
         }
-        
+
         const [response] = await this._client.synthesizeSpeech(this._request);
         // Google sends response as buffer. We need to convert it as ReadableStream.
         const stream = bufferToStream(response.audioContent);
         return stream;
     }
 }
-class GcpTtsBasic extends GcpTts {
-    constructor() {
-        super('Standard', '1.0', '0.0', '0.0');
-    }
-}
-class GcpTtsWaveNet extends GcpTts {
-    constructor() {
-        super('Wavenet', '1.0', '0.0', '0.0');
-    }
-}
 
-module.exports = { GcpTtsBasic, GcpTtsWaveNet }
+module.exports = GcpTts;
