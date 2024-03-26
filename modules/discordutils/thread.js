@@ -1,3 +1,4 @@
+const { Locale } = require('discord.js');
 const DiscordThread = require('./class/DiscordThread.js');
 const DiscordVoice = require('./class/DiscordVoice.js');
 const TTSClass = require('../tts/class/TextToSpeech.js');
@@ -42,8 +43,13 @@ async function parse(message) {
     if (threadClass.get().id !== message.channel.id) return;
 
     try {
+        // get params to initialize TTS module
+        const paramBuilder = new TTSClass.ParameterBuilder();
+        paramBuilder.locale = message.guild.preferredLocale;
+        const params = await paramBuilder.build();
+
         // initialize TTS module wrapper
-        const tts = await TTSClass.getOrCreate(message.guild.id);
+        const tts = await TTSClass.getOrCreate(message.guild.id, params);
         const user = new TTSUser(message.member);  // profile of the user
 
         // fix and build message 
