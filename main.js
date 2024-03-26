@@ -35,9 +35,9 @@ client.once(Events.ClientReady, async c => {
             await rest.put(Routes.applicationCommands(c.user.id), { body: [] });
 
             logger.info('discord.js', 'Unregistered all slash commands.');
-        } catch (e) {
-            logger.error('discord.js', 'Failed to unregister slash command:');
-            console.log(e);
+        } catch (err) {
+            logger.error('discord.js', 'Failed to unregister slash command!');
+            logger.error('discord.js', err.stack ? err.stack : err);
         }
         process.exit();
     }

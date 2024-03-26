@@ -113,7 +113,8 @@ async function commandHandler(interaction) {
             .onVoiceDisconnect(thread, channel));
     } catch (err) {
         const result = report(err, interaction.user.id);
-        logger.error('discord.js', `Error occured while joining voice channel:\n  ${err.stack}\n`);
+        logger.error('discord.js', 'Error occured while joining voice channel!');
+        logger.error('discord.js', err.stack);
         // send error message to discord channel
         interaction.editReply(i18n.get(interaction.locale, 'error.generic').format(result));
         return;

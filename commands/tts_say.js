@@ -37,7 +37,7 @@ async function commandHandler(interaction) {
         // Send message and TTS to discord
         interaction.editReply(i18n.get(interaction.locale, 'tts.speak.text').format(interaction.user, text));
         tts.addQueue(new TTSUser(user), interaction.locale, fixedText);
-        const voiceCallback = async function(stream) {
+        const voiceCallback = async function (stream) {
             // play audio stream
             const player = await voice.play(stream);
             // wait until player finish playing stream
@@ -45,9 +45,11 @@ async function commandHandler(interaction) {
         }
         await tts.requestSpeak(voiceCallback);
         logger.verbose('tts', `${interaction.user} spoken: ${text}`);
-    } catch(err) {
+    } catch (err) {
         const result = report(err, interaction.user.id);
-        logger.verbose('tts', `Error occured while synthesizing:\n  ${err.stack}\n`);
+        logger.error('tts', 'Error occured while synthesizing!');
+        logger.error('tts', err.stack ? err.stack : err);
+
         interaction.editReply(i18n.get(interaction.locale, 'error.generic').format(result));
     }
     return;
@@ -60,9 +62,9 @@ module.exports = {
         .setDescription(i18n.get('en-US', 'command.say.desc'))
         .setDescriptionLocalizations(i18n.getAll('command.say.desc'))
         .addStringOption(option => option.setName(i18n.get('en-US', 'command.say.opt1.name'))
-                                         .setNameLocalizations(i18n.getAll('command.say.opt1.name'))
-                                         .setDescription(i18n.get('en-US', 'command.say.opt1.desc'))
-                                         .setDescriptionLocalizations(i18n.getAll('command.say.opt1.desc'))
-                                         .setRequired(true)),
+            .setNameLocalizations(i18n.getAll('command.say.opt1.name'))
+            .setDescription(i18n.get('en-US', 'command.say.opt1.desc'))
+            .setDescriptionLocalizations(i18n.getAll('command.say.opt1.desc'))
+            .setRequired(true)),
     execute: commandHandler
 }
