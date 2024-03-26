@@ -68,7 +68,8 @@ async function SlashCommandHandler(interaction) {
         logger.error('discord.js', `No command matching ${interaction.commandName} was found.`);
         return;
     }
-  
+
+    // prevent non-guild command to be responded
     if (!interaction.inGuild()) {
         await interaction.reply(i18n.get(interaction.locale, 'error.discord.guild_only'));
         return;
