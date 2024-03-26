@@ -12,14 +12,14 @@ class ParameterBuilder {
 
         this._gender = 'neutral';
         this._locale = Locale.EnglishUS;
-        this._gain = 0;
-        this._pitch = 0.0;
-        this._speed = 1.0;
+        this._volume = 93;
+        this._pitch = 100;
+        this._speed = 100;
     }
 
     get gender() { return this._gender }
     get locale() { return this._locale }
-    get gain() { return this._gain }
+    get volume() { return this._volume }
     get pitch() { return this._pitch }
     get speed() { return this._speed }
 
@@ -35,9 +35,9 @@ class ParameterBuilder {
         else
             throw new Error(`Locale "${value}" is not available.`);
     }
-    set gain(value) {
+    set volume(value) {
         if (value >= 0 && value <= 200)
-            this._gain = value
+            this._volume = value
         else
             throw new Error(`Volume Gain "${value}" is out of range.`)
     }
