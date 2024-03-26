@@ -28,6 +28,13 @@ function SlashCommandRegister(token, client) {
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
         const command = require(filePath);
+
+        // prepend "zz" to command when running as development environment
+        if (process.env.NODE_ENV === 'development') {
+            command.data.name = `zz${command.data.name}`;
+            Object.keys(command.data.name_localizations).forEach(key => command.data.name_localizations[key] = `zz${command.data.name_localizations[key]}`);
+        }
+
         commandList.push(command.data.toJSON());
     }
 
@@ -56,25 +63,25 @@ function SlashCommandRegister(token, client) {
 async function SlashCommandHandler(interaction) {
     const command = interaction.client.commands.get(interaction.commandName);
 
-	if (!command) {
-		logger.error('discord.js', `No command matching ${interaction.commandName} was found.`);
-		return;
-	}
+    if (!command) {
+        logger.error('discord.js', `No command matching ${interaction.commandName} was found.`);
+        return;
+    }
 
-	try {
+    try {
         // defer reply and wait for command to write any message
         const isEphemeral = (command.extra && command.extra.ephemeral) || false;
         await interaction.deferReply({ ephemeral: isEphemeral });
         // launch command
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-		} else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-		}
-	}
+        await command.execute(interaction);
+    } catch (error) {
+        console.error(error);
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+        } else {
+            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+        }
+    }
 }
 
 module.exports = { load: SlashCommandLoader, handler: SlashCommandHandler, register: SlashCommandRegister };
