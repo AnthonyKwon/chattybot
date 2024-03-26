@@ -32,8 +32,6 @@ class GcpTts extends TTSProvider {
             this._request.input = { text: message.content };
         }
 
-        console.log(this._request); //debug
-
         const [response] = await this._client.synthesizeSpeech(this._request);
         // Google sends response as buffer. We need to convert it as ReadableStream.
         const stream = bufferToStream(response.audioContent);
