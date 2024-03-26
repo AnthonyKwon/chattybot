@@ -29,6 +29,13 @@ function SlashCommandRegister(token, client) {
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
         const command = require(filePath);
+
+        // prepend "zz" to command when running as development environment
+        if (process.env.NODE_ENV === 'development') {
+            command.data.name = `zz${command.data.name}`;
+            Object.keys(command.data.name_localizations).forEach(key => command.data.name_localizations[key] = `zz${command.data.name_localizations[key]}`);
+        }
+
         commandList.push(command.data.toJSON());
     }
 
@@ -61,7 +68,7 @@ async function SlashCommandHandler(interaction) {
         logger.error('discord.js', `No command matching ${interaction.commandName} was found.`);
         return;
     }
-
+  
     if (!interaction.inGuild()) {
         await interaction.reply(i18n.get(interaction.locale, 'error.discord.guild_only'));
         return;
