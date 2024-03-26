@@ -5,7 +5,7 @@ const TTSMap = new Map();
 
 // create TTS object from guild
 const createTTSObject = (guildId, params) => {
-    const TTSobject = new TextToSpeech(config.ttsProvider, params);
+    const TTSobject = new TextToSpeech(params);
     TTSMap.set(guildId, TTSobject);
     return TTSobject;
 }
@@ -14,7 +14,7 @@ const createTTSObject = (guildId, params) => {
 const getTTSObject = guildId => TTSMap.get(guildId)
 
 // get provider subclass dynamically
-const getTTSProvider = (id, params) => {
+const getTTSProvider = (id) => {
     const fs = require('fs');
     const path = require('path');
     const scripts = fs.readdirSync(path.join(__dirname, 'provider')).filter(file => file.match('^.*Provider\.js$'));
@@ -23,7 +23,7 @@ const getTTSProvider = (id, params) => {
         const subClass = require(path.join(__dirname, 'provider', file));
         try {
             if (subClass[id] && subClass[id].ttsAvailable)
-                return new subClass[id](params);
+                return subClass[id];
         } catch (err) {
             // TTS not available
             console.error(err.stack);
@@ -32,21 +32,21 @@ const getTTSProvider = (id, params) => {
 }
 
 class TextToSpeech {
-    constructor(providerId, params) {
+    constructor(params) {
         this._prevQueue = undefined; // previous message queue
         this._queue = undefined;
-        this._provider = getTTSProvider(providerId, params); // TTS provider
+        this._provider = new (getTTSProvider(config.ttsProvider))(params); // TTS provider
     }
 
     // (static) get object, create one if not exists
-    static getOrCreate(guildId, params = undefined) {
+    static getOrCreate(guildId, params) {
         let TTSobject = getTTSObject(guildId);
         if (!TTSobject) TTSobject = createTTSObject(guildId, params);
         return TTSobject;
     }
 
     // (static) parameter builder for TTS engine
-    get ParameterBuilder() { return this._provider.ParameterBuilder }
+    static get ParameterBuilder() { return getTTSProvider(config.ttsProvider).ParameterBuilder }
 
     // (static) delete TTS object from guild
     static delete(guildId) { TTSMap.delete(guildId) }
@@ -59,7 +59,6 @@ class TextToSpeech {
         this._queue.push(
             {
                 author: ttsUser,
-                locale: locale,
                 content: message
             });
         // if TTS is not speaking, make it speak
@@ -77,9 +76,6 @@ class TextToSpeech {
     // Speak as TTS: call specified TTS engine and read text (in queue)
     async speak(voiceCallback) {
         do {
-            // set working locale of current TTS provider
-            await this._provider.setLocale(this.queue[0].locale);
-
             // check if previous speaker and current speaker in queue is same (will decide to speak header)
             let willSpeakHeader = true;
             if (this._prevQueue && this._prevQueue.author.id == this.queue[0].author.id)
