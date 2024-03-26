@@ -7,7 +7,10 @@ const i18n = require('../../../../i18n/main.mod.js');
 // Google Cloud Text-to-Speech Engine Class
 class GcpTts {
     constructor(type, speed, pitch, volumeGain) {
-        this._client = new GcpTtsExt.TextToSpeechClient({ projectId: config.projectId, keyFilename: path.join(path.dirname(require.main.filename), 'configs/gcp-credentials.json') });
+        this._client = new GcpTtsExt.TextToSpeechClient({
+            projectId: require('../../../../../configs/gcp-credentials.json').project_id,
+            keyFilename: path.join(path.dirname(require.main.filename), 'configs/gcp-credentials.json')
+        });
         this._type = type;
         this._request = {
             input: { text: 'Hello world! This is a test sentence for TTS engine. If you heard this and not an geek programmer, it might be something wrong.' },
