@@ -5,5 +5,7 @@
     "status": "purrr...",
     "ttsGender": "female",
     "ttsMaxLength": "500",
-    "ttsProvider": "GcpTtsWaveNet"
+    "ttsProvider": "GcpTts",
+    "GcpTtsPreferredType": "Standard",
+    "GcpTtsPreferredCode": "H"
 }

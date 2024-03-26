@@ -1,3 +1,4 @@
+const { Locale } = require('discord.js');
 const DiscordThread = require('./class/DiscordThread.js');
 const DiscordVoice = require('./class/DiscordVoice.js');
 const TTSClass = require('../tts/class/TextToSpeech.js');
@@ -9,11 +10,11 @@ const report = require('../errorreport/main.mod.js');
 
 async function onArchive(thread) {
     const threadClass = new DiscordThread(thread.guild.id);  // voice thread class
-    
+
     //check if voice thread class initialized correctly
-    if(!threadClass.get()) return;
+    if (!threadClass.get()) return;
     // check if archived thread is same as voice thread
-    if(threadClass.get().id !== thread.id) return;
+    if (threadClass.get().id !== thread.id) return;
 
     // remove and leave
     logger.warn('discord.js', `Thread ${thread} archived by someone. Removing thread and leaving voice...`);
@@ -22,11 +23,11 @@ async function onArchive(thread) {
 
 async function onDelete(thread) {
     const threadClass = new DiscordThread(thread.guild.id);  // voice thread class
-    
+
     //check if voice thread class initialized correctly
-    if(!threadClass.get()) return;
+    if (!threadClass.get()) return;
     // check if deleted thread is same as voice thread
-    if(threadClass.get().id !== thread.id) return;
+    if (threadClass.get().id !== thread.id) return;
 
     // remove and leave
     logger.warn('discord.js', `Thread ${thread} removed by someone. Leaving voice...`);
@@ -37,25 +38,30 @@ async function parse(message) {
     const threadClass = new DiscordThread(message.guild.id);  // voice thread class
 
     // check if voice thread class initialized correctly
-    if(!threadClass.get()) return;
+    if (!threadClass.get()) return;
     // check if message come from voice thread
-    if(threadClass.get().id !== message.channel.id) return;
+    if (threadClass.get().id !== message.channel.id) return;
 
     try {
+        // get params to initialize TTS module
+        const paramBuilder = new TTSClass.ParameterBuilder();
+        paramBuilder.locale = message.guild.preferredLocale;
+        const params = await paramBuilder.build();
+
         // initialize TTS module wrapper
-        const tts = await TTSClass.getOrCreate(message.guild.id);
+        const tts = await TTSClass.getOrCreate(message.guild.id, params);
         const user = new TTSUser(message.member);  // profile of the user
-        
+
         // fix and build message 
         const text = MessageFixer.fix(message);
         // is fixed message has anything?
-        if(text == '') return;  // NOPE: stop and exit
-        
+        if (text == '') return;  // NOPE: stop and exit
+
         // add message to TTS speak queue
         const voice = new DiscordVoice(message.guild.id);
         tts.addQueue(user, voice.locale, text);
         // create player callback TTS to use
-        const voiceCallback = async function(stream) {
+        const voiceCallback = async function (stream) {
             // play audio stream
             const player = await voice.play(stream);
             // wait until player finish playing stream
@@ -72,14 +78,14 @@ async function parse(message) {
     }
 }
 
-async function remove(thread, threadDeleted=false, voiceDisconnected=false) {
+async function remove(thread, threadDeleted = false, voiceDisconnected = false) {
     const voice = new DiscordVoice(thread.guildId);
     // check if bot is in voice channel
-    if(!voice.channelId) return;
+    if (!voice.channelId) return;
 
     // leave from voice channel
     const voiceChannel = thread.get().client.channels.cache.get(voice.channelId);
-    if(!voiceDisconnected) {
+    if (!voiceDisconnected) {
         await voice.leave();
         logger.verbose('discord.js', `Left voice channel ${voiceChannel}.`);
     }
@@ -87,7 +93,7 @@ async function remove(thread, threadDeleted=false, voiceDisconnected=false) {
     // remove voice thread
     const epoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
     thread.headup.edit(`${voiceChannel} :wave: <t:${epoch}:R>`);
-    if(!threadDeleted) {
+    if (!threadDeleted) {
         logger.verbose('discord.js', `Removed thread channel ${thread.get()}.`);
         await thread.setLocked(true);
         await thread.delete();

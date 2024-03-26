@@ -2,6 +2,7 @@ const { Collection, REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
 const logger = require('../logger/main.mod.js');
+const i18n = require('../i18n/main.mod.js');
 
 const commandsPath = path.join(path.dirname(require.main.filename), 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -68,6 +69,12 @@ async function SlashCommandHandler(interaction) {
         return;
     }
 
+    // prevent non-guild command to be responded
+    if (!interaction.inGuild()) {
+        await interaction.reply(i18n.get(interaction.locale, 'error.discord.guild_only'));
+        return;
+    }
+
     try {
         // defer reply and wait for command to write any message
         const isEphemeral = (command.extra && command.extra.ephemeral) || false;
@@ -77,9 +84,9 @@ async function SlashCommandHandler(interaction) {
     } catch (error) {
         console.error(error);
         if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+            await interaction.followUp({ content: 'There was an error while executing this command!\nslashCommand-exception', ephemeral: true });
         } else {
-            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+            await interaction.reply({ content: 'There was an error while executing this command!\nslashCommand-exception', ephemeral: true });
         }
     }
 }
