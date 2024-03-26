@@ -2,6 +2,7 @@ const { Collection, REST, Routes } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
 const logger = require('../logger/main.mod.js');
+const i18n = require('../i18n/main.mod.js');
 
 const commandsPath = path.join(path.dirname(require.main.filename), 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -56,25 +57,30 @@ function SlashCommandRegister(token, client) {
 async function SlashCommandHandler(interaction) {
     const command = interaction.client.commands.get(interaction.commandName);
 
-	if (!command) {
-		logger.error('discord.js', `No command matching ${interaction.commandName} was found.`);
-		return;
-	}
+    if (!command) {
+        logger.error('discord.js', `No command matching ${interaction.commandName} was found.`);
+        return;
+    }
 
-	try {
+    if (!interaction.inGuild()) {
+        await interaction.reply(i18n.get(interaction.locale, 'error.discord.guild_only'));
+        return;
+    }
+
+    try {
         // defer reply and wait for command to write any message
         const isEphemeral = (command.extra && command.extra.ephemeral) || false;
         await interaction.deferReply({ ephemeral: isEphemeral });
         // launch command
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-		} else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-		}
-	}
+        await command.execute(interaction);
+    } catch (error) {
+        console.error(error);
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp({ content: 'There was an error while executing this command!\nslashCommand-exception', ephemeral: true });
+        } else {
+            await interaction.reply({ content: 'There was an error while executing this command!\nslashCommand-exception', ephemeral: true });
+        }
+    }
 }
 
 module.exports = { load: SlashCommandLoader, handler: SlashCommandHandler, register: SlashCommandRegister };
