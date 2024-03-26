@@ -1,4 +1,4 @@
-const { Client, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Events, GatewayIntentBits, Locale, REST, Routes } = require('discord.js');
 const slash = require('./modules/discordutils/slashCommand.js');
 const thread = require('./modules/discordutils/thread.js');
 const config = require('./modules/config.js');
@@ -9,12 +9,14 @@ const package = require('./package.json');
 logger.info(package.name, `version ${package.version}`);
 
 // create discord.js client object
-const client = new Client({ intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
-]});
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent
+    ]
+});
 
 client.once(Events.ClientReady, async c => {
     // create voice session map
@@ -22,14 +24,26 @@ client.once(Events.ClientReady, async c => {
 
     // check if user launched bot to unregister commands
     if (process.env.UNREGISTER_SLASH == 'yes') {
-        // unregister slash commands
-        logger.warn('discord.js', 'Unregistering slash commands...');
-        await client.application.commands.set([]);
+        const rest = new REST().setToken(config.token);
+        try {
+            logger.info('discord.js', 'Unregistering slash commands...');
+
+            // unregister guild slash commands
+            c.guilds.cache.forEach(async guild => await rest.put(Routes.applicationCommands(c.user.id, guild.id), { body: [] }));
+
+            // unregister global slash commands
+            await rest.put(Routes.applicationCommands(c.user.id), { body: [] });
+
+            logger.info('discord.js', 'Unregistered all slash commands.');
+        } catch (e) {
+            logger.error('discord.js', 'Failed to unregister slash command:');
+            console.log(e);
+        }
         process.exit();
     }
 
     // set bot activity message if available
-    if(config.status && config.status !== '') c.user.setActivity(`${config.status}`);
+    if (config.status && config.status !== '') c.user.setActivity(`${config.status}`);
 
     // register slash commands
     //TODO: cache command data and register only when updated
@@ -42,7 +56,7 @@ client.once(Events.ClientReady, async c => {
 
 client.on(Events.InteractionCreate, interaction => {
     // filter only for chat interaction
-    if(!interaction.isChatInputCommand()) return;
+    if (!interaction.isChatInputCommand()) return;
     // call slash command handler
     slash.handler(interaction);
 });
@@ -50,17 +64,17 @@ client.on(Events.InteractionCreate, interaction => {
 // Reply to a user who mentions the bot
 client.on(Events.MessageCreate, message => {
     // ignore message from a bot
-    if(message.author.bot) return;
+    if (message.author.bot) return;
     // ignore message not from a thread
-    if(!message.channel.isThread()) return;
+    if (!message.channel.isThread()) return;
     thread.parse(message);
 });
 
 client.on(Events.ThreadDelete, t => {
     // check if thread owner is same as bot user
-    if(!t.ownerId !== t.client.user.id) return;
+    if (!t.ownerId !== t.client.user.id) return;
     // check if thread is locked
-    if(!t.locked) return;
+    if (!t.locked) return;
 
     // handle thread deletion by other factor 
     thread.onDelete(t);
@@ -68,7 +82,7 @@ client.on(Events.ThreadDelete, t => {
 
 client.on(Events.ThreadUpdate, (oldThread, newThread) => {
     // handle thread update by other factor
-    if(!oldThread.archived && newThread.archived) thread.onArchive(newThread);
+    if (!oldThread.archived && newThread.archived) thread.onArchive(newThread);
 });
 
 // initialize discord module
