@@ -29,20 +29,20 @@ function verify(interaction, channel) {
     if (!permissions.has(PermissionsBitField.Flags.Connect) ||
         !permissions.has(PermissionsBitField.Flags.Speak) ||
         !channel.joinable) {
-            // NOPE: I can't join to that channel
-            logger.error('discord.js', `Failed to join voice channel: bot does not have permission to access channel ${channel.id}!`);
-            interaction.editReply(i18n.get(interaction.locale, 'error.discord.voice.no_permission').format(channel));
-            return false;
+        // NOPE: I can't join to that channel
+        logger.error('discord.js', `Failed to join voice channel: bot does not have permission to access channel ${channel.id}!`);
+        interaction.editReply(i18n.get(interaction.locale, 'error.discord.voice.no_permission').format(channel));
+        return false;
     }
 
     // can I create or manage thread at the text channel where interaction was used?
     if (!permissions.has(PermissionsBitField.Flags.CreatePublicThreads) ||
         !permissions.has(PermissionsBitField.Flags.ManageThreads) ||
         !permissions.has(PermissionsBitField.Flags.SendMessagesInThreads)) {
-            // NOPE: I can't create thread on there
-            logger.error('discord.js', `Failed to join voice channel: bot does not have permission to create thread in channel ${channel.id}!`);
-            interaction.editReply(i18n.get(interaction.locale, 'error.discord.thread.no_permission').format(channel));
-            return false;
+        // NOPE: I can't create thread on there
+        logger.error('discord.js', `Failed to join voice channel: bot does not have permission to create thread in channel ${channel.id}!`);
+        interaction.editReply(i18n.get(interaction.locale, 'error.discord.thread.no_permission').format(channel));
+        return false;
     }
 
     // get currently joined voice channel (if has one) 
@@ -65,10 +65,10 @@ function verify(interaction, channel) {
 async function commandHandler(interaction) {
     // channel id from options (if available)
     let channel = interaction.options.getString(i18n.get('en-US', 'command.join.opt1.name'));
-    
+
     // get channel from id (if available) or user's current joined channel
-    if(channel) channel = interaction.client.channels.cache.get(channel);
-    else if(!channel && interaction.member.voice.channel) channel = interaction.member.voice.channel;
+    if (channel) channel = interaction.client.channels.cache.get(channel);
+    else if (!channel && interaction.member.voice.channel) channel = interaction.member.voice.channel;
     else {
         // NOPE: no channel id provided, and user not joined into voice channel
         logger.error('discord.js', 'Failed to join voice channel: channel id not provided');
@@ -77,14 +77,14 @@ async function commandHandler(interaction) {
     }
 
     // check if channel is valid
-    if(!verify(interaction, channel)) return;
-    
+    if (!verify(interaction, channel)) return;
+
     const voice = new DiscordVoice(interaction.guild.id);  // voice class (of current guild)
     const thread = new DiscordThread(interaction.guild.id);
 
     try {
         // leave from previous voice channel (if has one)
-        if(voice.connected) await threads.remove(thread);
+        if (voice.connected) await threads.remove(thread);
 
         // try to join voice channel
         voice.locale = interaction.locale;
@@ -109,16 +109,8 @@ async function commandHandler(interaction) {
         logger.verbose('discord.js', `Created thread channel ${newThread}.`);
 
         // handle disconnect event
-        voice.handleDisconnect(async () => {
-            logger.warn('discord.js', `Bot kicked from channel ${channel} by someone. Removing thread...`);
-            // remove voice thread
-            //TODO: integrate code w/ threads.remove()
-            const leaveEpoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
-            thread.headup.edit(`${channel} :wave: <t:${leaveEpoch}:R>`);
-            logger.verbose('discord.js', `Removed thread channel ${thread.get()}.`);
-            await thread.setLocked(true);
-            await thread.delete();
-        });
+        voice.handleDisconnect(() => require('../modules/discordutils/thread.js')
+            .onVoiceDisconnect(thread, channel));
     } catch (err) {
         const result = report(err, interaction.user.id);
         logger.error('discord.js', `Error occured while joining voice channel:\n  ${err.stack}\n`);
@@ -135,10 +127,10 @@ module.exports = {
         .setDescription(i18n.get('en-US', 'command.join.desc'))
         .setDescriptionLocalizations(i18n.getAll('command.join.desc'))
         .addStringOption(option => option.setName(i18n.get('en-US', 'command.join.opt1.name'))
-                                         .setNameLocalizations(i18n.getAll('command.join.opt1.name'))
-                                         .setDescription(i18n.get('en-US', 'command.join.opt1.desc'))
-                                         .setDescriptionLocalizations(i18n.getAll('command.join.opt1.desc'))
-                                         .setRequired(false)),
+            .setNameLocalizations(i18n.getAll('command.join.opt1.name'))
+            .setDescription(i18n.get('en-US', 'command.join.opt1.desc'))
+            .setDescriptionLocalizations(i18n.getAll('command.join.opt1.desc'))
+            .setRequired(false)),
     extra: { ephemeral: true },
     execute: commandHandler
 }

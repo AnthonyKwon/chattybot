@@ -72,9 +72,7 @@ client.on(Events.MessageCreate, message => {
 
 client.on(Events.ThreadDelete, t => {
     // check if thread owner is same as bot user
-    if (!t.ownerId !== t.client.user.id) return;
-    // check if thread is locked
-    if (!t.locked) return;
+    if (t.ownerId !== t.client.user.id) return;
 
     // handle thread deletion by other factor 
     thread.onDelete(t);

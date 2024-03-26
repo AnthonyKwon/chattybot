@@ -34,6 +34,16 @@ async function onDelete(thread) {
     remove(threadClass, true, false);
 }
 
+const onVoiceDisconnect = async (thread, channel) => {
+    logger.warn('discord.js', `Bot kicked from channel ${channel} by someone. Removing thread...`);
+    // remove voice thread
+    const leaveEpoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
+    thread.headup.edit(`${channel} :wave: <t:${leaveEpoch}:R>`);
+    logger.verbose('discord.js', `Removed thread channel ${thread.get()}.`);
+    await thread.setLocked(true);
+    await thread.delete();
+}
+
 async function parse(message) {
     const threadClass = new DiscordThread(message.guild.id);  // voice thread class
 
@@ -78,14 +88,14 @@ async function parse(message) {
     }
 }
 
-async function remove(thread, threadDeleted = false, voiceDisconnected = false) {
+async function remove(thread) {
     const voice = new DiscordVoice(thread.guildId);
     // check if bot is in voice channel
     if (!voice.channelId) return;
 
     // leave from voice channel
-    const voiceChannel = thread.get().client.channels.cache.get(voice.channelId);
-    if (!voiceDisconnected) {
+    if (voice) {
+        const voiceChannel = thread.get().client.channels.cache.get(voice.channelId);
         await voice.leave();
         logger.verbose('discord.js', `Left voice channel ${voiceChannel}.`);
     }
@@ -93,11 +103,10 @@ async function remove(thread, threadDeleted = false, voiceDisconnected = false) 
     // remove voice thread
     const epoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
     thread.headup.edit(`${voiceChannel} :wave: <t:${epoch}:R>`);
-    if (!threadDeleted) {
+    if (thread) {
         logger.verbose('discord.js', `Removed thread channel ${thread.get()}.`);
-        await thread.setLocked(true);
         await thread.delete();
     }
 }
 
-module.exports = { onArchive, onDelete, parse, remove }
+module.exports = { onArchive, onDelete, onVoiceDisconnect, parse, remove }
