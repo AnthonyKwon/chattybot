@@ -1,4 +1,3 @@
-const util = require('node:util');
 const common = require('../common.js');
 
 function parseId(message, guild) {
@@ -6,7 +5,7 @@ function parseId(message, guild) {
     return message.replace(regexId, (match, $1) => {
         // get id w/o angle brackets
         let id = common.replaceAll(match, /[<>]/g, '');
-        
+
         // classify and handle id by type
         if (id.includes('@'))  // user id
             return guild.members.cache.get(id.replace('@', '')).displayName;
