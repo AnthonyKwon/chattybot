@@ -2,7 +2,7 @@ const path = require('path');
 const winston = require('winston');
 
 // initialize logger
-    const logger = winston.createLogger({
+const logger = winston.createLogger({
     level: 'info',
     format: winston.format.combine(
         winston.format.timestamp(),
@@ -14,17 +14,19 @@ const winston = require('winston');
         new winston.transports.File({
             filename: path.join(__dirname, '../../logs/error.log'),
             level: 'error'
-        }),
-        new winston.transports.File({
-            filename: path.join(__dirname, '../../logs/verbose.log'),
-            level: 'verbose'
         })
     ]
 });
 
 // test if development mode is set
 if (process.env.NODE_ENV == "development") {
-    logger.add(new winston.transports.Console({ 
+    // enable full file logging in development mode
+    logger.add(new winston.transports.File({
+        filename: path.join(__dirname, '../../logs/verbose.log'),
+        level: 'verbose'
+    }));
+    // show full log on console in development mode
+    logger.add(new winston.transports.Console({
         format: winston.format.combine(
             winston.format.colorize(),
             winston.format.cli(),
@@ -32,6 +34,7 @@ if (process.env.NODE_ENV == "development") {
         level: 'verbose'
     }));
 } else {
+    // show only warning+ log on console in release mode
     logger.add(new winston.transports.Console({
         format: winston.format.combine(
             winston.format.colorize(),
