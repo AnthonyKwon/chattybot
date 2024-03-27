@@ -16,9 +16,10 @@ function getLocaleData(locale) {
             cache.save(locale, localeData);
         }
         return localeData;
-    } catch (error) {
+    } catch (err) {
         //TODO: implement errorreport
-        logger.error('i18n', `Error occured while getting locale data:\n${error}`);
+        logger.error('i18n', 'Error occured while getting locale data!');
+        logger.error('i18n', err.stack ? err.stack : err)
     }
 }
 
@@ -42,9 +43,10 @@ function getAll(id) {
     try {
         // redirect to file.readAll() function
         return file.readAll(id);
-    } catch (error) {
+    } catch (err) {
         //TODO: implement errorreport
-        logger.error('i18n', `Error occured while getting locale data:\n${error}`);
+        logger.error('i18n', 'Error occured while getting locale data!');
+        logger.error('i18n', err.stack ? err.stack : err);
         // return dummmy locale data
         return { 'en-US': 'undefined' };
     }
