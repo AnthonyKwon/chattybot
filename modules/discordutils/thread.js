@@ -18,11 +18,14 @@ async function onArchive(thread) {
 
     // remove and leave
     logger.warn('discord.js', `Thread ${thread} archived by someone. Removing thread and leaving voice...`);
-    remove(threadClass, false, false);
+    remove(threadClass);
 }
 
 async function onDelete(thread) {
     const threadClass = new DiscordThread(thread.guild.id);  // voice thread class
+
+    // prevent discord from double-call the deletion
+    if (threadClass.get().name = '__REMOVEME_CHATTYDISPOSAL') return;
 
     //check if voice thread class initialized correctly
     if (!threadClass.get()) return;
@@ -31,17 +34,16 @@ async function onDelete(thread) {
 
     // remove and leave
     logger.warn('discord.js', `Thread ${thread} removed by someone. Leaving voice...`);
-    remove(threadClass, true, false);
+    threadClass.deleted = true;
+    remove(threadClass);
 }
 
-const onVoiceDisconnect = async (thread, channel) => {
+async function onVoiceDisconnect(threadClass, channel) {
     logger.warn('discord.js', `Bot kicked from channel ${channel} by someone. Removing thread...`);
     // remove voice thread
     const leaveEpoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
-    thread.headup.edit(`${channel} :wave: <t:${leaveEpoch}:R>`);
-    logger.verbose('discord.js', `Removed thread channel ${thread.get()}.`);
-    await thread.setLocked(true);
-    await thread.delete();
+    threadClass.headup.edit(`${channel} :wave: <t:${leaveEpoch}:R>`);
+    remove(threadClass);
 }
 
 async function parse(message) {
@@ -90,21 +92,20 @@ async function parse(message) {
 }
 
 async function remove(thread) {
-    const voice = new DiscordVoice(thread.guildId);
-    // check if bot is in voice channel
-    if (!voice.channelId) return;
-
     // leave from voice channel
-    if (voice) {
-        const voiceChannel = thread.get().client.channels.cache.get(voice.channelId);
+    const voice = new DiscordVoice(thread.guildId);
+    const voiceChannel = thread.get().client.channels.cache.get(voice.channelId);
+    const epoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
+    if (voice.connected) {
         await voice.leave();
         logger.verbose('discord.js', `Left voice channel ${voiceChannel}.`);
+        thread.headup.edit(`${voiceChannel} :wave: <t:${epoch}:R>`);
+    } else {
+        thread.headup.edit(`:cry:  <t:${epoch}:R>`);
     }
 
     // remove voice thread
-    const epoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
-    thread.headup.edit(`${voiceChannel} :wave: <t:${epoch}:R>`);
-    if (thread) {
+    if (!thread.deleted) {
         logger.verbose('discord.js', `Removed thread channel ${thread.get()}.`);
         await thread.delete();
     }
