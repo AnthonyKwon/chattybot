@@ -14,14 +14,14 @@ async function commandHandler(interaction) {
     // check if message text length is less than 1000
     const text = interaction.options.getString(i18n.get('en-US', 'command.say.opt1.name'));
     if (text.length > config.ttsMaxLength) {
-        interaction.editReply(i18n.get(interaction.locale, 'error.discord.tts.text_too_long').format(config.ttsMaxLength));
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.tts.text_too_long').format(config.ttsMaxLength));
         return;
     }
 
     // does user joined voice channel?
     if (!voice.connected) {
         // NOPE: user does not joined voice channel
-        interaction.editReply(i18n.get(interaction.locale, 'error.discord.voice.not_joined'));
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.not_joined'));
         return;
     }
 
@@ -35,7 +35,7 @@ async function commandHandler(interaction) {
         // get account username (guild username if command used on guild && user has guild-specific username) of the user
         const user = interaction.member ? interaction.member : interaction.user;
         // Send message and TTS to discord
-        interaction.editReply(i18n.get(interaction.locale, 'tts.speak.text').format(interaction.user, text));
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'tts.speak.text').format(interaction.user, text));
         tts.addQueue(new TTSUser(user), interaction.locale, fixedText);
         const voiceCallback = async function (stream) {
             // play audio stream
@@ -50,7 +50,7 @@ async function commandHandler(interaction) {
         logger.error('tts', 'Error occured while synthesizing!');
         logger.error('tts', err.stack ? err.stack : err);
 
-        interaction.editReply(i18n.get(interaction.locale, 'error.generic').format(result));
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.generic').format(result));
     }
     return;
 }
