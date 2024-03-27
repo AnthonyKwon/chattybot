@@ -43,7 +43,7 @@ client.once(Events.ClientReady, async c => {
     }
 
     // set bot activity message if available
-    if (config.status && config.status !== '') c.user.setActivity(`${config.status}`);
+    if (config.status && config.status !== '') c.user.setActivity(config.status);
 
     // register slash commands
     //TODO: cache command data and register only when updated
