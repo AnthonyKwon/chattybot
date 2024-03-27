@@ -99,10 +99,11 @@ async function commandHandler(interaction) {
         const headupMsg = await interaction.channel.send(`${channel} :ballot_box_with_check: <t:${epoch}:R>`);
 
         // create thread for conversation
-        const threadIdRaw = `${interaction.client.user.username}${interaction.user.displayName}${Date.now()}`;
+        const username = interaction.member.displayName;
+        const threadName = `🧵 - ${username} (${Math.floor(Date.now() / 1000)})`;
         const threadOpt = {
             autoArchiveDuration: 60,
-            name: Buffer.from(threadIdRaw).toString('base64').substring(0, 24),
+            name: threadName,
             rateLimitPerUser: 3
         }
         const newThread = await thread.create(headupMsg, threadOpt);
