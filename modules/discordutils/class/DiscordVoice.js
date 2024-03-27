@@ -1,4 +1,25 @@
 const voice = require('@discordjs/voice');
+const localeMap = new Map();
+
+// handle disconnect event
+const onDisconnect = (connection, threadDestroyCallback) => {
+    connection.on(voice.VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
+        try {
+            await Promise.race([
+                voice.entersState(connection, voice.VoiceConnectionStatus.Signalling, 5_000),
+                voice.entersState(connection, voice.VoiceConnectionStatus.Connecting, 5_000),
+            ]);
+            // Seems to be reconnecting to a new channel - ignore disconnect
+        } catch(err) {
+            // Seems to be a real disconnect which SHOULDN'T be recovered from
+            connection.destroy();
+            // remove locale data from localeMap
+            localeMap.delete(connection.joinConfig.guildId);
+            // remove voice thread
+            threadDestroyCallback();
+        }
+    });
+};
 
 class DiscordVoice {
     constructor(guildId) {
@@ -18,6 +39,17 @@ class DiscordVoice {
         const connection = voice.getVoiceConnection(this._guildId);
         // return channel id if available, if not, return undefined
         return connection ? connection.joinConfig.channelId : undefined;
+    }
+
+    // (get/setter) locale for the voice channel
+    get locale()  { return localeMap.get(this._guildId); }
+    set locale(value)  { localeMap.set(this._guildId, value); }
+
+    // handle disconnect event
+    handleDisconnect(threadDestroyCallback) {
+        const connection = voice.getVoiceConnection(this._guildId);
+        if(!connection) return;
+        return onDisconnect(connection, threadDestroyCallback);
     }
 
     // join into specified voice channel
@@ -58,6 +90,8 @@ class DiscordVoice {
         if (!connection) return;
         // destroy(disconnect) current connection
         connection.destroy();
+        // remove locale data from localeMap
+        localeMap.delete(this._guildId);
     }
 }
 

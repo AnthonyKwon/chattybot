@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const logger = require('../logger/main.mod.js');
 
 // parse date-time for filename
 const datetime = () => {
@@ -14,18 +15,23 @@ const datetime = () => {
 }
 
 // create an error report and return report id
-function createReport(error, uid=undefined) {
+function createReport(error, uid = undefined) {
     const errorid = `${error.name.toUpperCase()}_${datetime()}_${uid}`;
     const filename = `report-${errorid}.txt`;
     const data = { date: new Date(), uid, errorId: error.name, errorStack: error.stack };
 
-    // check if report directory exists and create if not
-    if (!fs.existsSync(path.join(path.dirname(require.main.filename), '/logs/report/'))) {
-        fs.mkdirSync(path.join(path.dirname(require.main.filename), '/logs/report/'));
-    }
+    try {
+        // check if report directory exists and create if not
+        if (!fs.existsSync(path.join(path.dirname(require.main.filename), '/logs/report/'))) {
+            fs.mkdirSync(path.join(path.dirname(require.main.filename), '/logs/report/'));
+        }
 
-    // save report to file
-    fs.writeFileSync(path.join(path.dirname(require.main.filename), '/logs/report/', filename), JSON.stringify(data));
+        // save report to file
+        fs.writeFileSync(path.join(path.dirname(require.main.filename), '/logs/report/', filename), JSON.stringify(data));
+    } catch (fileErr) {
+        logger.error('errorreport', `Failed to write error report "${filename}"!`);
+        logger.error('errorreport', fileErr.stack ? fileErr.stack : fileErr);
+    }
 
     // return error id
     return errorid;

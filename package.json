@@ -1,13 +1,13 @@
 {
   "name": "chattybot",
-  "version": "2.1.0-experimental.0",
+  "version": "2.1.0-experimental.1",
   "description": "An Discord Text-To-Speech Bot",
   "main": "main.js",
   "scripts": {
     "start": "node .",
     "dev": "npm run development",
     "development": "NODE_ENV=development nodemon --inspect .",
-    "unregister": "UNREGISTER_SLASH=yes node ."
+    "unregister": "NODE_ENV=development UNREGISTER_SLASH=yes node ."
   },
   "repository": {
     "type": "git",
