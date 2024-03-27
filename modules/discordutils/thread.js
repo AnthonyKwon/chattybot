@@ -1,4 +1,3 @@
-const { Locale } = require('discord.js');
 const DiscordThread = require('./class/DiscordThread.js');
 const DiscordVoice = require('./class/DiscordVoice.js');
 const TTSClass = require('../tts/class/TextToSpeech.js');

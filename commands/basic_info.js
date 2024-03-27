@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const package = require('../package.json');
-const config = require('../modules/config.js');
 
 async function commandHandler(interaction) {
     let reply = '';
@@ -12,7 +11,7 @@ async function commandHandler(interaction) {
     interaction.editReply(reply);
 }
 
-module.exports = { 
+module.exports = {
     data: new SlashCommandBuilder()
         .setName(i18n.get('en-US', 'command.info.name'))
         .setNameLocalizations(i18n.getAll('command.info.name'))

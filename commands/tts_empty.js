@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require('discord.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const TextToSpeech = require('../modules/tts/class/TextToSpeech.js');
 const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
-const config = require('../modules/config.js')
 
 async function commandHandler(interaction) {
     // This command only can be used after TTS is initialized

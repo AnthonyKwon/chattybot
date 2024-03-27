@@ -3,7 +3,6 @@ const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
 const DiscordThread = require('../modules/discordutils/class/DiscordThread.js');
 const threads = require('../modules/discordutils/thread.js');
 const i18n = require('../modules/i18n/main.mod.js');
-const logger = require('../modules/logger/main.mod.js');
 
 async function commandHandler(interaction) {
     const thread = new DiscordThread(interaction.guild.id);
