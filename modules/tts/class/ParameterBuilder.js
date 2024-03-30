@@ -12,7 +12,7 @@ class ParameterBuilder {
 
         this._gender = 'neutral';
         this._locale = Locale.EnglishUS;
-        this._volume = 93;
+        this._volume = 100;
         this._pitch = 100;
         this._speed = 100;
     }
