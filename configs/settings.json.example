@@ -2,9 +2,9 @@
     "token": "paste_your_token_here",
     "inviteLink": "paste-your-bot-link-here",
     "locale": "en-US",
-    "status": "purrr...",
+    "status": "",
     "ttsGender": "female",
-    "ttsMaxLength": "500",
+    "ttsMaxLength": "100",
     "ttsProvider": "GcpTts",
     "GcpTtsPreferredType": "Standard",
     "GcpTtsPreferredCode": "H"
