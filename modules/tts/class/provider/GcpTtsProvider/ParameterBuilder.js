@@ -57,7 +57,13 @@ class GcpTtsParamBuilder extends ParameterBuilder {
         // set TTS audio configuration
         this._params.audioConfig.speakingRate = this._speed / 100;
         this._params.audioConfig.pitch = (this._pitch - 100) / 10;
-        this._params.audioConfig.volumeGainDb = this.volume > 100 ? ((this._volume - 100) / 100) * 10 : (this._volume / 100) * 96 - 96;
+        const rawVolume = 10 * Math.log10(this._volume / 100);
+        if (rawVolume > 6)
+            this._params.audioConfig.volumeGainDb = 6;
+        else if (rawVolume < -20)
+            this._params.audioConfig.volumeGainDb = -96;
+        else
+            this._params.audioConfig.volumeGainDb = rawVolume;
 
         return this._params;
     }
