@@ -3,9 +3,7 @@ const DiscordVoice = require('./class/DiscordVoice.js');
 const TTSClass = require('../tts/class/TextToSpeech.js');
 const TTSUser = require('../tts/class/TTSUser.js');
 const MessageFixer = require('./messageFixer.js');
-const i18n = require('../i18n/main.mod.js');
 const logger = require('../logger/main.mod.js');
-const report = require('../errorreport/main.mod.js');
 
 async function onArchive(thread) {
     const threadClass = new DiscordThread(thread.guild.id);  // voice thread class
@@ -82,11 +80,8 @@ async function parse(message) {
         logger.verbose('tts', `${message.author} spoken: ${text}`);
         await tts.requestSpeak(voiceCallback);
     } catch (err) {
-        // handle error report
-        const result = report(err, message.author.id);
         logger.error('tts', 'Error occured while synthesizing!');
         logger.error('tts', err.stack ? err.stack : err);
-        message.channel.send(i18n.get('en-US', 'error.generic').format(result));
     }
 }
 

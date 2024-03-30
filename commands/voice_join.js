@@ -90,13 +90,16 @@ async function commandHandler(interaction) {
         voice.locale = interaction.locale;
         await voice.join(channel);
 
-        // send success reply to user
-        logger.verbose('discord.js', `Joined voice channel ${channel}.`);
-        interaction.editReply(i18n.get(interaction.locale, 'message.discord.voice.joined').format(channel));
-
         // send a message for starting a thread
         const epoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
-        const headupMsg = await interaction.channel.send(`${channel} :ballot_box_with_check: <t:${epoch}:R>`);
+        const headupMsg = await interaction.editReply(`${channel} :ballot_box_with_check: <t:${epoch}:R>`);
+
+        // send success reply to user
+        logger.verbose('discord.js', `Joined voice channel ${channel}.`);
+        interaction.followUp({
+            content: i18n.get(interaction.locale, 'message.discord.voice.joined').format(channel),
+            ephemeral: true
+        });
 
         // create thread for conversation
         const username = interaction.member.displayName;
@@ -133,6 +136,6 @@ module.exports = {
             .setDescription(i18n.get('en-US', 'command.join.opt1.desc'))
             .setDescriptionLocalizations(i18n.getAll('command.join.opt1.desc'))
             .setRequired(false)),
-    extra: { ephemeral: true },
+    extra: { ephemeral: false },
     execute: commandHandler
 }
