@@ -4,6 +4,7 @@ const DiscordThread = require('../modules/discordutils/class/DiscordThread.js');
 const threadEvent = require('../modules/discordutils/thread.js');
 const config = require('../modules/config.js');
 const i18n = require('../modules/i18n/main.mod.js');
+const { datetimePretty } = require('../modules/common.js');
 const logger = require('../modules/logger/main.mod.js');
 const report = require('../modules/errorreport/main.mod.js');
 
@@ -103,7 +104,7 @@ async function commandHandler(interaction) {
 
         // create thread for conversation
         const username = interaction.member.displayName;
-        const threadName = `🧵 - ${username} (${Math.floor(Date.now() / 1000)})`;
+        const threadName = `🧵 - ${username} (${datetimePretty()})`;
         const threadOpt = {
             autoArchiveDuration: 60,
             name: threadName,
