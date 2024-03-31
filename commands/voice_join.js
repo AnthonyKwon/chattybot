@@ -1,4 +1,4 @@
-const { ChannelType, PermissionsBitField, SlashCommandBuilder } = require('discord.js');
+const { ChannelType, PermissionsBitField, SlashCommandBuilder, SlashCommandStringOption } = require('discord.js');
 const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
 const DiscordThread = require('../modules/discordutils/class/DiscordThread.js');
 const threadEvent = require('../modules/discordutils/thread.js');
@@ -7,6 +7,26 @@ const i18n = require('../modules/i18n/main.mod.js');
 const { datetimePretty } = require('../modules/common.js');
 const logger = require('../modules/logger/main.mod.js');
 const report = require('../modules/errorreport/main.mod.js');
+
+function buildCommand() {
+    const command = new SlashCommandBuilder();
+    command.setName(i18n.get('en-US', 'command.join.name'));
+    command.setNameLocalizations(i18n.getAll('command.join.name'));
+    command.setDescription(i18n.get('en-US', 'command.join.desc'));
+    command.setDescriptionLocalizations(i18n.getAll('command.join.desc'));
+
+    // add string option on development mode
+    if (process.env.NODE_ENV === 'development') {
+        const optChannelId = new SlashCommandStringOption();
+        optChannelId.setName(i18n.get('en-US', 'command.join.opt1.name'));
+        optChannelId.setNameLocalizations(i18n.getAll('command.join.opt1.name'));
+        optChannelId.setDescription(i18n.get('en-US', 'command.join.opt1.desc'));
+        optChannelId.setDescriptionLocalizations(i18n.getAll('command.join.opt1.desc'));
+        optChannelId.setRequired(false);
+        command.addStringOption(optChannelId);
+    }
+    return command;
+}
 
 // channel verification: lots of checks before joining to voice channel
 function verify(interaction, channel) {
@@ -133,16 +153,7 @@ async function commandHandler(interaction) {
 }
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName(i18n.get('en-US', 'command.join.name'))
-        .setNameLocalizations(i18n.getAll('command.join.name'))
-        .setDescription(i18n.get('en-US', 'command.join.desc'))
-        .setDescriptionLocalizations(i18n.getAll('command.join.desc'))
-        .addStringOption(option => option.setName(i18n.get('en-US', 'command.join.opt1.name'))
-            .setNameLocalizations(i18n.getAll('command.join.opt1.name'))
-            .setDescription(i18n.get('en-US', 'command.join.opt1.desc'))
-            .setDescriptionLocalizations(i18n.getAll('command.join.opt1.desc'))
-            .setRequired(false)),
+    data: buildCommand(),
     extra: { ephemeral: false },
     execute: commandHandler
 }

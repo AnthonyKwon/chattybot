@@ -19,7 +19,7 @@ const logger = winston.createLogger({
 });
 
 // test if development mode is set
-if (process.env.NODE_ENV == "development") {
+if (process.env.NODE_ENV == "development" || process.env.SLASH_ACTION) {
     // enable full file logging in development mode
     logger.add(new winston.transports.File({
         filename: path.join(__dirname, '../../logs/verbose.log'),
