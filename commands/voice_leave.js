@@ -14,10 +14,12 @@ async function commandHandler(interaction) {
         return;
     }
 
+    // cache information of the voice channel
+    const voiceChannel = interaction.client.channels.cache.get(voice.channelId);
+
     // remove thread and leave voice
     threads.remove(thread);
 
-    const voiceChannel = interaction.client.channels.cache.get(voice.channelId);
     // send reply to user interaction
     interaction.editReply(i18n.get(interaction.locale, 'message.discord.voice.left').format(voiceChannel));
 }
