@@ -104,6 +104,11 @@ async function parse(message) {
 async function remove(thread) {
     // set event lock
     eventLock = true;
+
+    // delete TTS class if available
+    if (TTSClass.available(thread.guildId))
+        TTSClass.delete(thread.guildId);
+
     // leave from voice channel
     const voice = new DiscordVoice(thread.guildId);
     const voiceChannel = thread.get().client.channels.cache.get(voice.channelId);
