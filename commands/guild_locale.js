@@ -22,7 +22,8 @@ async function commandHandler(interaction) {
 
     // check if bot has permission to update the guild settings
     if (!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageGuild)) {
-        interaction.editReply(i18n.get(currLocale, 'error.discord.bot.no_permission'));
+        interaction.editReply(i18n.get(currLocale, 'error.discord.bot.no_permission')
+            .format(i18n.get(currLocale, 'permissions.MANAGE_GUILD')));
         return;
     }
 
@@ -33,7 +34,7 @@ async function commandHandler(interaction) {
     }
 
     // check if server locale is the same as before
-    if (interaction.guild.preferredLocale === locale) {
+    if (interaction.guild.preferredLocale === newLocale) {
         interaction.editReply(i18n.get(currLocale, 'error.discord.command.locale_already_set'))
         return;
     }

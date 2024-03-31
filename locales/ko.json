@@ -31,13 +31,14 @@
     "error.discord.voice.user_not_found": ":loud_sound:  :no_entry_sign: {0}님이 있는 채널을 찾지 못했습니다. *음성 채널* 에 **들어가 주세요.**",
     "error.discord.thread.no_permission": ":thread::no_entry_sign:  봇이 현재 채널에 스레드를 생성할 권한이 없습니다!",
     "error.discord.tts.text_too_long": ":loud_sound:  :page_with_curl: 문장이 너무 깁니다. {0}자 이하로 입력해 주세요.",
-    "error.discord.bot.no_permission": ":hourglass_flowing_sand::no_entry_sign:  제가 이 행동을 수행 할 권한이 없습니다! 이 문제에 대해 서버 관리자에게 문의해 주세요.",
+    "error.discord.bot.no_permission": ":hourglass_flowing_sand::no_entry_sign:  제가 이 행동을 수행 할 권한(**{0}**)이 없습니다.",
     "error.discord.user.no_permission": ":hourglass_flowing_sand::no_entry_sign:  이 행동을 수행 할 권한이 없습니다!",
     "error.generic": [
         ":octagonal_sign: 명령어를 실행하는 도중 **오류**가 발생했습니다!",
         "아래의 오류 ID를 개발자에게 알려주세요.",
         "**오류 ID:** {0}"
     ],
+    "locale.name": "한국어",
     "message.discord.locale.guild_current": [
         "**메시지 언어**: (개인 설정을 따름)",
         "**음성 언어**: {0}",
@@ -55,6 +56,7 @@
     ],
     "message.info.maintenance": ":tools: 현재 **점검 모드**로 실행 중입니다.",
     "message.tts_queue.empty": ":loud_sound:  :page_with_curl: TTS를 초기화 했습니다!",
+    "permissions.MANAGE_GUILD": "서버 관리하기",
     "tts.gender.FEMALE": "여성",
     "tts.gender.MALE": "남성",
     "tts.gender.NEUTRAL": "중성",
