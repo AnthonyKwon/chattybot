@@ -3,9 +3,9 @@
     "inviteLink": "paste-your-bot-link-here",
     "locale": "en-US",
     "status": "",
-    "awayTime": "60",
+    "awayTime": 60,
     "ttsGender": "female",
-    "ttsMaxLength": "100",
+    "ttsMaxLength": 100,
     "ttsProvider": "GcpTts",
     "GcpTtsPreferredType": "Standard",
     "GcpTtsPreferredCode": "H"
