@@ -53,7 +53,7 @@ class TextToSpeech {
 
     // (getter,setter) Queue: Get/Set an queue array
     //TODO: create TTSUser and TTSQueue type on typescript transform
-    async addQueue(ttsUser, locale, message) {
+    async addQueue(ttsUser, message) {
         // If queue is not initialize, initialize it first
         if (!this._queue) this._queue = [];
         this._queue.push(

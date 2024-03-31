@@ -84,7 +84,7 @@ async function parse(message) {
 
         // add message to TTS speak queue
         const voice = new DiscordVoice(message.guild.id);
-        tts.addQueue(user, voice.locale, text);
+        tts.addQueue(user, text);
         // create player callback TTS to use
         const voiceCallback = async function (stream) {
             // play audio stream
