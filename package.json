@@ -8,6 +8,7 @@
     "dev": "npm run development",
     "development": "NODE_ENV=development nodemon --inspect .",
     "register": "NODE_ENV=development SLASH_ACTION=register node .",
+    "devRegister": "NODE_ENV=development SLASH_ACTION=devRegister node .",
     "unregister": "NODE_ENV=development SLASH_ACTION=unregister node ."
   },
   "repository": {
