@@ -23,7 +23,7 @@ client.once(Events.ClientReady, async c => {
     logger.info('discord.js', `Connected to ${client.user.username}!`);
 
     // check if user launched bot to register/unregister commands
-    if (process.env.SLASH_ACTION === 'register')
+    if (process.env.SLASH_ACTION === 'register' || process.env.SLASH_ACTION === 'devRegister')
         slash.register(config.token, c);
     else if (process.env.SLASH_ACTION == 'unregister')
         slash.unregister(config.token, c);
