@@ -5,7 +5,12 @@ const TTSUser = require('../tts/class/TTSUser.js');
 const MessageFixer = require('./messageFixer.js');
 const logger = require('../logger/main.mod.js');
 
+// event lock to prevent multiple event trigger
+// why I even have to do this; maybe spaghetti code?
+let eventLock = false;
+
 async function onArchive(thread) {
+    if (eventLock) return;
     const threadClass = new DiscordThread(thread.guild.id);  // voice thread class
 
     //check if voice thread class initialized correctly
@@ -19,23 +24,21 @@ async function onArchive(thread) {
 }
 
 async function onDelete(thread) {
+    if (eventLock) return;
     const threadClass = new DiscordThread(thread.guild.id);  // voice thread class
 
-    // prevent discord from double-call the deletion
-    if (threadClass.get().name = '__REMOVEME_CHATTYDISPOSAL') return;
-
     //check if voice thread class initialized correctly
-    if (!threadClass.get()) return;
+    if (await threadClass.available()) return;
     // check if deleted thread is same as voice thread
     if (threadClass.get().id !== thread.id) return;
 
     // remove and leave
     logger.warn('discord.js', `Thread ${thread} removed by someone. Leaving voice...`);
-    threadClass.deleted = true;
     remove(threadClass);
 }
 
 async function onVoiceDisconnect(threadClass, channel) {
+    if (eventLock) return;
     logger.warn('discord.js', `Bot kicked from channel ${channel} by someone. Removing thread...`);
     // remove voice thread
     const leaveEpoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
@@ -86,6 +89,8 @@ async function parse(message) {
 }
 
 async function remove(thread) {
+    // set event lock
+    eventLock = true;
     // leave from voice channel
     const voice = new DiscordVoice(thread.guildId);
     const voiceChannel = thread.get().client.channels.cache.get(voice.channelId);
@@ -99,10 +104,11 @@ async function remove(thread) {
     }
 
     // remove voice thread
-    if (!thread.deleted) {
+    if (await thread.available()) {
         logger.verbose('discord.js', `Removed thread channel ${thread.get()}.`);
         await thread.delete();
     }
+    eventLock = false;
 }
 
 module.exports = { onArchive, onDelete, onVoiceDisconnect, parse, remove }
