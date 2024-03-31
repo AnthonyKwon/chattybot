@@ -26,19 +26,7 @@ client.once(Events.ClientReady, async c => {
     if (process.env.SLASH_ACTION === 'register')
         slash.register(config.token, c);
     else if (process.env.SLASH_ACTION == 'unregister') {
-        const rest = new REST().setToken(config.token);
-        try {
-            logger.info('discord.js', 'Unregistering slash commands...');
-
-            // unregister global slash commands
-            await rest.put(Routes.applicationCommands(c.user.id), { body: [] });
-
-            logger.info('discord.js', 'Unregistered all slash commands.');
-        } catch (err) {
-            logger.error('discord.js', 'Failed to unregister slash command!');
-            logger.error('discord.js', err.stack ? err.stack : err);
-        }
-        process.exit();
+        slash.unregister(config.token, c);
     }
 
     // set bot activity message if available
