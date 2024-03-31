@@ -31,13 +31,14 @@
     "error.discord.voice.user_not_found": ":loud_sound:  :no_entry_sign: I can't find {0} in any voice channel. Please join voice channel first.",
     "error.discord.thread.no_permission": ":thread::no_entry_sign:  I don't have permission to create thread here!",
     "error.discord.tts.text_too_long": ":loud_sound:  :page_with_curl: Text too long. Write within {0} letter(s).",
-    "error.discord.bot.no_permission": ":hourglass_flowing_sand::no_entry_sign:  I don't have permission to do this action! Contact to server admin about this issue.",
+    "error.discord.bot.no_permission": ":hourglass_flowing_sand::no_entry_sign:  I don't have permission(s)(**{0}**) to do this action.",
     "error.discord.user.no_permission": ":hourglass_flowing_sand::no_entry_sign:  You don't have permission to do this action!",
     "error.generic": [
         ":octagonal_sign: Error occured while launching command!",
         "Please send this Error ID to developer.",
         "**Error ID:** {0}"
     ],
+    "locale.name": "English, US",
     "message.discord.locale.guild_current": [
         "**Message locale**: (follows personal preferences)",
         "**Voice locale**: {0}",
@@ -51,10 +52,11 @@
         ":information_source: {0} Discord TTS bot **version {1}**",
         ":scroll: This program is licensed under the GNU General Public License, version 2.",
         ":scroll: **License information:** <https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html>",
-        ":floppy_disk: **Repository:** {2}"
+        ":floppy_disk: **Repository:** <{2}>"
     ],
     "message.info.maintenance": ":tools: Currently running as **maintenance mode**.",
     "message.tts_queue.empty": ":loud_sound:  :page_with_curl: Successfully reset Text-to-speech engine!",
+    "permission.MANAGE_GUILD": "Manage Server",
     "tts.gender.FEMALE": "FEMALE",
     "tts.gender.MALE": "MALE",
     "tts.gender.NEUTRAL": "NEUTRAL",

@@ -56,8 +56,9 @@ class DiscordThread {
 
         // rename thread to dummy name
         // to prevent discord double-calling the onDelete() method
-        await oldThread.setArchived(false);
-        await oldThread.edit({ name: '__REMOVEME_CHATTYDISPOSAL' });
+        //TODO: solve issue that thread name can't be modified w/o SEND_MESSAGES_IN_THREADS permission
+        //await oldThread.setArchived(false);
+        //await oldThread.edit({ name: '__REMOVEME_CHATTYDISPOSAL' });
 
         // delete current thread
         await oldThread.delete(reason);

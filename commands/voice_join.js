@@ -37,8 +37,7 @@ function verify(interaction, channel) {
 
     // can I create or manage thread at the text channel where interaction was used?
     if (!permissions.has(PermissionsBitField.Flags.CreatePublicThreads) ||
-        !permissions.has(PermissionsBitField.Flags.ManageThreads) ||
-        !permissions.has(PermissionsBitField.Flags.SendMessagesInThreads)) {
+        !permissions.has(PermissionsBitField.Flags.ManageThreads)) {
         // NOPE: I can't create thread on there
         logger.error('discord.js', `Failed to join voice channel: bot does not have permission to create thread in channel ${channel.id}!`);
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.thread.no_permission').format(channel));
