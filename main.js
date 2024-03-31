@@ -25,9 +25,8 @@ client.once(Events.ClientReady, async c => {
     // check if user launched bot to register/unregister commands
     if (process.env.SLASH_ACTION === 'register')
         slash.register(config.token, c);
-    else if (process.env.SLASH_ACTION == 'unregister') {
+    else if (process.env.SLASH_ACTION == 'unregister')
         slash.unregister(config.token, c);
-    }
 
     // set bot activity message if available
     if (config.status && config.status !== '') c.user.setActivity(config.status);
