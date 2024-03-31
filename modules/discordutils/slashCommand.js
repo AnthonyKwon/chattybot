@@ -31,7 +31,7 @@ async function SlashCommandRegister(token, client) {
         const command = require(filePath);
 
         // prepend "zz" to command when running as development environment
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.SLASH_ACTION === 'devRegister') {
             command.data.name = `zz${command.data.name}`;
             Object.keys(command.data.name_localizations).forEach(key => command.data.name_localizations[key] = `zz${command.data.name_localizations[key]}`);
         }
