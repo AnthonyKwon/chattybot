@@ -22,8 +22,10 @@ client.once(Events.ClientReady, async c => {
     // create voice session map
     logger.info('discord.js', `Connected to ${client.user.username}!`);
 
-    // check if user launched bot to unregister commands
-    if (process.env.UNREGISTER_SLASH == 'yes') {
+    // check if user launched bot to register/unregister commands
+    if (process.env.SLASH_ACTION === 'register')
+        slash.register(config.token, c);
+    else if (process.env.SLASH_ACTION == 'unregister') {
         const rest = new REST().setToken(config.token);
         try {
             logger.info('discord.js', 'Unregistering slash commands...');
@@ -41,11 +43,6 @@ client.once(Events.ClientReady, async c => {
 
     // set bot activity message if available
     if (config.status && config.status !== '') c.user.setActivity(config.status);
-
-    // register slash commands
-    //TODO: cache command data and register only when updated
-    logger.info('discord.js', 'Reloading slash commands...');
-    slash.register(config.token, c);
 
     // load registered slash commands
     slash.load(c);
