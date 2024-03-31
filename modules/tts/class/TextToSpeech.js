@@ -35,6 +35,9 @@ class TextToSpeech {
         this._provider = new (getTTSProvider(config.ttsProvider))(params); // TTS provider
     }
 
+    // (static) check if TTS object is available
+    static available(guildId) { return TTSMap.has(guildId) }
+
     // (static) get object, create one if not exists
     static getOrCreate(guildId, params) {
         let TTSobject = getTTSObject(guildId);
