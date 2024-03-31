@@ -31,7 +31,7 @@ async function SlashCommandRegister(token, client) {
         const command = require(filePath);
 
         // check if user is trying to register development enviroment commands
-        if (process.env.SLASH_ACTION === 'devRegister') {
+        if (process.env.SLASH_ACTION === 'registerDev') {
             // prepend "zz" to command when running as development environment
             Object.keys(command.data.name_localizations).forEach(key => command.data.name_localizations[key] = `zz${command.data.name_localizations[key]}`);
             // prepend "(dev)" to description when running as development environment
