@@ -1,7 +1,8 @@
 const { ChannelType, PermissionsBitField, SlashCommandBuilder } = require('discord.js');
 const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
 const DiscordThread = require('../modules/discordutils/class/DiscordThread.js');
-const threads = require('../modules/discordutils/thread.js');
+const threadEvent = require('../modules/discordutils/thread.js');
+const config = require('../modules/config.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const logger = require('../modules/logger/main.mod.js');
 const report = require('../modules/errorreport/main.mod.js');
@@ -83,7 +84,7 @@ async function commandHandler(interaction) {
 
     try {
         // leave from previous voice channel (if has one)
-        if (voice.connected) await threads.remove(thread);
+        if (voice.connected) await threadEvent.remove(thread);
 
         // try to join voice channel
         voice.locale = interaction.guild.preferredLocale;
@@ -114,6 +115,12 @@ async function commandHandler(interaction) {
         // handle disconnect event
         voice.handleDisconnect(() => require('../modules/discordutils/thread.js')
             .onVoiceDisconnect(thread, channel));
+
+        // handle away-from-keyboard situation
+        // ideally, this should be based on discord's onArchive event,
+        // but discord doesn't seems emit any event on thread archive
+        thread.awayHandler = setTimeout(() => require('../modules/discordutils/thread.js')
+            .onAway(thread), config.awayTime * 60000);
     } catch (err) {
         const result = report(err, interaction.user.id);
         logger.error('discord.js', 'Error occured while joining voice channel!');
