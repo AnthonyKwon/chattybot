@@ -3,13 +3,13 @@ const { Readable } = require('stream');
 /* Implement format() in javascript
    https://stackoverflow.com/a/18405800 */
 if (!String.prototype.format) {
-    String.prototype.format = function() {
+    String.prototype.format = function () {
         const args = arguments;
         return this.replace(/{(\d+)}/g, (match, number) => {
             return typeof args[number] != 'undefined'
                 ? args[number]
                 : match
-            ;
+                ;
         });
     };
 }
@@ -55,6 +55,17 @@ const datetime = () => {
     return dateString;
 }
 
+const datetimePretty = customDate => {
+    const currDate = new Date();
+    let dateString = String(currDate.getFullYear()).padStart(4, '0');
+    dateString = `${dateString}/${String(currDate.getMonth() + 1).padStart(2, '0')}`;
+    dateString = `${dateString}/${String(currDate.getDate()).padStart(2, '0')}`;
+    dateString = `${dateString} ${String(currDate.getHours()).padStart(2, '0')}`;
+    dateString = `${dateString}:${String(currDate.getMinutes()).padStart(2, '0')}`;
+    dateString = `${dateString}:${String(currDate.getSeconds()).padStart(2, '0')}`;
+    return dateString;
+}
+
 /* parse command aliases */
 function parseAliases(commandName, aliases) {
     if (typeof aliases === 'string') {
@@ -81,12 +92,13 @@ const parseTime = param => {
  * https://stackoverflow.com/a/9229821
  */
 function uniq(a) {
-   return Array.from(new Set(a));
+    return Array.from(new Set(a));
 }
 
 module.exports = {
     bufferToStream,
     datetime,
+    datetimePretty,
     parseAliases,
     parseTime,
     replaceAll,
