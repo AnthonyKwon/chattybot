@@ -61,8 +61,6 @@ class TextToSpeech {
                 author: ttsUser,
                 content: message
             });
-        // if TTS is not speaking, make it speak
-        //if (this._speaking === false) await this.speak();
     }
     get queue() { return this._queue }
 
@@ -77,12 +75,11 @@ class TextToSpeech {
     async speak(voiceCallback) {
         do {
             // check if previous speaker and current speaker in queue is same (will decide to speak header)
-            let willSpeakHeader = true;
-            if (this._prevQueue && this._prevQueue.author.id == this.queue[0].author.id)
-                willSpeakHeader = false;
+            if (!this._prevQueue || this.queue[0].author.id != this._prevQueue.author.id)
+                await voiceCallback(await this._provider.speakPrefix(this.queue[0].author));
 
             // generate speech and send it to voice callback
-            const stream = await this._provider.speak(this._queue[0], willSpeakHeader);
+            const stream = await this._provider.speak(this._queue[0]);
             await voiceCallback(stream);
 
             // shift queue array and save previous queue to other variable (for author comparison)
