@@ -9,6 +9,16 @@ const logger = require('../logger/main.mod.js');
 // why I even have to do this; maybe spaghetti code?
 let eventLock = false;
 
+async function onAway(threadClass) {
+    if (eventLock) return;
+
+    // check if thread class is already removed by another event
+    if (!threadClass) return;
+
+    logger.info('discord.js', 'Everyone were away longer than specified time. Removing thread and leaving voice...');
+    remove(threadClass);
+}
+
 async function onArchive(thread) {
     if (eventLock) return;
     const threadClass = new DiscordThread(thread.guild.id);  // voice thread class
@@ -53,6 +63,9 @@ async function parse(message) {
     if (!threadClass.get()) return;
     // check if message come from voice thread
     if (threadClass.get().id !== message.channel.id) return;
+
+    // reset thread away check timer
+    threadClass.awayHandler.refresh();
 
     try {
         // get params to initialize TTS module
@@ -103,12 +116,17 @@ async function remove(thread) {
         thread.headup.edit(`:cry:  <t:${epoch}:R>`);
     }
 
+    // unregister thread's away-from-keyboard handler
+    clearTimeout(thread.awayHandler);
+    thread.deleteAwayHandler();
+
     // remove voice thread
     if (await thread.available()) {
         logger.verbose('discord.js', `Removed thread channel ${thread.get()}.`);
         await thread.delete();
     }
+
     eventLock = false;
 }
 
-module.exports = { onArchive, onDelete, onVoiceDisconnect, parse, remove }
+module.exports = { onAway, onArchive, onDelete, onVoiceDisconnect, parse, remove }

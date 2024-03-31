@@ -1,19 +1,48 @@
-const { error } = require("winston");
-
+const awayHandlerMap = new Map();
 const threadHeadupMap = new Map();
 const threadMap = new Map();
 
 class DiscordThread {
     constructor(guildId) {
+        this._awayHandler = awayHandlerMap.get(guildId);
         this._guildId = guildId;
     }
+
+    // (getter) get current thread
+    get() { return threadMap.get(this._guildId); }
+
+    // (setter) set current thread
+    set(newThread) {
+        // if thread already exists previously, delete it first
+        const oldThread = threadMap.get(this._guildId);
+        if (oldThread) {
+            oldThread.delete("Chatty: unused voice thread deletion.");
+            threadMap.delete(this._guildId);
+        }
+        // save new thread data
+        threadMap.set(this._guildId, newThread);
+    }
+
+    get awayHandler() { return awayHandlerMap.get(this._guildId) }
+    set awayHandler(value) { awayHandlerMap.set(this._guildId, value) }
+    deleteAwayHandler() { awayHandlerMap.delete(this._guildId) }
+
+    // (getter) guild id
+    get guildId() { return this._guildId; }
+
+    // (get/setter) headup message for threads
+    get headup() { return threadHeadupMap.get(this._guildId); }
+    set headup(value) { return threadHeadupMap.set(this._guildId, value); }
+
+    // (static) get thread id
+    static threadId(guildId) { return threadMap.get(guildId); }
 
     // check if thread is available
     async available() {
         const targetThread = threadMap.get(this._guildId);
 
         // check if object is valid thread
-        if (!typeof targetThread === 'object' || !targetThread.guild.id === this._guildId)
+        if (!(typeof targetThread === 'object' && targetThread.guild.id === this._guildId))
             return false;
 
         /**
@@ -37,34 +66,7 @@ class DiscordThread {
             // exception; unknown error occured
             else throw err;
         }
-
     }
-
-
-    // (getter) get current thread
-    get() { return threadMap.get(this._guildId); }
-
-    // (setter) set current thread
-    set(newThread) {
-        // if thread already exists previously, delete it first
-        const oldThread = threadMap.get(this._guildId);
-        if (oldThread) {
-            oldThread.delete("Chatty: unused voice thread deletion.");
-            threadMap.delete(this._guildId);
-        }
-        // save new thread data
-        threadMap.set(this._guildId, newThread);
-    }
-
-    // (getter) guild id
-    get guildId() { return this._guildId; }
-
-    // (get/setter) headup message for threads
-    get headup() { return threadHeadupMap.get(this._guildId); }
-    set headup(value) { return threadHeadupMap.set(this._guildId, value); }
-
-    // (static) get thread id
-    static threadId(guildId) { return threadMap.get(guildId); }
 
     // create new thread from headup message
     async create(headup, threadOpt) {
