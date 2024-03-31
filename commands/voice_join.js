@@ -120,7 +120,7 @@ async function commandHandler(interaction) {
         // ideally, this should be based on discord's onArchive event,
         // but discord doesn't seems emit any event on thread archive
         thread.awayHandler = setTimeout(() => require('../modules/discordutils/thread.js')
-            .onAway(thread), 30000);
+            .onAway(thread), config.awayTime * 60000);
     } catch (err) {
         const result = report(err, interaction.user.id);
         logger.error('discord.js', 'Error occured while joining voice channel!');
