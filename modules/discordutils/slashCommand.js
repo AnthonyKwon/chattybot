@@ -44,7 +44,7 @@ function SlashCommandRegister(token, client) {
     // and deploy your commands!
     (async () => {
         try {
-            logger.verbose('discord.js:slash', `Started refreshing ${commandList.length} application (/) commands.`);
+            logger.info('discord.js:slash', `Started registering/refreshing ${commandList.length} application (/) commands.`);
 
             // The put method is used to fully refresh all commands in the guild with the current set
             const data = await rest.put(
@@ -52,10 +52,10 @@ function SlashCommandRegister(token, client) {
                 { body: commandList }
             );
 
-            logger.verbose('discord.js:slash', `Successfully reloaded ${data.length} application (/) commands.`);
+            logger.info('discord.js:slash', `Successfully registered/refreshed ${data.length} application (/) commands.`);
         } catch (err) {
             // And of course, make sure you catch and log any errors!
-            logger.error('discord.js:slash', 'Error occured while reloading slash command!');
+            logger.error('discord.js:slash', 'Error occured while registering/refreshing slash command!');
             logger.error('discord.js:slash', err.stack ? err.stack : err);
         }
     })();

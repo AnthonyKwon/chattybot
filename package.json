@@ -7,7 +7,8 @@
     "start": "node .",
     "dev": "npm run development",
     "development": "NODE_ENV=development nodemon --inspect .",
-    "unregister": "NODE_ENV=development UNREGISTER_SLASH=yes node ."
+    "register": "NODE_ENV=development SLASH_ACTION=register node .",
+    "unregister": "NODE_ENV=development SLASH_ACTION=unregister node ."
   },
   "repository": {
     "type": "git",
