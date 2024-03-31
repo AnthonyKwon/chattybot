@@ -28,9 +28,6 @@ client.once(Events.ClientReady, async c => {
         try {
             logger.info('discord.js', 'Unregistering slash commands...');
 
-            // unregister guild slash commands
-            c.guilds.cache.forEach(async guild => await rest.put(Routes.applicationCommands(c.user.id, guild.id), { body: [] }));
-
             // unregister global slash commands
             await rest.put(Routes.applicationCommands(c.user.id), { body: [] });
 
