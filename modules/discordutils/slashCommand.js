@@ -24,16 +24,19 @@ function SlashCommandLoader(client) {
 }
 
 // register slash command
-function SlashCommandRegister(token, client) {
+async function SlashCommandRegister(token, client) {
     const commandList = [];
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
         const command = require(filePath);
 
-        // prepend "zz" to command when running as development environment
-        if (process.env.NODE_ENV === 'development') {
-            command.data.name = `zz${command.data.name}`;
+        // check if user is trying to register development enviroment commands
+        if (process.env.SLASH_ACTION === 'registerDev') {
+            // prepend "zz" to command when running as development environment
             Object.keys(command.data.name_localizations).forEach(key => command.data.name_localizations[key] = `zz${command.data.name_localizations[key]}`);
+            // prepend "(dev)" to description when running as development environment
+            Object.keys(command.data.description_localizations).forEach(key =>
+                command.data.description_localizations[key] = `(dev) ${command.data.description_localizations[key]}`);
         }
 
         commandList.push(command.data.toJSON());
@@ -42,23 +45,39 @@ function SlashCommandRegister(token, client) {
     const rest = new REST({ version: '10' }).setToken(token);
 
     // and deploy your commands!
-    (async () => {
-        try {
-            logger.verbose('discord.js:slash', `Started refreshing ${commandList.length} application (/) commands.`);
+    try {
+        logger.info('discord.js:slash', `Started registering/refreshing ${commandList.length} slash commands.`);
 
-            // The put method is used to fully refresh all commands in the guild with the current set
-            const data = await rest.put(
-                Routes.applicationCommands(client.user.id),
-                { body: commandList }
-            );
+        // The put method is used to fully refresh all commands in the guild with the current set
+        const data = await rest.put(
+            Routes.applicationCommands(client.user.id),
+            { body: commandList }
+        );
 
-            logger.verbose('discord.js:slash', `Successfully reloaded ${data.length} application (/) commands.`);
-        } catch (err) {
-            // And of course, make sure you catch and log any errors!
-            logger.error('discord.js:slash', 'Error occured while reloading slash command!');
-            logger.error('discord.js:slash', err.stack ? err.stack : err);
-        }
-    })();
+        logger.info('discord.js:slash', `Successfully registered/refreshed ${data.length} slash commands.`);
+    } catch (err) {
+        // And of course, make sure you catch and log any errors!
+        logger.error('discord.js:slash', 'Error occured while registering/refreshing slash commands!');
+        logger.error('discord.js:slash', err.stack ? err.stack : err);
+    }
+    process.exit();
+}
+
+// unregister slash command
+async function SlashCommandUnregister(token, client) {
+    const rest = new REST().setToken(token);
+    try {
+        logger.info('discord.js:slash', 'Started unregistering slash commands.');
+
+        // unregister global slash commands
+        await rest.put(Routes.applicationCommands(client.user.id), { body: [] });
+
+        logger.info('discord.js:slash', 'Successfully unregistered slash commands.');
+    } catch (err) {
+        logger.error('discord.js:slash', 'Error occured while unregistering slash commands!');
+        logger.error('discord.js:slash', err.stack ? err.stack : err);
+    }
+    process.exit();
 }
 
 // handle slash commands
@@ -96,4 +115,9 @@ async function SlashCommandHandler(interaction) {
     }
 }
 
-module.exports = { load: SlashCommandLoader, handler: SlashCommandHandler, register: SlashCommandRegister };
+module.exports = {
+    load: SlashCommandLoader,
+    handler: SlashCommandHandler,
+    register: SlashCommandRegister,
+    unregister: SlashCommandUnregister
+};
