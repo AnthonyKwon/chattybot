@@ -4,18 +4,17 @@ const TextToSpeech = require('../modules/tts/class/TextToSpeech.js');
 const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
 
 async function commandHandler(interaction) {
-    // This command only can be used after TTS is initialized
+    // This command only can be used when session is available
     const voice = new DiscordVoice(interaction.guild.id);
-    const tts = TextToSpeech.get(interaction.guild.id);
-    if (!voice.connected || !tts) {
-        interaction.editReply(i18n.get(interaction.locale, 'error.discord.voice.not_joined'));
+    if (!voice.connected) {
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.not_joined'));
         return;
     }
 
     // Re-initialize TTSClass with empty queue
     TextToSpeech.delete(interaction.guild.id);
     // Notify to user
-    interaction.editReply(i18n.get(interaction.locale, 'message.tts_queue.empty'));
+    interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'message.tts_queue.empty'));
 }
 
 module.exports = {
