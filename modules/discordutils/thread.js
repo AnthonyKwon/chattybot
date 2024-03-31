@@ -38,10 +38,9 @@ async function onDelete(thread) {
     const threadClass = new DiscordThread(thread.guild.id);  // voice thread class
 
     //check if voice thread class initialized correctly
-    if (await threadClass.available()) return;
+    if (!await threadClass.available()) return;
     // check if deleted thread is same as voice thread
     if (threadClass.get().id !== thread.id) return;
-
     // remove and leave
     logger.warn('discord.js', `Thread ${thread} removed by someone. Leaving voice...`);
     remove(threadClass);
