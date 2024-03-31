@@ -40,9 +40,12 @@
     ],
     "locale.name": "English, US",
     "message.discord.locale.guild_current": [
-        "**Message locale**: (follows personal preferences)",
-        "**Voice locale**: {0}",
-        "\nYou can check out for list of supported locales below.",
+        "### Language preferences of {0}",
+        "Message (personal):  {1} *({2})*",
+        "Message (global):       {3} *({4})*",
+        "Voice:   {4}\n",
+        "**English, US** will be used instead if your language is unsupported. (except for voice)",
+        "You can check out for list of supported languages below.",
         "<https://discord.com/developers/docs/reference#locales>"
     ],
     "message.discord.locale.guild_set": ":white_check_mark: Server locale have been changed from {0} to {1}.",

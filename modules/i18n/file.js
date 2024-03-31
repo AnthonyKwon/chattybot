@@ -12,7 +12,7 @@ function read(locale) {
     // check json file of chosen locale is available
     // if not, switch to fallback locale (this SHOULD be available)
     if (!fs.existsSync(localeFilePath)) {
-        logger.warn('i18n', `Locale ${locale} is not available, falling back.`);
+        logger.verbose('i18n', `Locale ${locale} is not available, falling back.`);
         localeFilePath = path.join(path.dirname(require.main.filename), 'locales', `${fallbackLocale}.json`);
     }
 
@@ -30,15 +30,15 @@ function readAll(id) {
 
     for (const file of localeFiles) {
         // get current locale from filename
-       const locale = path.basename(file, path.extname(file));
-       // get string and assign to object
-       const localeData = read(locale);
-       const localizedString = localeData[id];
-       if (typeof(localizedString) !== 'string')  continue;  // skip if result is invalid
-       const newResult = { [locale]: localizedString };
-       Object.assign(result, newResult);
-   }
-   return result;
+        const locale = path.basename(file, path.extname(file));
+        // get string and assign to object
+        const localeData = read(locale);
+        const localizedString = localeData[id];
+        if (typeof (localizedString) !== 'string') continue;  // skip if result is invalid
+        const newResult = { [locale]: localizedString };
+        Object.assign(result, newResult);
+    }
+    return result;
 }
 
 module.exports = { read, readAll };
