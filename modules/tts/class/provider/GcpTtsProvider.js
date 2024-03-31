@@ -21,16 +21,20 @@ class GcpTts extends TTSProvider {
     // (static) parameter builder for gcp-tts
     static get ParameterBuilder() { return GcpTtsParamBuilder }
 
-    async speak(message, readAuthor = true) {
-        // If message author or channel is different or authorId is not system(0), send TTS w/ prefix.
-        if (readAuthor) {
-            this._request.input = {
-                ssml: '<speak><prosody pitch="-3st">' + i18n.get(getKeyByValue(localeMap, this._request.voice.languageCode), 'tts.speak.prefix')
-                    .format(message.author.name) + '</prosody><break time="0.5s"/>' + message.content + '</speak>'
-            };
-        } else {
-            this._request.input = { text: message.content };
-        }
+    async speakPrefix(author) {
+        this._request.input = {
+            ssml: '<speak><prosody pitch="-4st">' + i18n.get(getKeyByValue(localeMap, this._request.voice.languageCode), 'tts.speak.prefix')
+                .format(author.name) + '</prosody></speak>'
+        };
+
+        const [response] = await this._client.synthesizeSpeech(this._request);
+        // Google sends response as buffer. We need to convert it as ReadableStream.
+        const stream = bufferToStream(response.audioContent);
+        return stream;
+    }
+
+    async speak(message) {
+        this._request.input = { text: message.content };
 
         const [response] = await this._client.synthesizeSpeech(this._request);
         // Google sends response as buffer. We need to convert it as ReadableStream.
