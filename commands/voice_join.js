@@ -1,4 +1,4 @@
-const { ChannelType, PermissionsBitField, SlashCommandBuilder, SlashCommandStringOption } = require('discord.js');
+const { ChannelType, PermissionsBitField, SlashCommandBuilder, SlashCommandChannelOption } = require('discord.js');
 const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
 const DiscordThread = require('../modules/discordutils/class/DiscordThread.js');
 const threadEvent = require('../modules/discordutils/thread.js');
@@ -17,13 +17,14 @@ function buildCommand() {
 
     // add string option on development mode
     if (process.env.NODE_ENV === 'development') {
-        const optChannelId = new SlashCommandStringOption();
-        optChannelId.setName(i18n.get('en-US', 'command.join.opt1.name'));
-        optChannelId.setNameLocalizations(i18n.getAll('command.join.opt1.name'));
-        optChannelId.setDescription(i18n.get('en-US', 'command.join.opt1.desc'));
-        optChannelId.setDescriptionLocalizations(i18n.getAll('command.join.opt1.desc'));
-        optChannelId.setRequired(false);
-        command.addStringOption(optChannelId);
+        const optChannel = new SlashCommandChannelOption();
+        optChannel.setName(i18n.get('en-US', 'command.join.opt1.name'));
+        optChannel.setNameLocalizations(i18n.getAll('command.join.opt1.name'));
+        optChannel.setDescription(i18n.get('en-US', 'command.join.opt1.desc'));
+        optChannel.setDescriptionLocalizations(i18n.getAll('command.join.opt1.desc'));
+        optChannel.addChannelTypes(ChannelType.GuildVoice);
+        optChannel.setRequired(false);
+        command.addChannelOption(optChannel);
     }
     return command;
 }
@@ -33,7 +34,7 @@ function verify(interaction, channel) {
     // is this channel exists?
     if (!channel) {
         // NOPE: channel does not exists or invalid channel id
-        logger.error('discord.js', 'Failed to join channel: unknown channel id');
+        logger.error('discord.js', 'Failed to join channel: unknown channel');
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.unknown_channel'));
         return false;
     }
@@ -85,14 +86,13 @@ function verify(interaction, channel) {
 
 async function commandHandler(interaction) {
     // channel id from options (if available)
-    let channel = interaction.options.getString(i18n.get('en-US', 'command.join.opt1.name'));
+    let channel = interaction.options.getChannel(i18n.get('en-US', 'command.join.opt1.name'));
 
     // get channel from id (if available) or user's current joined channel
-    if (channel) channel = interaction.client.channels.cache.get(channel);
-    else if (!channel && interaction.member.voice.channel) channel = interaction.member.voice.channel;
-    else {
-        // NOPE: no channel id provided, and user not joined into voice channel
-        logger.error('discord.js', 'Failed to join voice channel: channel id not provided');
+    if (!channel && interaction.member.voice.channel) channel = interaction.member.voice.channel;
+    else if (!channel) {
+        // NOPE: no channel provided, and user not joined into voice channel
+        logger.error('discord.js', 'Failed to join voice channel: channel not provided');
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.user_not_found').format(interaction.user));
         return;
     }
