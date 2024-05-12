@@ -74,7 +74,7 @@ async function parse(message) {
 
         // initialize TTS module wrapper
         const tts = await TTSClass.getOrCreate(message.guild.id, params);
-        const user = new TTSUser(message.member);  // profile of the user
+        const user = new TTSUser(message.guild, message.member);  // profile of the user
 
         // fix and build message 
         const text = MessageFixer.fix(message);

@@ -58,7 +58,7 @@ class TextToSpeech {
         if (!this._queue) this._queue = [];
         this._queue.push(
             {
-                author: ttsUser,
+                author: await ttsUser.fetchUser(),
                 content: message
             });
     }
