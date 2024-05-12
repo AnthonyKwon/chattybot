@@ -45,7 +45,7 @@ class TTSUserClass {
         }
 
         // save to cache for 1 day
-        const cachePurgeTimer = setTimeout(() => userCache.delete(this.fetchCacheId()), 86400000);
+        const cachePurgeTimer = setTimeout(() => userCache.delete(this.fetchCacheId()), 180000);
         userCache.set(this.fetchCacheId(), user);
         timerCache.set(this.fetchCacheId(), cachePurgeTimer);
 
