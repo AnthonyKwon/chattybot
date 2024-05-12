@@ -74,7 +74,7 @@ async function parse(message) {
 
         // initialize TTS module wrapper
         const tts = await TTSClass.getOrCreate(message.guild.id, params);
-        const user = new TTSUser(message.member);  // profile of the user
+        const user = new TTSUser(message.guild, message.member);  // profile of the user
 
         // fix and build message 
         const text = MessageFixer.fix(message);
@@ -83,7 +83,7 @@ async function parse(message) {
 
         // add message to TTS speak queue
         const voice = new DiscordVoice(message.guild.id);
-        tts.addQueue(user, text);
+        await tts.addQueue(user, text);
         // create player callback TTS to use
         const voiceCallback = async function (stream) {
             // play audio stream
