@@ -1,6 +1,7 @@
 const { ChannelType, PermissionsBitField, SlashCommandBuilder, SlashCommandStringOption } = require('discord.js');
 const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
 const DiscordThread = require('../modules/discordutils/class/DiscordThread.js');
+const TTSUser = require('../modules/tts/class/TTSUser.js');
 const threadEvent = require('../modules/discordutils/thread.js');
 const config = require('../modules/config.js');
 const i18n = require('../modules/i18n/main.mod.js');
@@ -122,9 +123,11 @@ async function commandHandler(interaction) {
             ephemeral: true
         });
 
+        // use TTSUser class to parse username properly
+        const ttsUser = new TTSUser(interaction.guild, interaction.user);
         // create thread for conversation
-        const username = interaction.member.displayName;
-        const threadName = `🧵 - ${username} (${datetimePretty()})`;
+        const fetchedUser = await ttsUser.fetchUser();
+        const threadName = `🧵 - ${fetchedUser.name} (${datetimePretty()})`;
         const threadOpt = {
             autoArchiveDuration: 60,
             name: threadName,
