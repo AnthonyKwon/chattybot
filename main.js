@@ -64,5 +64,17 @@ client.on(Events.ThreadUpdate, (oldThread, newThread) => {
     if (!oldThread.archived && newThread.archived) thread.onArchive(newThread);
 });
 
+// destroy discord.js connection on exit
+process.stdin.resume();
+function exitHandler(signal) {
+    client.destroy().finally(() => process.exit(0));
+}
+[
+    'beforeExit', 'uncaughtException', 'unhandledRejection',
+    'SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP',
+    'SIGABRT', 'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV',
+    'SIGUSR2', 'SIGTERM',
+].forEach(evt => process.on(evt, exitHandler));
+
 // initialize discord module
 client.login(config.token);
