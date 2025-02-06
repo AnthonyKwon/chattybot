@@ -16,17 +16,16 @@ function buildCommand() {
     command.setDescription(i18n.get('en-US', 'command.join.desc'));
     command.setDescriptionLocalizations(i18n.getAll('command.join.desc'));
 
-    // add string option on development mode
-    if (process.env.NODE_ENV === 'development') {
-        const optChannel = new SlashCommandChannelOption();
-        optChannel.setName(i18n.get('en-US', 'command.join.opt1.name'));
-        optChannel.setNameLocalizations(i18n.getAll('command.join.opt1.name'));
-        optChannel.setDescription(i18n.get('en-US', 'command.join.opt1.desc'));
-        optChannel.setDescriptionLocalizations(i18n.getAll('command.join.opt1.desc'));
-        optChannel.addChannelTypes(ChannelType.GuildVoice);
-        optChannel.setRequired(false);
-        command.addChannelOption(optChannel);
-    }
+    // (optional) channel name as string option
+    const optChannel = new SlashCommandChannelOption();
+    optChannel.setName(i18n.get('en-US', 'command.join.opt1.name'));
+    optChannel.setNameLocalizations(i18n.getAll('command.join.opt1.name'));
+    optChannel.setDescription(i18n.get('en-US', 'command.join.opt1.desc'));
+    optChannel.setDescriptionLocalizations(i18n.getAll('command.join.opt1.desc'));
+    optChannel.addChannelTypes(ChannelType.GuildVoice);
+    optChannel.setRequired(false);
+    command.addChannelOption(optChannel);
+
     return command;
 }
 
