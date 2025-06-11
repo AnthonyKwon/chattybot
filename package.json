@@ -24,8 +24,10 @@
     "@discordjs/voice": "^0.16.1",
     "@google-cloud/text-to-speech": "^5.2.0",
     "discord.js": "^14.14.1",
+    "json5": "^2.2.3",
     "sodium": "^3.0.2",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.3"
