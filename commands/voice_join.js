@@ -34,7 +34,7 @@ function verify(interaction, channel) {
     // is this channel exists?
     if (!channel) {
         // NOPE: channel does not exists or invalid channel id
-        logger.error('discord.js', 'Failed to join channel: unknown channel');
+        logger.error({ topic: 'discord.js', message: 'Failed to join channel: unknown channel' });
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.unknown_channel'));
         return false;
     }
@@ -42,7 +42,7 @@ function verify(interaction, channel) {
     // is this a voice channel?
     if (channel.type !== ChannelType.GuildVoice) {
         // NOPE: this is not a voice channel
-        logger.error('discord.js', 'Failed to join channel: channel type is not a voice');
+        logger.error({ topic: 'discord.js', message: 'Failed to join channel: channel type is not a voice' });
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.not_a_voice_channel'));
         return false;
     }
@@ -53,7 +53,7 @@ function verify(interaction, channel) {
         !permissions.has(PermissionsBitField.Flags.Speak) ||
         !channel.joinable) {
         // NOPE: I can't join to that channel
-        logger.error('discord.js', `Failed to join voice channel: bot does not have permission to access channel ${channel.id}!`);
+        logger.error({ topic: 'discord.js', message: `Failed to join voice channel: bot does not have permission to access channel ${channel.id}!` });
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.no_permission').format(channel));
         return false;
     }
@@ -62,7 +62,7 @@ function verify(interaction, channel) {
     if (!permissions.has(PermissionsBitField.Flags.CreatePublicThreads) ||
         !permissions.has(PermissionsBitField.Flags.ManageThreads)) {
         // NOPE: I can't create thread on there
-        logger.error('discord.js', `Failed to join voice channel: bot does not have permission to create thread in channel ${channel.id}!`);
+        logger.error({ topic: 'discord.js', message: `Failed to join voice channel: bot does not have permission to create thread in channel ${channel.id}!` });
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.thread.no_permission').format(channel));
         return false;
     }
@@ -75,7 +75,7 @@ function verify(interaction, channel) {
     // am I trying to join different channel from before?
     if (currChannelId === channel.id) {
         // NOPE: I'm trying to join same channel
-        logger.error('discord.js', 'Failed to join voice channel: user tried to join bot into same channel currently in!');
+        logger.error({ topic: 'discord.js', message: 'Failed to join voice channel: user tried to join bot into same channel currently in!' });
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.already_joined').format(channel));
         return false;
     }
@@ -92,7 +92,7 @@ async function commandHandler(interaction) {
     if (!channel && interaction.member.voice.channel) channel = interaction.member.voice.channel;
     else if (!channel) {
         // NOPE: no channel provided, and user not joined into voice channel
-        logger.error('discord.js', 'Failed to join voice channel: channel not provided');
+        logger.error({ topic: 'discord.js', message: 'Failed to join voice channel: channel not provided' });
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.user_not_found').format(interaction.user));
         return;
     }
@@ -116,7 +116,7 @@ async function commandHandler(interaction) {
         const headupMsg = await interaction.editReply(`${channel} :ballot_box_with_check: <t:${epoch}:R>`);
 
         // send success reply to user
-        logger.verbose('discord.js', `Joined voice channel ${channel}.`);
+        logger.verbose({ topic: 'discord.js', message: `Joined voice channel ${channel}.` });
         interaction.followUp({
             content: i18n.get(interaction.locale, 'message.discord.voice.joined').format(channel),
             ephemeral: true
@@ -133,7 +133,7 @@ async function commandHandler(interaction) {
             rateLimitPerUser: 3
         }
         const newThread = await thread.create(headupMsg, threadOpt);
-        logger.verbose('discord.js', `Created thread channel ${newThread}.`);
+        logger.verbose({ topic: 'discord.js', message: `Created thread channel ${newThread}.` });
 
         // handle disconnect event
         voice.handleDisconnect(() => require('../modules/discordutils/thread.js')
@@ -146,8 +146,8 @@ async function commandHandler(interaction) {
             .onAway(thread), config.awayTime * 60000);
     } catch (err) {
         const result = report(err, interaction.user.id);
-        logger.error('discord.js', 'Error occured while joining voice channel!');
-        logger.error('discord.js', err.stack);
+        logger.error({ topic: 'discord.js', message: 'Error occured while joining voice channel!' });
+        logger.error({ topic: 'discord.js', message: err.stack });
         // send error message to discord channel
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.generic').format(result));
         return;

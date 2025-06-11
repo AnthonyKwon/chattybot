@@ -29,8 +29,8 @@ function createReport(error, uid = undefined) {
         // save report to file
         fs.writeFileSync(path.join(path.dirname(require.main.filename), '/logs/report/', filename), JSON.stringify(data));
     } catch (fileErr) {
-        logger.error('errorreport', `Failed to write error report "${filename}"!`);
-        logger.error('errorreport', fileErr.stack ? fileErr.stack : fileErr);
+        logger.error({ topic: 'errorreport', message: `Failed to write error report "${filename}"!` });
+        logger.error({ topic: 'errorreport', message: fileErr.stack ? fileErr.stack : fileErr });
     }
 
     // return error id

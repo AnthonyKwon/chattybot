@@ -1,61 +1,41 @@
 const path = require('path');
 const winston = require('winston');
+require('winston-daily-rotate-file');
+const config = require('../config');
+const { isDevMode } = require('../common');
 
-// initialize logger
-const logger = winston.createLogger({
-    level: 'info',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json(),
-        winston.format.printf(info => `{"timestamp":"${info.timestamp}", "topic":"${logger.topic}", "level":"${info.level}", "message":"${info.message}"}`)
-    ),
-    topic: undefined,
+// set winston log level to verbose, if app is running on dev mode
+const logLevel = isDevMode() ? 'verbose' : 'warn';
+
+// get log rotation time and size limit from config
+const timeLimit = `${config['log-rotate'].timeLimit ?? 24}h`;
+const sizeLimit = `${config['log-rotate'].sizeLimit ?? 100}k`;
+
+// create new logger object and export it
+module.exports = winston.createLogger({
     transports: [
-        new winston.transports.File({
-            filename: path.join(__dirname, '../../logs/error.log'),
-            level: 'error'
+        new winston.transports.Console({
+            format: winston.format.combine(
+                winston.format.timestamp(),
+                winston.format.colorize(),
+                winston.format.printf(info => `${info.timestamp} - ${info.level}/${info.topic}:  ${info.message}`)),
+            level: logLevel
+        }),
+        new winston.transports.DailyRotateFile({
+            filename: path.join(__dirname, '../../logs/%DATE%'),
+            dirname: path.join(__dirname, '../../logs'),
+            extension: '.log',
+            datePattern: 'YYYY-MM-DD',
+            frequency: timeLimit,
+            maxSize: sizeLimit,
+            createSymlink: true,
+            symlinkName: 'latest.log',
+            format: winston.format.combine(
+                winston.format.timestamp(),
+                winston.format.json(),
+                winston.format.printf(info => `{"timestamp":"${info.timestamp}", "topic":"${info.topic}", "level":"${info.level}", "message":"${info.message}"}`)),
+            level: logLevel,
         })
     ]
 });
 
-// test if development mode is set
-if (process.env.NODE_ENV == "development" || process.env.SLASH_ACTION) {
-    // enable full file logging in development mode
-    logger.add(new winston.transports.File({
-        filename: path.join(__dirname, '../../logs/verbose.log'),
-        level: 'verbose'
-    }));
-    // show full log on console in development mode
-    logger.add(new winston.transports.Console({
-        format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.cli(),
-            winston.format.printf(info => `${info.timestamp} - ${info.level}/${logger.topic}: ${info.message}`)),
-        level: 'verbose'
-    }));
-} else {
-    // show only warning+ log on console in release mode
-    logger.add(new winston.transports.Console({
-        format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.cli(),
-            winston.format.printf(info => `${info.timestamp} - ${info.level}/${logger.topic}: ${info.message}`)),
-        level: 'warn'
-    }));
-}
-
-function log(topic, level, message) {
-    logger.topic = topic;
-    logger.log(level, message);
-}
-function error(topic, message) { log(topic, 'error', message) }
-function warn(topic, message) { log(topic, 'warn', message) }
-function info(topic, message) { log(topic, 'info', message) }
-function http(topic, message) { log(topic, 'http', message) }
-function verbose(topic, message) { log(topic, 'verbose', message) }
-function debug(topic, message) { log(topic, 'debug', message) }
-function silly(topic, message) { log(topic, 'silly', message) }
-
-module.exports = {
-    log, error, warn, info, http, verbose, debug, silly
-};

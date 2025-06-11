@@ -1,4 +1,10 @@
 {
+    "log-rotate": {
+        // logging time limit until file gets rotated (unit: Hour)
+        "timeLimit": 24,
+        // log file size limit until file gets rotated (unit: KB)
+        "sizeLimit": 100
+    },
     "token": "paste_your_token_here",
     "inviteLink": "paste-your-bot-link-here",
     "locale": "en-US",

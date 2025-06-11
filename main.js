@@ -4,9 +4,10 @@ const thread = require('./modules/discordutils/thread.js');
 const config = require('./modules/config.js');
 const logger = require('./modules/logger/main.mod.js');
 const package = require('./package.json');
+const { info } = require('winston');
 
 // initialize logger module for main
-logger.info(package.name, `version ${package.version}`);
+logger.info({ topic: package.name, message: `version ${package.version}` });
 
 // create discord.js client object
 const client = new Client({
@@ -20,7 +21,7 @@ const client = new Client({
 
 client.once(Events.ClientReady, async c => {
     // create voice session map
-    logger.info('discord.js', `Connected to ${client.user.username}!`);
+    logger.info({ topic: 'discord.js', message: `Connected to ${client.user.username}!` });
 
     // check if user launched bot to register/unregister commands
     if (process.env.SLASH_ACTION === 'register')
@@ -66,7 +67,7 @@ client.on(Events.ThreadUpdate, (oldThread, newThread) => {
 
 // destroy discord.js connection on exit
 process.stdin.resume();
-function exitHandler(signal) {
+function exitHandler() {
     client.destroy().finally(() => process.exit(0));
 }
 [

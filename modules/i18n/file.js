@@ -12,7 +12,7 @@ function read(locale) {
     // check json file of chosen locale is available
     // if not, switch to fallback locale (this SHOULD be available)
     if (!fs.existsSync(localeFilePath)) {
-        logger.verbose('i18n', `Locale ${locale} is not available, falling back.`);
+        logger.verbose({ topic: 'i18n', message: `Locale ${locale} is not available, falling back.` });
         localeFilePath = path.join(path.dirname(require.main.filename), 'locales', `${fallbackLocale}.json`);
     }
 
