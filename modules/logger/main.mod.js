@@ -2,10 +2,10 @@ const path = require('path');
 const winston = require('winston');
 require('winston-daily-rotate-file');
 const config = require('../config');
+const { isDevMode } = require('../common');
 
-// set winston log level to verbose, if app is running on dev mode or slash-command related job
-const logLevel = (process.env.NODE_ENV == 'development' || process.env.SLASH_ACTION) ?
-                  winston.config.syslog.levels.verbose : winston.config.syslog.levels.warning;
+// set winston log level to verbose, if app is running on dev mode
+const logLevel = isDevMode() ? 'verbose' : 'warn';
 
 // get log rotation time and size limit from config
 const timeLimit = `${config['log-rotate'].timeLimit ?? 24}h`;
