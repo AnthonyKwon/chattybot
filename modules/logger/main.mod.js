@@ -13,19 +13,13 @@ const sizeLimit = `${config['log-rotate'].sizeLimit ?? 100}k`;
 
 // create new logger object and export it
 module.exports = winston.createLogger({
-    level: 'info',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json(),
-        winston.format.printf(info => `{"timestamp":"${info.timestamp}", "topic":"${info.topic}", "level":"${info.level}", "message":"${info.message}"}`)
-    ),
     transports: [
         new winston.transports.Console({
-        format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.cli(),
-            winston.format.printf(info => `${info.timestamp} - ${info.level}/${info.topic}:  ${info.message}`)),
-        level: logLevel
+            format: winston.format.combine(
+                winston.format.timestamp(),
+                winston.format.colorize(),
+                winston.format.printf(info => `${info.timestamp} - ${info.level}/${info.topic}:  ${info.message}`)),
+            level: logLevel
         }),
         new winston.transports.DailyRotateFile({
             filename: path.join(__dirname, '../../logs/%DATE%'),
@@ -36,6 +30,10 @@ module.exports = winston.createLogger({
             maxSize: sizeLimit,
             createSymlink: true,
             symlinkName: 'latest.log',
+            format: winston.format.combine(
+                winston.format.timestamp(),
+                winston.format.json(),
+                winston.format.printf(info => `{"timestamp":"${info.timestamp}", "topic":"${info.topic}", "level":"${info.level}", "message":"${info.message}"}`)),
             level: logLevel,
         })
     ]
