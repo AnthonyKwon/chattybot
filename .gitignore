@@ -1,5 +1,6 @@
 .vscode
 configs/*.json
+configs/*.json5
 *_old
 _commands_preconvert
 logs
