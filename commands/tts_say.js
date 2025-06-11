@@ -30,7 +30,7 @@ async function commandHandler(interaction) {
     // Fix message for TTS-readable
     interaction.content = text;
     const fixedText = await MessageFixer.fix(interaction);
-    if (fixedText !== text) logger.warn('tts', `Message ${text} will be spoken as ${fixedText}.`);
+    if (fixedText !== text) logger.warn({ topic: 'tts', message: `Message ${text} will be spoken as ${fixedText}.` });
     try {
         // get account username (guild username if command used on guild && user has guild-specific username) of the user
         const user = interaction.member ? interaction.member : interaction.user;
@@ -44,11 +44,11 @@ async function commandHandler(interaction) {
             await new Promise(resolve => player.on('stateChange', () => resolve()));
         }
         await tts.requestSpeak(voiceCallback);
-        logger.verbose('tts', `${interaction.user} spoken: ${text}`);
+        logger.verbose({ topic: 'tts', message: `${interaction.user} spoken: ${text}` });
     } catch (err) {
         const result = report(err, interaction.user.id);
-        logger.error('tts', 'Error occured while synthesizing!');
-        logger.error('tts', err.stack ? err.stack : err);
+        logger.error({ topic: 'tts', message: 'Error occured while synthesizing!' });
+        logger.error({ topic: 'tts', message: err.stack ? err.stack : err });
 
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.generic').format(result));
     }
