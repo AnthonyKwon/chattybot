@@ -66,6 +66,14 @@ const datetimePretty = customDate => {
     return dateString;
 }
 
+// check if application is running as development mode or doing slash-command related job
+function isDevMode() {
+    if (process.env.NODE_ENV == 'development' || process.env.SLASH_ACTION)
+        return true;
+    else
+        return false;
+}
+
 /* parse command aliases */
 function parseAliases(commandName, aliases) {
     if (typeof aliases === 'string') {
@@ -99,6 +107,7 @@ module.exports = {
     bufferToStream,
     datetime,
     datetimePretty,
+    isDevMode,
     parseAliases,
     parseTime,
     replaceAll,

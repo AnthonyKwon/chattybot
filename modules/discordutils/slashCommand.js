@@ -18,7 +18,7 @@ function SlashCommandLoader(client) {
         if ('data' in command && 'execute' in command) {
             client.commands.set(command.data.name, command);
         } else {
-            logger.warn('discord.js', `The command at ${filePath} is missing a required "data" or "execute" property.`);
+            logger.warn({ topic: 'discord.js', message: `The command at ${filePath} is missing a required "data" or "execute" property.` });
         }
     }
 }
@@ -46,7 +46,7 @@ async function SlashCommandRegister(token, client) {
 
     // and deploy your commands!
     try {
-        logger.info('discord.js:slash', `Started registering/refreshing ${commandList.length} slash commands.`);
+        logger.info({ topic: 'discord.js:slash', message: `Started registering/refreshing ${commandList.length} slash commands.` });
 
         // The put method is used to fully refresh all commands in the guild with the current set
         const data = await rest.put(
@@ -54,11 +54,11 @@ async function SlashCommandRegister(token, client) {
             { body: commandList }
         );
 
-        logger.info('discord.js:slash', `Successfully registered/refreshed ${data.length} slash commands.`);
+        logger.info({ topic: 'discord.js:slash', message: `Successfully registered/refreshed ${data.length} slash commands.` });
     } catch (err) {
         // And of course, make sure you catch and log any errors!
-        logger.error('discord.js:slash', 'Error occured while registering/refreshing slash commands!');
-        logger.error('discord.js:slash', err.stack ? err.stack : err);
+        logger.error({ topic: 'discord.js:slash', message: 'Error occured while registering/refreshing slash commands!' });
+        logger.error({ topic: 'discord.js:slash', message: err.stack ? err.stack : err });
     }
     process.exit();
 }
@@ -67,15 +67,15 @@ async function SlashCommandRegister(token, client) {
 async function SlashCommandUnregister(token, client) {
     const rest = new REST().setToken(token);
     try {
-        logger.info('discord.js:slash', 'Started unregistering slash commands.');
+        logger.info({ topic: 'discord.js:slash', message: 'Started unregistering slash commands.' });
 
         // unregister global slash commands
         await rest.put(Routes.applicationCommands(client.user.id), { body: [] });
 
-        logger.info('discord.js:slash', 'Successfully unregistered slash commands.');
+        logger.info({ topic: 'discord.js:slash', message: 'Successfully unregistered slash commands.' });
     } catch (err) {
-        logger.error('discord.js:slash', 'Error occured while unregistering slash commands!');
-        logger.error('discord.js:slash', err.stack ? err.stack : err);
+        logger.error({ topic: 'discord.js:slash', message: 'Error occured while unregistering slash commands!' });
+        logger.error({ topic: 'discord.js:slash', message: err.stack ? err.stack : err });
     }
     process.exit();
 }
@@ -85,7 +85,7 @@ async function SlashCommandHandler(interaction) {
     const command = interaction.client.commands.get(interaction.commandName);
 
     if (!command) {
-        logger.error('discord.js', `No command matching ${interaction.commandName} was found.`);
+        logger.error({ topic: 'discord.js', message: `No command matching ${interaction.commandName} was found.` });
         return;
     }
 
@@ -102,8 +102,8 @@ async function SlashCommandHandler(interaction) {
         // launch command
         await command.execute(interaction);
     } catch (err) {
-        logger.error('discord.js:slash', `Error occured while handling slash command!`);
-        logger.error('discord.js:slash', err.stack ? err.stack : err)
+        logger.error({ topic: 'discord.js:slash', message: `Error occured while handling slash command!` });
+        logger.error({ topic: 'discord.js:slash', message: err.stack ? err.stack : err })
 
         const errorInteraction = { content: i18n.get(interaction.locale, 'error.generic').format(result), ephemeral: true };
         const result = report(err, interaction.user.id);

@@ -18,7 +18,7 @@ function has(locale) {
 function save(locale, data) {
     if (cache.has(locale)) {
         // cache already has data for this locale.
-        logger.verbose('i18n', `Cache already has ${locale} data. Skipping.`);
+        logger.verbose({ topic: 'i18n', message: `Cache already has ${locale} data. Skipping.` });
         return;
     }
     cache.set(locale, data);
