@@ -1,13 +1,13 @@
-const { Client, Events, GatewayIntentBits, Locale, REST, Routes } = require('discord.js');
+const { Client, Events, GatewayIntentBits } = require('discord.js');
 const slash = require('./modules/discordutils/slashCommand.js');
 const thread = require('./modules/discordutils/thread.js');
 const config = require('./modules/config.js');
 const logger = require('./modules/logger/main.mod.js');
 const package = require('./package.json');
-const { info } = require('winston');
 
 // initialize logger module for main
 logger.info({ topic: package.name, message: `version ${package.version}` });
+
 
 // create discord.js client object
 const client = new Client({
@@ -65,17 +65,32 @@ client.on(Events.ThreadUpdate, (oldThread, newThread) => {
     if (!oldThread.archived && newThread.archived) thread.onArchive(newThread);
 });
 
+// log unhandled error of discord.js
+client.on(Events.Error, err => {
+    logger.error({ topic: 'discord.js', message: 'Unhandled error has occured!' });
+    logger.error({ topic: 'discord.js', message: err.stack });
+});
+
+// exit with error on unhandled Rejection
+process.on('unhandledRejection', err => {
+    logger.error({ topic: package.name, message: 'An unhandled Rejection has occured, appliation will exit!' });
+    logger.error({ topic: package.name, message: err.stack });
+    process.exit(1);
+});
+
+// exit with error on uncaught Exception
+process.on('uncaughtException', err => {
+    logger.error({ topic: package.name, message: 'An uncaught Exception has thrown, appliation will exit!' });
+    logger.error({ topic: package.name, message: err.stack });
+    process.exit(1);
+});
+
 // destroy discord.js connection on exit
-process.stdin.resume();
 function exitHandler() {
     client.destroy().finally(() => process.exit(0));
 }
-[
-    'beforeExit', 'uncaughtException', 'unhandledRejection',
-    'SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP',
-    'SIGABRT', 'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV',
-    'SIGUSR2', 'SIGTERM',
-].forEach(evt => process.on(evt, exitHandler));
+process.on('SIGINT', exitHandler);
+process.on('SIGTERM', exitHandler);
 
 // initialize discord module
 client.login(config.token);
