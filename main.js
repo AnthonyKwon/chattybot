@@ -1,4 +1,4 @@
-const { Client, Events, GatewayIntentBits, Locale, REST, Routes } = require('discord.js');
+const { Client, Events, GatewayIntentBits } = require('discord.js');
 const slash = require('./modules/discordutils/slashCommand.js');
 const thread = require('./modules/discordutils/thread.js');
 const config = require('./modules/config.js');
@@ -7,6 +7,7 @@ const package = require('./package.json');
 
 // initialize logger module for main
 logger.info({ topic: package.name, message: `version ${package.version}` });
+
 
 // create discord.js client object
 const client = new Client({
@@ -74,14 +75,14 @@ client.on(Events.Error, err => {
 process.on('unhandledRejection', err => {
     logger.error({ topic: package.name, message: 'An unhandled Rejection has occured, appliation will exit!' });
     logger.error({ topic: package.name, message: err.stack });
-    exit(1);
+    process.exit(1);
 });
 
 // exit with error on uncaught Exception
 process.on('uncaughtException', err => {
     logger.error({ topic: package.name, message: 'An uncaught Exception has thrown, appliation will exit!' });
     logger.error({ topic: package.name, message: err.stack });
-    exit(1);
+    process.exit(1);
 });
 
 // destroy discord.js connection on exit
