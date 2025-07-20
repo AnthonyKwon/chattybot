@@ -65,17 +65,32 @@ client.on(Events.ThreadUpdate, (oldThread, newThread) => {
     if (!oldThread.archived && newThread.archived) thread.onArchive(newThread);
 });
 
+// log unhandled error of discord.js
+client.on(Events.Error, err => {
+    logger.error({ topic: 'discord.js', message: 'Unhandled error has occured!' });
+    logger.error({ topic: 'discord.js', message: err.stack });
+});
+
+// exit with error on unhandled Rejection
+process.on('unhandledRejection', err => {
+    logger.error({ topic: package.name, message: 'An unhandled Rejection has occured, appliation will exit!' });
+    logger.error({ topic: package.name, message: err.stack });
+    exit(1);
+});
+
+// exit with error on uncaught Exception
+process.on('uncaughtException', err => {
+    logger.error({ topic: package.name, message: 'An uncaught Exception has thrown, appliation will exit!' });
+    logger.error({ topic: package.name, message: err.stack });
+    exit(1);
+});
+
 // destroy discord.js connection on exit
-process.stdin.resume();
 function exitHandler() {
     client.destroy().finally(() => process.exit(0));
 }
-[
-    'beforeExit', 'uncaughtException', 'unhandledRejection',
-    'SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP',
-    'SIGABRT', 'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV',
-    'SIGUSR2', 'SIGTERM',
-].forEach(evt => process.on(evt, exitHandler));
+process.on('SIGINT', exitHandler);
+process.on('SIGTERM', exitHandler);
 
 // initialize discord module
 client.login(config.token);
