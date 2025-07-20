@@ -4,7 +4,6 @@ const thread = require('./modules/discordutils/thread.js');
 const config = require('./modules/config.js');
 const logger = require('./modules/logger/main.mod.js');
 const package = require('./package.json');
-const { info } = require('winston');
 
 // initialize logger module for main
 logger.info({ topic: package.name, message: `version ${package.version}` });
