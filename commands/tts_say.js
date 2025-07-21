@@ -1,11 +1,11 @@
 const { SlashCommandBuilder } = require('discord.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const logger = require('../modules/logger/main.mod.js');
-const MessageFixer = require('../modules/discordutils/messageFixer.js');
+const MessageFixer = require('../modules/discord/messageFixer.js');
 const report = require('../modules/errorreport/main.mod.js');
 const TTSClass = require('../modules/tts/class/TextToSpeech.js');
 const TTSUser = require('../modules/tts/class/TTSUser.js');
-const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
+const DiscordVoice = require('../modules/discord/class/DiscordVoice.js');
 const config = require('../modules/config.js');
 
 async function commandHandler(interaction) {
@@ -47,7 +47,7 @@ async function commandHandler(interaction) {
         logger.verbose({ topic: 'tts', message: `${interaction.user} spoken: ${text}` });
     } catch (err) {
         const result = report(err, interaction.user.id);
-        logger.error({ topic: 'tts', message: 'Error occured while synthesizing!' });
+        logger.error({ topic: 'tts', message: 'error occured while synthesizing!' });
         logger.error({ topic: 'tts', message: err.stack ? err.stack : err });
 
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.generic').format(result));
