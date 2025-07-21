@@ -1,0 +1,37 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "install",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [],
+			"label": "npm: install",
+			"detail": "install dependencies from package"
+		},
+		{
+			"type": "npm",
+			"script": "register",
+			"problemMatcher": [],
+			"label": "npm: register",
+			"detail": "Register bot slash commands to Discord"
+		},
+		{
+			"type": "npm",
+			"script": "registerDev",
+			"problemMatcher": [],
+			"label": "npm: register (Dev)",
+			"detail": "Register bot slash commands to Discord (as dev mode)"
+		},
+		{
+			"type": "npm",
+			"script": "unregister",
+			"problemMatcher": [],
+			"label": "npm: unregister",
+			"detail": "Unegister bot slash commands from Discord"
+		}
+	]
+}
