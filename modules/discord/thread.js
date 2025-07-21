@@ -7,7 +7,7 @@ const logger = require('../logger/main.mod.js');
 
 // event lock to prevent multiple event trigger
 // why I even have to do this; maybe spaghetti code?
-let eventLock = false;
+    let eventLock = false;
 
 async function onAway(threadClass) {
     if (eventLock) return;
@@ -95,7 +95,7 @@ async function parse(message) {
         logger.verbose({ topic: 'tts', message: `${message.author} spoken: ${text}` });
         await tts.requestSpeak(voiceCallback);
     } catch (err) {
-        logger.error({ topic: 'tts', message: 'Error occured while synthesizing!' });
+        logger.error({ topic: 'tts', message: 'error occured while synthesizing!' });
         logger.error({ topic: 'tts', message: err.stack ? err.stack : err });
     }
 }

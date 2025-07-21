@@ -1,8 +1,8 @@
 const { ChannelType, PermissionsBitField, SlashCommandBuilder, SlashCommandChannelOption } = require('discord.js');
-const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
-const DiscordThread = require('../modules/discordutils/class/DiscordThread.js');
+const DiscordVoice = require('../modules/discord/class/DiscordVoice.js');
+const DiscordThread = require('../modules/discord/class/DiscordThread.js');
 const TTSUser = require('../modules/tts/class/TTSUser.js');
-const threadEvent = require('../modules/discordutils/thread.js');
+const threadEvent = require('../modules/discord/thread.js');
 const config = require('../modules/config.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const { datetimePretty } = require('../modules/common.js');
@@ -136,17 +136,17 @@ async function commandHandler(interaction) {
         logger.verbose({ topic: 'discord.js', message: `Created thread channel ${newThread}.` });
 
         // handle disconnect event
-        voice.handleDisconnect(() => require('../modules/discordutils/thread.js')
+        voice.handleDisconnect(() => require('../modules/discord/thread.js')
             .onVoiceDisconnect(thread, channel));
 
         // handle away-from-keyboard situation
         // ideally, this should be based on discord's onArchive event,
         // but discord doesn't seems emit any event on thread archive
-        thread.awayHandler = setTimeout(() => require('../modules/discordutils/thread.js')
+        thread.awayHandler = setTimeout(() => require('../modules/discord/thread.js')
             .onAway(thread), config.awayTime * 60000);
     } catch (err) {
         const result = report(err, interaction.user.id);
-        logger.error({ topic: 'discord.js', message: 'Error occured while joining voice channel!' });
+        logger.error({ topic: 'discord.js', message: 'error occured while joining voice channel!' });
         logger.error({ topic: 'discord.js', message: err.stack });
         // send error message to discord channel
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.generic').format(result));
