@@ -1,36 +1,31 @@
-const path = require('node:path')
-const GcpTtsExt = require('@google-cloud/text-to-speech');
+const { getClient } = require('./AuthHandler.js');
 const localeMap = require('./locale.json');
 const ParameterBuilder = require('../../ParameterBuilder.js');
 const config = require('../../../../config.js');
+let voiceListCache;
 
 async function getVoiceName(locale, preferredType, preferredCode) {
-    const ttsOptions = {
-        projectId: undefined,
-        keyFilename: undefined
-    };
-    // fill required options when Service Account Key method is used
-    if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-        ttsOptions.projectId = require('../../../../../configs/gcp-credentials.json').project_id;
-        ttsOptions.keyFilename = path.join(path.dirname(require.main.filename), 'configs/gcp-credentials.json');
+    // load voice list from cache, or API request (if cache not available)
+    if (!voiceListCache) {
+
+        const client = await getClient();
+        [voiceListCache] = voiceListCache ?? await client.listVoices({});
     }
-    const client = new GcpTtsExt.TextToSpeechClient(ttsOptions);
-    const [result] = await client.listVoices({});
     // exact matching voice has found
     const voiceCallback = v => v.name === `${locale}-${preferredType}-${preferredCode}`;
-    let voice = result.voices.find(voiceCallback);
+    let voice = voiceListCache.voices.find(voiceCallback);
     if (voice) return voice;
     // fall back to Neural2 from Studio
     if (preferredType === 'Studio') preferredType = 'Neural2';
-    voice = result.voices.find(voiceCallback);
+    voice = voiceListCache.voices.find(voiceCallback);
     if (voice) return voice;
     // fall back to Wavenet from Neural2
     if (preferredType === 'Neural2') preferredType = 'Wavenet';
-    voice = result.voices.find(voiceCallback);
+    voice = voiceListCache.voices.find(voiceCallback);
     if (voice) return voice;
     // fall back to Standard from Wavenet
     if (preferredType === 'Wavenet') preferredType = 'Standard';
-    voice = result.voices.find(voiceCallback);
+    voice = voiceListCache.voices.find(voiceCallback);
     if (voice) return voice;
     // all methods failed - fall back to "en-US-Standard-H"
     if (!voice) return {
