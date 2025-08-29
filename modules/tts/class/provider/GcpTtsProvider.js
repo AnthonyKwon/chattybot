@@ -11,10 +11,16 @@ const i18n = require('../../../i18n/main.mod.js');
 class GcpTts extends TTSProvider {
     constructor(params) {
         super();
-        this._client = new GcpTtsExt.TextToSpeechClient({
-            projectId: require('../../../../configs/gcp-credentials.json').project_id,
-            keyFilename: path.join(path.dirname(require.main.filename), 'configs/gcp-credentials.json')
-        });
+        const ttsOptions = {
+            projectId: undefined,
+            keyFilename: undefined
+        };
+        // fill required options when Service Account Key method is used
+        if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+            ttsOptions.projectId = require('../../../../configs/gcp-credentials.json').project_id;
+            ttsOptions.keyFilename = path.join(path.dirname(require.main.filename), 'configs/gcp-credentials.json');
+        }
+        this._client = new GcpTtsExt.TextToSpeechClient(ttsOptions);
         this._request = params;
     }
 
