@@ -5,9 +5,16 @@ const ParameterBuilder = require('../../ParameterBuilder.js');
 const config = require('../../../../config.js');
 
 async function getVoiceName(locale, preferredType, preferredCode) {
-    const client = new GcpTtsExt.TextToSpeechClient({
-        keyFilename: path.join(path.dirname(require.main.filename), 'configs/gcp-credentials.json')
-    });
+    const ttsOptions = {
+        projectId: undefined,
+        keyFilename: undefined
+    };
+    // fill required options when Service Account Key method is used
+    if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+        ttsOptions.projectId = require('../../../../../configs/gcp-credentials.json').project_id;
+        ttsOptions.keyFilename = path.join(path.dirname(require.main.filename), 'configs/gcp-credentials.json');
+    }
+    const client = new GcpTtsExt.TextToSpeechClient(ttsOptions);
     const [result] = await client.listVoices({});
     // exact matching voice has found
     const voiceCallback = v => v.name === `${locale}-${preferredType}-${preferredCode}`;
