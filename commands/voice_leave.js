@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
-const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
-const DiscordThread = require('../modules/discordutils/class/DiscordThread.js');
-const threads = require('../modules/discordutils/thread.js');
+const DiscordVoice = require('../modules/discord/class/DiscordVoice.js');
+const DiscordThread = require('../modules/discord/class/DiscordThread.js');
+const threads = require('../modules/discord/thread.js');
 const i18n = require('../modules/i18n/main.mod.js');
 
 async function commandHandler(interaction) {
