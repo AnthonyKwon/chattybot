@@ -57,7 +57,7 @@ async function SlashCommandRegister(token, client) {
         logger.info({ topic: 'discord.js:slash', message: `Successfully registered/refreshed ${data.length} slash commands.` });
     } catch (err) {
         // And of course, make sure you catch and log any errors!
-        logger.error({ topic: 'discord.js:slash', message: 'Error occured while registering/refreshing slash commands!' });
+        logger.error({ topic: 'discord.js:slash', message: 'error occured while registering/refreshing slash commands!' });
         logger.error({ topic: 'discord.js:slash', message: err.stack ? err.stack : err });
     }
     process.exit();
@@ -74,7 +74,7 @@ async function SlashCommandUnregister(token, client) {
 
         logger.info({ topic: 'discord.js:slash', message: 'Successfully unregistered slash commands.' });
     } catch (err) {
-        logger.error({ topic: 'discord.js:slash', message: 'Error occured while unregistering slash commands!' });
+        logger.error({ topic: 'discord.js:slash', message: 'error occured while unregistering slash commands!' });
         logger.error({ topic: 'discord.js:slash', message: err.stack ? err.stack : err });
     }
     process.exit();

@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const TextToSpeech = require('../modules/tts/class/TextToSpeech.js');
-const DiscordVoice = require('../modules/discordutils/class/DiscordVoice.js');
+const DiscordVoice = require('../modules/discord/class/DiscordVoice.js');
 
 async function commandHandler(interaction) {
     // This command only can be used when session is available
