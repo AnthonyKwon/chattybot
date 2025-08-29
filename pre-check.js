@@ -1,6 +1,6 @@
 const { existsSync } = require('fs');
-const { GoogleAuth } = require('google-auth-library');
-const config = require('./modules/config.js')
+const { getClient, verify } = require('./modules/tts/class/provider/GcpTtsProvider/AuthHandler');
+const config = require('./modules/config')
 
 // some call requires asynchronous call, warp code with async function
 async function preCheck() {
@@ -16,27 +16,23 @@ async function preCheck() {
     {
         // check if Workload Identity Federation available
         if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-            console.log('\x1b[33mGOOGLE_APPLICATION_CREDENTIALS\x1b[0m provided, pre-check might take longer as testing credentials.');
-            const auth = new GoogleAuth({
-                scopes: 'https://www.googleapis.com/auth/cloud-platform'
-            });
+            console.log('\x1b[33mGOOGLE_APPLICATION_CREDENTIALS\x1b[0m provided, pre-check might take longer.');
 
-            // try to authenticate with provided credentials
-            const client = await auth.getClient();
-            // send the locale list request with invalid locale for testing
-            // this should return empty voices list object like below
-            // { voices: [] }
-            const url = 'https://texttospeech.googleapis.com/v1beta1/voices?languageCode=ne-RD';
-            const res = await client.request({ url });
-
-            // check if API returned correct empty object
-            if (!res || !res.data['voices']) {
+            try {
+                // try to authenticate with provided credentials
+                const client = await getClient();
+                // verify if credentials working correctly
+                await verify(client);
+            } catch (err) {
+                console.error(err);
+                // credentials not working, show error and exit
                 console.error('\x1b[41mFailed to authenticate with Workload Identity Federation credentials!\x1b[0m');
-                console.error('Please check if, rename to \x1b[33mGOOGLE_APPLICATION_CREDENTIALS\x1b[0m environment variable is correctly set,');
-                console.error('or check if there isn\'t any error inside credentials file.');
+                console.error('Please check if \x1b[33mGOOGLE_APPLICATION_CREDENTIALS\x1b[0m environment variable is correctly set,');
+                console.error('or there is any error inside credentials file.');
                 process.exit(1);
             }
         }
+
         // check if Service Account Key available instead
         else if (!existsSync('./configs/gcp-credentials.json'))
         {
