@@ -6,8 +6,8 @@
 .DS_Store
 
 # Actual configuration files
-configs/gcp-credentials.json
-configs/settings.json5
+configs/*.json
+configs/*.json5
 
 # old or unneeded dummy files that should not exist?
 **/*.bak
