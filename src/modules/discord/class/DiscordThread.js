@@ -24,7 +24,6 @@ class DiscordThread {
     }
 
     get awayHandler() { return awayHandlerMap.get(this._guildId) }
-    set awayHandler(value) { awayHandlerMap.set(this._guildId, value) }
     deleteAwayHandler() { awayHandlerMap.delete(this._guildId) }
 
     // (getter) guild id

@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const i18n = require('../modules/i18n/main.mod.js');
-const package = require('../package.json');
+const package = require('../../package.json');
 
 async function commandHandler(interaction) {
     let reply = '';

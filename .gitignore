@@ -13,6 +13,9 @@ configs/settings.json5
 **/*.bak
 **/*_old
 
+# transpiled javascript files from typescript
+out/**/*
+
 # Log files directory
 logs/
 
