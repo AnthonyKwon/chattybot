@@ -6,7 +6,7 @@ function initialize() {
     const files = fs.readdirSync(path.join(__dirname, '../../configs'));
     const configArray = {};
 
-    for (file of files) {
+    for (let file of files) {
         /* Read file only with ".json/.json5" extension. */
         if ((!file.endsWith('.json') && !file.endsWith('.json5')) || file === 'gcp-credentials.json') continue;
 
