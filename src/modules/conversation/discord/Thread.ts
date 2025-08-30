@@ -20,7 +20,7 @@ export async function create(origin: CommandInteraction, options: ThreadOptions)
  * @param channel - {@link ThreadChannel} to destroy
  * @alpha
  */
-export function destroy(channel: ThreadChannel) {
+export async function destroy(channel: ThreadChannel) {
     // I'm not sure if this even needed...
     await channel.delete();
 }
@@ -43,7 +43,7 @@ export async function validate(channel: ThreadChannel): Promise<boolean> {
         await channel.setInvitable(false);
         // check success; channel exists
         return true;
-    } catch (err) {
+    } catch (err: any) {
         // check failed; channel exists but no permission
         if (err.message === 'Missing Access')
             return false;

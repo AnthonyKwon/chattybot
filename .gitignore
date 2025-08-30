@@ -14,7 +14,7 @@ configs/*.json5
 **/*_old
 
 # transpiled javascript files from typescript
-out/**/*
+build/**/*
 
 # Log files directory
 logs/
