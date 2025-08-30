@@ -3,7 +3,7 @@ const slash = require('./modules/discord/slashCommand.js');
 const thread = require('./modules/discord/thread.js');
 const config = require('./modules/config.js');
 const logger = require('./modules/logger/main.mod.js');
-const package = require('./package.json');
+const package = require('../package.json');
 
 // initialize logger module for main
 logger.info({ topic: package.name, message: `version ${package.version}` });

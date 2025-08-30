@@ -7,7 +7,7 @@ if (!existsSync('./configs/settings.json5')) {
     process.exit(1);
 }
 
-const config = require('./modules/config.js');
+const config = require('./src/modules/config.js');
 
 // pre-check: check if gcp-credenctials.json exists when user uses GCP-TTS
 if (config.ttsProvider === "GcpTts" && !existsSync('./configs/gcp-credentials.json')) {
@@ -17,4 +17,4 @@ if (config.ttsProvider === "GcpTts" && !existsSync('./configs/gcp-credentials.js
 }
 
 // pre-check done. start main application
-require('./main')
+require('./src/main')
