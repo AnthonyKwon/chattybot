@@ -1,5 +1,4 @@
-const GcpTtsExt = require('@google-cloud/text-to-speech');
-const path = require('node:path');
+const { getClient } = require('./GcpTtsProvider/AuthHandler.js')
 const bufferToStream = require('./GcpTtsProvider/bufferToStream.js');
 const getKeyByValue = require('./GcpTtsProvider/getKeybyValue.js');
 const GcpTtsParamBuilder = require('./GcpTtsProvider/ParameterBuilder.js');
@@ -11,10 +10,7 @@ const i18n = require('../../../i18n/main.mod.js');
 class GcpTts extends TTSProvider {
     constructor(params) {
         super();
-        this._client = new GcpTtsExt.TextToSpeechClient({
-            projectId: require('../../../../configs/gcp-credentials.json').project_id,
-            keyFilename: path.join(path.dirname(require.main.filename), 'configs/gcp-credentials.json')
-        });
+        this._client = getClient();
         this._request = params;
     }
 
