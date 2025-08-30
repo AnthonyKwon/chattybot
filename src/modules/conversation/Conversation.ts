@@ -10,10 +10,10 @@ import { ObjectOccupiedError, OccupiedObject } from "./error/ObjectOccupiedError
  * @alpha
  */
 export class ConversationManager {
-    private guildId: string;
-    private origin: CommandInteraction;
-    private thread: ThreadChannel;
-    private voice: VoiceChannel;
+    private readonly guildId: string;
+    private readonly origin: CommandInteraction;
+    private thread: ThreadChannel | undefined;
+    private readonly voice: VoiceChannel;
 
     constructor(origin: CommandInteraction, voice: VoiceChannel) {
         this.guildId = voice.guild.id;
@@ -29,7 +29,7 @@ export class ConversationManager {
      */
     async create(): Promise<void> {
         // check if client is able to connect voice channel in specified guild
-        if (voice.connected)
+        if (voice.connected(this.guildId))
             throw new ObjectOccupiedError('Client already connected to voice channel in this guild.', OccupiedObject.Voice);
 
         // create new thread from origin interaction
@@ -47,18 +47,12 @@ export class ConversationManager {
      */
     async destroy(force: boolean = false): Promise<void> {
         // check if full conversation object already exists (unless forced to destroy)
-        if (force !== true && (!await thread.validate(this.thread) || !voice.connected(this.guildId)))
+        if (!force && (!this.thread || !await thread.validate(this.thread) || !voice.connected(this.guildId)))
             throw new ReferenceError('Conversation does not exist.');
 
         // leave voice channel in current guild
         if (voice.connected(this.guildId)) voice.leave(this.guildId);
         // destroy current thread
-        if (await thread.validate(this.thread)) thread.destroy(this.thread);
-
-        // de-assign every variable
-        this.guildId = undefined;
-        this.origin = undefined;
-        this.thread = undefined;
-        this.voice = undefined;
+        if (this.thread && await thread.validate(this.thread)) thread.destroy(this.thread);
     }
 }

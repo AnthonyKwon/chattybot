@@ -15,19 +15,22 @@
     "google-auth-library": "^10.3.0",
     "json5": "^2.2.3",
     "sodium": "^3.0.2",
+    "typescript": "^5.9.2",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^5.0.0"
   },
   "description": "An Discord Text-To-Speech Bot",
   "license": "GPL-2.0-or-later",
   "scripts": {
+    "build": "tsc",
     "start": "node .",
-    "dev": "NODE_ENV=development node --watch .",
-    "development": "NODE_ENV=development node --watch .",
-    "register": "SLASH_ACTION=register node .",
-    "registerDev": "NODE_ENV=development SLASH_ACTION=register node .",
-    "registerAndRun": "npm run register && npm run start",
-    "registerAndRunDev": "npm run registerDev && npm run development",
-    "unregister": "SLASH_ACTION=unregister node ."
+    "dev": "npm run development",
+    "development": "NODE_ENV=development tsx watch .",
+    "register": "SLASH_ACTION=register tsx src/main.js",
+    "registerDev": "NODE_ENV=development tsx watch watch src/main.js",
+    "unregister": "SLASH_ACTION=unregister tsx src/main.js"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.5"
   }
 }

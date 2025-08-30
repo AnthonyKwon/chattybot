@@ -36,7 +36,7 @@ export async function join(channel: VoiceChannel): Promise<voice.VoiceConnection
  * @alpha
  */
 export function leave(guildId: string): void {
-    const connection: voice.VoiceConnection = voice.getVoiceConnection(guildId);
+    const connection: voice.VoiceConnection | undefined = voice.getVoiceConnection(guildId);
 
     // throw InvalidChannelError when connection not exists
     if (!connection) throw new InvalidChannelError("Can't find any voice connection to destroy.");
@@ -67,14 +67,14 @@ export function connected(guildId: string): boolean {
  */
 export function play(guildId: string, stream: Readable): Promise<voice.AudioPlayer> {
     // get bot's current voice connection on guild
-    const connection: voice.VoiceConnection = voice.getVoiceConnection(guildId);
+    const connection: voice.VoiceConnection | undefined = voice.getVoiceConnection(guildId);
 
     // throw InvalidChannelError when connection not exists
     if (!connection) throw new InvalidChannelError("Can't find any voice connection to destroy.");
 
     // create audio player and resource
     const player: voice.AudioPlayer = voice.createAudioPlayer({ behaviors: { noSubscriber: voice.NoSubscriberBehavior.Stop }});
-    const resource: voice.AudioResource<Readable> = voice.createAudioResource(stream, { inputType: voice.StreamType.OggOpus });
+    const resource: voice.AudioResource<null> = voice.createAudioResource(stream, { inputType: voice.StreamType.OggOpus });
 
     // link player to audio connection
     connection.subscribe(player);
@@ -92,7 +92,7 @@ export function play(guildId: string, stream: Readable): Promise<voice.AudioPlay
  */
 export function onDisconnected(guildId: string, callback: VoidFunction): void {
     // get bot's current voice connection on guild
-    const connection: voice.VoiceConnection = voice.getVoiceConnection(guildId);
+    const connection: voice.VoiceConnection | undefined = voice.getVoiceConnection(guildId);
 
     // throw InvalidChannelError when connection not exists
     if (!connection) throw new InvalidChannelError("Can't find any voice connection to destroy.");

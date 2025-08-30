@@ -1,6 +1,15 @@
 const { existsSync } = require('fs');
-const { getClient, verify } = require('./modules/tts/class/provider/GcpTtsProvider/AuthHandler');
-const config = require('./modules/config')
+
+// pre-check: check if user transpiled typescript
+if (!existsSync('./build/main.js')) {
+    console.error('\x1b[41mFailed to locate application core!\x1b[0m');
+    console.error('Check if you have run \x1b[33m"npm run build"\x1b[0m.');
+    console.error('This is required to application to work correctly.');
+    process.exit(1);
+}
+
+const { getClient, verify } = require('./build/modules/tts/class/provider/GcpTtsProvider/AuthHandler');
+const config = require('./build/modules/config')
 
 // some call requires asynchronous call, warp code with async function
 async function preCheck() {
@@ -44,5 +53,5 @@ async function preCheck() {
 }
 
 // pre-check done. start main application
-preCheck().then(() => require('./main'));
+preCheck().then(() => require('./build/main'));
 
