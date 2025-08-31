@@ -1,58 +1,127 @@
-import { CommandInteraction, ThreadChannel, VoiceChannel } from "discord.js";
-import { VoiceConnection } from "@discordjs/voice";
-import * as voice from "./discord/Voice";
-import * as thread from "./discord/Thread";
-import { ThreadOptions } from "./discord/ThreadOptions";
+import { CommandInteraction, Message, ThreadChannel, VoiceChannel } from "discord.js";
+import * as voice from "../discord/Voice";
+import * as thread from "../discord/thread/Thread";
 import { ObjectOccupiedError, OccupiedObject } from "./error/ObjectOccupiedError";
 
+// cache for saving conversation data
+const conversationCache: Map<string, ConversationManager> = new Map();
+
 /**
- * Manages Text-to-Speech conversation, wrapping {@link VoiceChannel} and {@link ThreadChannel}.
+ * @classDesc Manages Text-to-Speech conversation, wrapping {@link VoiceChannel} and {@link ThreadChannel}.
+ * @class
  * @alpha
  */
 export class ConversationManager {
     private readonly guildId: string;
     private readonly origin: CommandInteraction;
     private thread: ThreadChannel | undefined;
-    private readonly voice: VoiceChannel;
+    private readonly channel: VoiceChannel;
 
-    constructor(origin: CommandInteraction, voice: VoiceChannel) {
-        this.guildId = voice.guild.id;
+    /**
+     * @private
+     * this constructor only meant to be called by {@link create},
+     * do not use from outside.
+     */
+    private constructor(origin: CommandInteraction, channel: VoiceChannel) {
+        // build new conversation data
+        this.guildId = channel.guild.id;
         this.origin = origin;
-        this.voice = voice;
+        this.channel = channel;
     }
 
     /**
-     * Create new conversation.
-     * @returns `true` when conversation created.
+     * Create a new conversation session.
+     * @param origin - Interaction message where conversation has started
+     * @param channel - Voice channel to connect
+     * @returns new {@link ConversationManager} with provided parameters.
+     * @alpha
+     */
+    static create(origin: CommandInteraction, channel: VoiceChannel): ConversationManager {
+        // return conversation session from cache if exists
+        if (conversationCache.has(channel.guild.id))
+            return conversationCache.get(channel.guild.id)!;
+
+        // create new conversation session
+        const conversation = new ConversationManager(origin, channel);
+        conversationCache.set(channel.guild.id, conversation);
+        return conversation;
+    }
+
+    /**
+     * Check if conversation data exists in cache.
+     * @param guildId - {@link Guild} to test cache.
+     * @returns true if conversation data exists in cache, false if not.
+     */
+    static has(guildId: string | undefined): boolean {
+        if (guildId === undefined) return false;
+        return conversationCache.has(guildId);
+    }
+
+    /**
+     * Get conversation data from cache.
+     * @param guildId - {@link Guild} to get cache.
+     * @returns Cached {@link ConversationManager} object if found, {@link undefined} if not.
+     */
+    static get(guildId: string | undefined): ConversationManager | undefined {
+        if (guildId === undefined) return undefined;
+        return conversationCache.get(guildId);
+    }
+
+    /**
+     * Start current conversation session.
      * @throws {@link ObjectOccupiedError} when voice already created and in use for current guild.
      * @alpha
      */
-    async create(): Promise<void> {
+    async start(threadOptions: thread.ThreadOptions): Promise<void> {
         // check if client is able to connect voice channel in specified guild
-        if (voice.connected(this.guildId))
+        if (voice.isConnected(this.guildId))
             throw new ObjectOccupiedError('Client already connected to voice channel in this guild.', OccupiedObject.Voice);
 
-        // create new thread from origin interaction
-        const threadOptions = new ThreadOptions('brand-new-test', 5, 1);
-        this.thread = await thread.create(this.origin, threadOptions);
         // join voice channel
-        await voice.join(this.voice);
+        await voice.join(this.channel);
+
+        // register VC on disconnection event
+        voice.onDisconnected(this.guildId, this.destroy, this);
+
+        // create new thread from origin interaction
+        this.thread = await thread.create(this.origin, threadOptions);
+
+        // alter user that conversation session is started
+        const epoch = Math.floor(Date.now() / 1000);  // unix epoch of current time
+        await this.origin.editReply(`${this.channel} :ballot_box_with_check: <t:${epoch}:R>`);
     }
 
     /**
      * Destroy current conversation.
-     * @param force - Force {@link VoiceConnection} and {@link ThreadChannel} to destroy.
      * @throws {@link ReferenceError} when conversation not created for current guild.
      * @alpha
      */
-    async destroy(force: boolean = false): Promise<void> {
-        // check if full conversation object already exists (unless forced to destroy)
-        if (!force && (!this.thread || !await thread.validate(this.thread) || !voice.connected(this.guildId)))
-            throw new ReferenceError('Conversation does not exist.');
+    async destroy(): Promise<void> {
+        // destroy current thread
+        if (this.thread && await thread.validate(this.thread)) await thread.destroy(this.thread);
 
         // leave voice channel in current guild
-        if (voice.connected(this.guildId)) voice.leave(this.guildId);
-        // destroy current thread
-        if (this.thread && await thread.validate(this.thread)) thread.destroy(this.thread);
+        if (voice.isConnected(this.guildId)) voice.leave(this.guildId);
+
+        // alert user that conversation session is destroyed
+        const epoch = Math.floor(Date.now() / 1000);  // unix epoch of current time
+        await this.origin.editReply(`${this.channel} :wave: <t:${epoch}:R>`);
+
+        // remove from conversation cache
+        conversationCache.delete(this.guildId);
+    }
+
+    /**
+     * Handle message sent from user.
+     * @param message - message to handle.
+     */
+    async onMessage(message: Message) {
+        // ignore message not sent from current guild
+        if (message.guildId !== this.guildId) return;
+
+        // ignore message not sent from current thread
+        if (!this.thread || message.channelId !== this.thread.id) return;
+
+        await message.reply("핑퐁!");
     }
 }

@@ -12,6 +12,7 @@ configs/*.json5
 # old or unneeded dummy files that should not exist?
 **/*.bak
 **/*_old
+**/*.test.js
 
 # transpiled javascript files from typescript
 build/**/*

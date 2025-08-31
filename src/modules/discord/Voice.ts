@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream';
 import { VoiceChannel, Guild } from 'discord.js';
 import * as voice from '@discordjs/voice';
-import { InvalidChannelError } from '../error/InvalidChannelError';
+import { InvalidChannelError } from './error/InvalidChannelError';
 
 /**
  * Join the specified {@link VoiceChannel}
@@ -50,10 +50,9 @@ export function leave(guildId: string): void {
  * @param guildId - id of the {@link Guild} to check connectivity
  * @returns result of connectivity check as {@link boolean}.
  */
-export function connected(guildId: string): boolean {
+export function isConnected(guildId: string): boolean {
     // get bot's current voice connection on guild
-    const connection = voice.getVoiceConnection(guildId);
-    return !!connection;
+    return !!voice.getVoiceConnection(guildId);
 }
 
 /**
@@ -70,7 +69,7 @@ export function play(guildId: string, stream: Readable): Promise<voice.AudioPlay
     const connection: voice.VoiceConnection | undefined = voice.getVoiceConnection(guildId);
 
     // throw InvalidChannelError when connection not exists
-    if (!connection) throw new InvalidChannelError("Can't find any voice connection to destroy.");
+    if (!connection) throw new InvalidChannelError("Can't find any voice connection to play.");
 
     // create audio player and resource
     const player: voice.AudioPlayer = voice.createAudioPlayer({ behaviors: { noSubscriber: voice.NoSubscriberBehavior.Stop }});
@@ -89,13 +88,17 @@ export function play(guildId: string, stream: Readable): Promise<voice.AudioPlay
  * Handle disconnection event of {@link VoiceChannel}
  * @param guildId - id of {@link Guild} to fetch the voice channel
  * @param callback - callback function to run
+ * @param thisArg - {@link this} value to use in callback
+ * @param params - parameters to use in callback
+ * @throws InvalidChannelError
+ * when not connected to voice channel to handle event.
  */
-export function onDisconnected(guildId: string, callback: VoidFunction): void {
+export function onDisconnected(guildId: string, callback: Function, thisArg: any, ...params: any): void {
     // get bot's current voice connection on guild
     const connection: voice.VoiceConnection | undefined = voice.getVoiceConnection(guildId);
 
     // throw InvalidChannelError when connection not exists
-    if (!connection) throw new InvalidChannelError("Can't find any voice connection to destroy.");
+    if (!connection) throw new InvalidChannelError("Can't find any voice connection to handle event.");
 
     // check for disconnection and handle disconnect event
     connection.on(voice.VoiceConnectionStatus.Disconnected, async (oldState, newState): Promise<void> => {
@@ -106,7 +109,7 @@ export function onDisconnected(guildId: string, callback: VoidFunction): void {
             ]);
             // Seems to be reconnecting to a new channel - ignore disconnect
         } catch(err) {
-            callback();
+            callback.apply(thisArg, params);
         }
     });
 }

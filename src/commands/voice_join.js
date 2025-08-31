@@ -1,13 +1,11 @@
-const { ChannelType, PermissionsBitField, SlashCommandBuilder, SlashCommandChannelOption } = require('discord.js');
-const DiscordVoice = require('../modules/discord/class/DiscordVoice.js');
-const DiscordThread = require('../modules/discord/class/DiscordThread.js');
+const { ChannelType, PermissionsBitField, SlashCommandBuilder, SlashCommandChannelOption} = require('discord.js');
 const TTSUser = require('../modules/tts/class/TTSUser.js');
-const threadEvent = require('../modules/discord/thread.js');
-const config = require('../modules/config.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const { datetimePretty } = require('../modules/common.js');
 const logger = require('../modules/logger/main.mod.js');
 const report = require('../modules/errorreport/main.mod.js');
+const { ConversationManager } = require("../modules/conversation/Conversation");
+const { ThreadOptions } = require("../modules/discord/thread/Thread");
 
 function buildCommand() {
     const command = new SlashCommandBuilder();
@@ -34,16 +32,16 @@ function verify(interaction, channel) {
     // is this channel exists?
     if (!channel) {
         // NOPE: channel does not exists or invalid channel id
-        logger.error({ topic: 'discord.js', message: 'Failed to join channel: unknown channel' });
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.unknown_channel'));
+        logger.error({ topic: 'discord_legacy.js', message: 'Failed to join channel: unknown channel' });
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.unknown_channel'));
         return false;
     }
 
     // is this a voice channel?
     if (channel.type !== ChannelType.GuildVoice) {
         // NOPE: this is not a voice channel
-        logger.error({ topic: 'discord.js', message: 'Failed to join channel: channel type is not a voice' });
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.not_a_voice_channel'));
+        logger.error({ topic: 'discord_legacy.js', message: 'Failed to join channel: channel type is not a voice' });
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.not_a_voice_channel'));
         return false;
     }
 
@@ -53,8 +51,8 @@ function verify(interaction, channel) {
         !permissions.has(PermissionsBitField.Flags.Speak) ||
         !channel.joinable) {
         // NOPE: I can't join to that channel
-        logger.error({ topic: 'discord.js', message: `Failed to join voice channel: bot does not have permission to access channel ${channel.id}!` });
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.no_permission').format(channel));
+        logger.error({ topic: 'discord_legacy.js', message: `Failed to join voice channel: bot does not have permission to access channel ${channel.id}!` });
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.voice.no_permission').format(channel));
         return false;
     }
 
@@ -62,8 +60,8 @@ function verify(interaction, channel) {
     if (!permissions.has(PermissionsBitField.Flags.CreatePublicThreads) ||
         !permissions.has(PermissionsBitField.Flags.ManageThreads)) {
         // NOPE: I can't create thread on there
-        logger.error({ topic: 'discord.js', message: `Failed to join voice channel: bot does not have permission to create thread in channel ${channel.id}!` });
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.thread.no_permission').format(channel));
+        logger.error({ topic: 'discord_legacy.js', message: `Failed to join voice channel: bot does not have permission to create thread in channel ${channel.id}!` });
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.thread.no_permission').format(channel));
         return false;
     }
 
@@ -75,8 +73,8 @@ function verify(interaction, channel) {
     // am I trying to join different channel from before?
     if (currChannelId === channel.id) {
         // NOPE: I'm trying to join same channel
-        logger.error({ topic: 'discord.js', message: 'Failed to join voice channel: user tried to join bot into same channel currently in!' });
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.already_joined').format(channel));
+        logger.error({ topic: 'discord_legacy.js', message: 'Failed to join voice channel: user tried to join bot into same channel currently in!' });
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.voice.already_joined').format(channel));
         return false;
     }
 
@@ -92,28 +90,25 @@ async function commandHandler(interaction) {
     if (!channel && interaction.member.voice.channel) channel = interaction.member.voice.channel;
     else if (!channel) {
         // NOPE: no channel provided, and user not joined into voice channel
-        logger.error({ topic: 'discord.js', message: 'Failed to join voice channel: channel not provided' });
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.user_not_found').format(interaction.user));
+        logger.error({ topic: 'discord_legacy.js', message: 'Failed to join voice channel: channel not provided' });
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.voice.user_not_found').format(interaction.user));
         return;
     }
 
     // check if channel is valid
     if (!verify(interaction, channel)) return;
 
-    const voice = new DiscordVoice(interaction.guild.id);  // voice class (of current guild)
-    const thread = new DiscordThread(interaction.guild.id);
-
     try {
-        // leave from previous voice channel (if has one)
-        if (voice.connected) await threadEvent.remove(thread);
+        // use TTSUser class to parse username properly
+        const ttsUser = new TTSUser(interaction.guild, interaction.user);
+        // create thread for conversation
+        const fetchedUser = await ttsUser.fetchUser();
+        const threadName = `🧵 - ${fetchedUser.name} (${datetimePretty()})`;
+        const options = new ThreadOptions(threadName, 60, 3);
 
-        // try to join voice channel
-        voice.locale = interaction.guild.preferredLocale;
-        await voice.join(channel);
-
-        // send a message for starting a thread
-        const epoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
-        const headupMsg = await interaction.editReply(`${channel} :ballot_box_with_check: <t:${epoch}:R>`);
+        // try to start the conversation
+        const conversation = ConversationManager.create(interaction, channel);
+        await conversation.start(options);
 
         // send success reply to user
         logger.verbose({ topic: 'discord.js', message: `Joined voice channel ${channel}.` });
@@ -122,35 +117,17 @@ async function commandHandler(interaction) {
             ephemeral: true
         });
 
-        // use TTSUser class to parse username properly
-        const ttsUser = new TTSUser(interaction.guild, interaction.user);
-        // create thread for conversation
-        const fetchedUser = await ttsUser.fetchUser();
-        const threadName = `🧵 - ${fetchedUser.name} (${datetimePretty()})`;
-        const threadOpt = {
-            autoArchiveDuration: 60,
-            name: threadName,
-            rateLimitPerUser: 3
-        }
-        const newThread = await thread.create(headupMsg, threadOpt);
-        logger.verbose({ topic: 'discord.js', message: `Created thread channel ${newThread}.` });
-
-        // handle disconnect event
-        voice.handleDisconnect(() => require('../modules/discord/thread.js')
-            .onVoiceDisconnect(thread, channel));
-
         // handle away-from-keyboard situation
-        // ideally, this should be based on discord's onArchive event,
-        // but discord doesn't seems emit any event on thread archive
-        thread.awayHandler = setTimeout(() => require('../modules/discord/thread.js')
-            .onAway(thread), config.awayTime * 60000);
+        // ideally, this should be based on discord_legacy's onArchive event,
+        // but discord_legacy doesn't seems emit any event on thread archive
+        //thread.awayHandler = setTimeout(() => require('../modules/discord_legacy/thread.js')
+            //.onAway(thread), config.awayTime * 60000);
     } catch (err) {
         const result = report(err, interaction.user.id);
-        logger.error({ topic: 'discord.js', message: 'error occured while joining voice channel!' });
-        logger.error({ topic: 'discord.js', message: err.stack });
-        // send error message to discord channel
+        logger.error({ topic: 'discord_legacy.js', message: 'error occured while joining voice channel!' });
+        logger.error({ topic: 'discord_legacy.js', message: err.stack });
+        // send error message to discord_legacy channel
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.generic').format(result));
-        return;
     }
 }
 

@@ -22,8 +22,8 @@ module.exports = winston.createLogger({
             level: logLevel
         }),
         new winston.transports.DailyRotateFile({
-            filename: path.join(__dirname, '../../logs/%DATE%'),
-            dirname: path.join(__dirname, '../../logs'),
+            filename: path.join(appRoot, 'logs/%DATE%'),
+            dirname: path.join(appRoot, 'logs'),
             extension: '.log',
             datePattern: 'YYYY-MM-DD',
             frequency: timeLimit,

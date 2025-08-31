@@ -25,7 +25,7 @@ class TTSUserClass {
         return userCache.get(this.fetchCacheId());
     }
 
-    // fetch user data from discord server
+    // fetch user data from discord_legacy server
     async fetchUserRaw(force = false) {
         // cancel the cache purge timer (if exists)
         if (timerCache.get(this.fetchCacheId())) {

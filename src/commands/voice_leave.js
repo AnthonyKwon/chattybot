@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
-const DiscordVoice = require('../modules/discord/class/DiscordVoice.js');
-const DiscordThread = require('../modules/discord/class/DiscordThread.js');
-const threads = require('../modules/discord/thread.js');
+const DiscordVoice = require('../modules/discord_legacy/class/DiscordVoice.js');
+const DiscordThread = require('../modules/discord_legacy/class/DiscordThread.js');
+const threads = require('../modules/discord_legacy/thread.js');
 const i18n = require('../modules/i18n/main.mod.js');
 
 async function commandHandler(interaction) {
@@ -10,7 +10,7 @@ async function commandHandler(interaction) {
 
     // check if bot has joined session
     if (!await thread.available() || !voice.connected) {
-        interaction.editReply(i18n.get(interaction.locale, 'error.discord.voice.not_joined'));
+        interaction.editReply(i18n.get(interaction.locale, 'error.discord_legacy.voice.not_joined'));
         return;
     }
 
@@ -21,7 +21,7 @@ async function commandHandler(interaction) {
     threads.remove(thread);
 
     // send reply to user interaction
-    interaction.editReply(i18n.get(interaction.locale, 'message.discord.voice.left').format(voiceChannel));
+    interaction.editReply(i18n.get(interaction.locale, 'message.discord_legacy.voice.left').format(voiceChannel));
 }
 
 module.exports = {

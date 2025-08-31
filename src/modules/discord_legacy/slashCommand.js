@@ -4,7 +4,7 @@ const path = require('node:path');
 const logger = require('../logger/main.mod.js');
 const i18n = require('../i18n/main.mod.js');
 
-const commandsPath = path.join(path.dirname(require.main.filename), 'commands');
+const commandsPath = path.join(srcRoot, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
 // load slash commands
@@ -18,7 +18,7 @@ function SlashCommandLoader(client) {
         if ('data' in command && 'execute' in command) {
             client.commands.set(command.data.name, command);
         } else {
-            logger.warn({ topic: 'discord.js', message: `The command at ${filePath} is missing a required "data" or "execute" property.` });
+            logger.warn({ topic: 'discord_legacy.js', message: `The command at ${filePath} is missing a required "data" or "execute" property.` });
         }
     }
 }
@@ -46,7 +46,7 @@ async function SlashCommandRegister(token, client) {
 
     // and deploy your commands!
     try {
-        logger.info({ topic: 'discord.js:slash', message: `Started registering/refreshing ${commandList.length} slash commands.` });
+        logger.info({ topic: 'discord_legacy.js:slash', message: `Started registering/refreshing ${commandList.length} slash commands.` });
 
         // The put method is used to fully refresh all commands in the guild with the current set
         const data = await rest.put(
@@ -54,11 +54,11 @@ async function SlashCommandRegister(token, client) {
             { body: commandList }
         );
 
-        logger.info({ topic: 'discord.js:slash', message: `Successfully registered/refreshed ${data.length} slash commands.` });
+        logger.info({ topic: 'discord_legacy.js:slash', message: `Successfully registered/refreshed ${data.length} slash commands.` });
     } catch (err) {
         // And of course, make sure you catch and log any errors!
-        logger.error({ topic: 'discord.js:slash', message: 'error occured while registering/refreshing slash commands!' });
-        logger.error({ topic: 'discord.js:slash', message: err.stack ? err.stack : err });
+        logger.error({ topic: 'discord_legacy.js:slash', message: 'error occured while registering/refreshing slash commands!' });
+        logger.error({ topic: 'discord_legacy.js:slash', message: err.stack ? err.stack : err });
     }
     process.exit();
 }
@@ -67,15 +67,15 @@ async function SlashCommandRegister(token, client) {
 async function SlashCommandUnregister(token, client) {
     const rest = new REST().setToken(token);
     try {
-        logger.info({ topic: 'discord.js:slash', message: 'Started unregistering slash commands.' });
+        logger.info({ topic: 'discord_legacy.js:slash', message: 'Started unregistering slash commands.' });
 
         // unregister global slash commands
         await rest.put(Routes.applicationCommands(client.user.id), { body: [] });
 
-        logger.info({ topic: 'discord.js:slash', message: 'Successfully unregistered slash commands.' });
+        logger.info({ topic: 'discord_legacy.js:slash', message: 'Successfully unregistered slash commands.' });
     } catch (err) {
-        logger.error({ topic: 'discord.js:slash', message: 'error occured while unregistering slash commands!' });
-        logger.error({ topic: 'discord.js:slash', message: err.stack ? err.stack : err });
+        logger.error({ topic: 'discord_legacy.js:slash', message: 'error occured while unregistering slash commands!' });
+        logger.error({ topic: 'discord_legacy.js:slash', message: err.stack ? err.stack : err });
     }
     process.exit();
 }
@@ -85,13 +85,13 @@ async function SlashCommandHandler(interaction) {
     const command = interaction.client.commands.get(interaction.commandName);
 
     if (!command) {
-        logger.error({ topic: 'discord.js', message: `No command matching ${interaction.commandName} was found.` });
+        logger.error({ topic: 'discord_legacy.js', message: `No command matching ${interaction.commandName} was found.` });
         return;
     }
 
     // prevent non-guild command to be responded
     if (!interaction.inGuild()) {
-        await interaction.reply(i18n.get(interaction.locale, 'error.discord.guild_only'));
+        await interaction.reply(i18n.get(interaction.locale, 'error.discord_legacy.guild_only'));
         return;
     }
 
@@ -102,8 +102,8 @@ async function SlashCommandHandler(interaction) {
         // launch command
         await command.execute(interaction);
     } catch (err) {
-        logger.error({ topic: 'discord.js:slash', message: `Error occured while handling slash command!` });
-        logger.error({ topic: 'discord.js:slash', message: err.stack ? err.stack : err })
+        logger.error({ topic: 'discord_legacy.js:slash', message: `Error occured while handling slash command!` });
+        logger.error({ topic: 'discord_legacy.js:slash', message: err.stack ? err.stack : err })
 
         const errorInteraction = { content: i18n.get(interaction.locale, 'error.generic').format(result), ephemeral: true };
         const result = report(err, interaction.user.id);
