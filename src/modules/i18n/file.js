@@ -8,24 +8,23 @@ const fallbackLocale = 'en-US';
 // read locale from file
 function read(locale) {
     // get json locale file path for provided locale
-    let localeFilePath = path.join(path.dirname(require.main.filename), 'locales', `${locale}.json`);
+    let localeFilePath = path.join(appRoot, 'locales', `${locale}.json`);
     // check json file of chosen locale is available
     // if not, switch to fallback locale (this SHOULD be available)
     if (!fs.existsSync(localeFilePath)) {
         logger.verbose({ topic: 'i18n', message: `Locale ${locale} is not available, falling back.` });
-        localeFilePath = path.join(path.dirname(require.main.filename), 'locales', `${fallbackLocale}.json`);
+        localeFilePath = path.join(appRoot, 'locales', `${fallbackLocale}.json`);
     }
 
     // read json file
-    localeData = JSON.parse(fs.readFileSync(localeFilePath));
-    return localeData;
+    return JSON.parse(fs.readFileSync(localeFilePath));
 }
 
 // read all locale from file
 // this is an equivalent of old getAll function
 function readAll(id) {
     // read locales directory
-    const localeFiles = fs.readdirSync(path.join(path.dirname(require.main.filename), 'locales')).filter(file => file.endsWith('.json'));
+    const localeFiles = fs.readdirSync(path.join(appRoot, 'locales')).filter(file => file.endsWith('.json'));
     const result = {};
 
     for (const file of localeFiles) {

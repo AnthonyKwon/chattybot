@@ -15,7 +15,7 @@ async function onAway(threadClass) {
     // check if thread class is already removed by another event
     if (!threadClass) return;
 
-    logger.info({ topic: 'discord.js', message: 'Everyone were away longer than specified time. Removing thread and leaving voice...' });
+    logger.info({ topic: 'discord_legacy.js', message: 'Everyone were away longer than specified time. Removing thread and leaving voice...' });
     remove(threadClass);
 }
 
@@ -29,7 +29,7 @@ async function onArchive(thread) {
     if (threadClass.get().id !== thread.id) return;
 
     // remove and leave
-    logger.warn({ topic: 'discord.js', message: `Thread ${thread} archived by someone. Removing thread and leaving voice...` });
+    logger.warn({ topic: 'discord_legacy.js', message: `Thread ${thread} archived by someone. Removing thread and leaving voice...` });
     remove(threadClass);
 }
 
@@ -42,13 +42,13 @@ async function onDelete(thread) {
     // check if deleted thread is same as voice thread
     if (threadClass.get().id !== thread.id) return;
     // remove and leave
-    logger.warn({ topic: 'discord.js', message: `Thread ${thread} removed by someone. Leaving voice...` });
+    logger.warn({ topic: 'discord_legacy.js', message: `Thread ${thread} removed by someone. Leaving voice...` });
     remove(threadClass);
 }
 
 async function onVoiceDisconnect(threadClass, channel) {
     if (eventLock) return;
-    logger.warn({ topic: 'discord.js', message: `Bot kicked from channel ${channel} by someone. Removing thread...` });
+    logger.warn({ topic: 'discord_legacy.js', message: `Bot kicked from channel ${channel} by someone. Removing thread...` });
     // remove voice thread
     const leaveEpoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
     threadClass.headup.edit(`${channel} :wave: <t:${leaveEpoch}:R>`);
@@ -114,7 +114,7 @@ async function remove(thread) {
     const epoch = Math.floor(Date.now() / 1000);  // unix timestamp of current time
     if (voice.connected) {
         await voice.leave();
-        logger.verbose({ topic: 'discord.js', message: `Left voice channel ${voiceChannel}.` });
+        logger.verbose({ topic: 'discord_legacy.js', message: `Left voice channel ${voiceChannel}.` });
         thread.headup.edit(`${voiceChannel} :wave: <t:${epoch}:R>`);
     } else {
         thread.headup.edit(`:cry:  <t:${epoch}:R>`);
@@ -126,7 +126,7 @@ async function remove(thread) {
 
     // remove voice thread
     if (await thread.available()) {
-        logger.verbose({ topic: 'discord.js', message: `Removed thread channel ${thread.get()}.` });
+        logger.verbose({ topic: 'discord_legacy.js', message: `Removed thread channel ${thread.get()}.` });
         await thread.delete();
     }
 

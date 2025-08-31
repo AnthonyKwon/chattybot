@@ -22,12 +22,12 @@ function createReport(error, uid = undefined) {
 
     try {
         // check if report directory exists and create if not
-        if (!fs.existsSync(path.join(path.dirname(require.main.filename), '/logs/report/'))) {
-            fs.mkdirSync(path.join(path.dirname(require.main.filename), '/logs/report/'));
+        if (!fs.existsSync(path.join(appRoot, '/logs/report/'))) {
+            fs.mkdirSync(path.join(appRoot, '/logs/report/'));
         }
 
         // save report to file
-        fs.writeFileSync(path.join(path.dirname(require.main.filename), '/logs/report/', filename), JSON.stringify(data));
+        fs.writeFileSync(path.join(appRoot, '/logs/report/', filename), JSON.stringify(data));
     } catch (fileErr) {
         logger.error({ topic: 'errorreport', message: `Failed to write error report "${filename}"!` });
         logger.error({ topic: 'errorreport', message: fileErr.stack ? fileErr.stack : fileErr });

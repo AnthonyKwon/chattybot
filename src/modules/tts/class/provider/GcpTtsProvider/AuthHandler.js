@@ -13,7 +13,7 @@ function getClient() {
         // check if additional options needed (for Service Account Key auth)
         if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
             clientOptions.projectId = require('configs/gcp-credentials.json').project_id;
-            clientOptions.keyFilename = path.join(path.dirname(require.main.filename), 'configs/gcp-credentials.json');
+            clientOptions.keyFilename = path.join(appRoot, 'configs/gcp-credentials.json');
         }
 
         // try to authenticate with provided credentials

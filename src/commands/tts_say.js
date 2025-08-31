@@ -1,11 +1,11 @@
 const { SlashCommandBuilder } = require('discord.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const logger = require('../modules/logger/main.mod.js');
-const MessageFixer = require('../modules/discord/messageFixer.js');
+const MessageFixer = require('../modules/discord_legacy/messageFixer.js');
 const report = require('../modules/errorreport/main.mod.js');
 const TTSClass = require('../modules/tts/class/TextToSpeech.js');
 const TTSUser = require('../modules/tts/class/TTSUser.js');
-const DiscordVoice = require('../modules/discord/class/DiscordVoice.js');
+const DiscordVoice = require('../modules/discord_legacy/class/DiscordVoice.js');
 const config = require('../modules/config.js');
 
 async function commandHandler(interaction) {
@@ -14,14 +14,14 @@ async function commandHandler(interaction) {
     // check if message text length is less than 1000
     const text = interaction.options.getString(i18n.get('en-US', 'command.say.opt1.name'));
     if (text.length > config.ttsMaxLength) {
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.tts.text_too_long').format(config.ttsMaxLength));
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.tts.text_too_long').format(config.ttsMaxLength));
         return;
     }
 
     // does user joined voice channel?
     if (!voice.connected) {
         // NOPE: user does not joined voice channel
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.not_joined'));
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.voice.not_joined'));
         return;
     }
 
@@ -34,7 +34,7 @@ async function commandHandler(interaction) {
     try {
         // get account username (guild username if command used on guild && user has guild-specific username) of the user
         const user = interaction.member ? interaction.member : interaction.user;
-        // Send message and TTS to discord
+        // Send message and TTS to discord_legacy
         interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'tts.speak.text').format(interaction.user, text));
         tts.addQueue(new TTSUser(interaction.guild, user), fixedText);
         const voiceCallback = async function (stream) {

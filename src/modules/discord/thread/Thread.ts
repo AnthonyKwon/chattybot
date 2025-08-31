@@ -1,5 +1,6 @@
 import { CommandInteraction, Message, ThreadChannel } from "discord.js";
 import { ThreadOptions } from "./ThreadOptions";
+export { ThreadOptions };
 
 /**
  * Create new {@link ThreadChannel}.
@@ -39,8 +40,7 @@ export async function validate(channel: ThreadChannel): Promise<boolean> {
      * This is a very hacky way; it might have lots of problems.
      */
     try {
-        await channel.setInvitable(true);
-        await channel.setInvitable(false);
+        await channel.setAutoArchiveDuration(60);
         // check success; channel exists
         return true;
     } catch (err: any) {

@@ -1,3 +1,5 @@
+import { ThreadAutoArchiveDuration } from 'discord.js';
+
 /**
  * Options to create {@link ThreadChannel}.
  * @alpha
@@ -6,7 +8,7 @@ export class ThreadOptions {
     /** Name of the thread */
     public name: string;
     /** Auto-archive duration */
-    public autoArchiveDuration: number;
+    public autoArchiveDuration: ThreadAutoArchiveDuration;
     /** Cooldown of the chat */
     public rateLimitPeruser: number;
 
@@ -16,7 +18,7 @@ export class ThreadOptions {
      * @param autoArchiveDuration - auto-archive duration
      * @param rateLimitPeruser - cooldown of the chat
      */
-    constructor(name: string, autoArchiveDuration: number = 5, rateLimitPeruser: number = 0) {
+    constructor(name: string, autoArchiveDuration: ThreadAutoArchiveDuration = ThreadAutoArchiveDuration.OneHour, rateLimitPeruser: number = 0) {
         this.name = name;
         this.autoArchiveDuration = autoArchiveDuration;
         this.rateLimitPeruser = rateLimitPeruser;
