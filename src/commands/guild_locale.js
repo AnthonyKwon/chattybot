@@ -1,6 +1,7 @@
 const { Locale, PermissionsBitField } = require('discord.js');
-const { SlashCommandBuilder } = require('discord.js');
 const i18n = require('../modules/i18n/main.mod.js');
+const I18nStringOption = require('../modules/discord/command/option/I18nStringOption').default;
+const I18nCommandBuilder = require('../modules/discord/command/I18nCommandBuilder').default;
 
 async function commandHandler(interaction) {
     const currLocale = interaction.guild.preferredLocale;
@@ -49,16 +50,13 @@ async function commandHandler(interaction) {
 }
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName(i18n.get('en-US', 'command.locale.name'))
-        .setNameLocalizations(i18n.getAll('command.locale.name'))
-        .setDescription(i18n.get('en-US', 'command.locale.desc'))
-        .setDescriptionLocalizations(i18n.getAll('command.locale.desc'))
-        .addStringOption(option => option.setName(i18n.get('en-US', 'command.locale.opt1.name'))
-            .setNameLocalizations(i18n.getAll('command.locale.opt1.name'))
-            .setDescription(i18n.get('en-US', 'command.locale.opt1.desc'))
-            .setDescriptionLocalizations(i18n.getAll('command.locale.opt1.desc'))
+    data: new I18nCommandBuilder('locale')
+        .setName()
+        .setDescription()
+        .addStringOption(new I18nStringOption('locale', 1)
+            .setName()
+            .setDescription()
             .setRequired(false)),
-    extra: { ephemeral: true },
+    ephemeral: true,
     execute: commandHandler
 }

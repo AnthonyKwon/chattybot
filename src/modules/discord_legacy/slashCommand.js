@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const logger = require('../logger/main.mod.js');
 const i18n = require('../i18n/main.mod.js');
+const {isDevMode} = require("../common");
 
 const commandsPath = path.join(srcRoot, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -31,7 +32,7 @@ async function SlashCommandRegister(token, client) {
         const command = require(filePath);
 
         // check if user is trying to register development enviroment commands
-        if (process.env.NODE_ENV === 'development') {
+        if (isDevMode()) {
             // prepend "zz" to command when running as development environment
             Object.keys(command.data.name_localizations).forEach(key => command.data.name_localizations[key] = `zz${command.data.name_localizations[key]}`);
             // prepend "(dev)" to description when running as development environment

@@ -31,6 +31,7 @@
     "unregister": "SLASH_ACTION=unregister tsx src/main.js"
   },
   "devDependencies": {
+    "discord-api-types": "^0.38.22",
     "tsx": "^4.20.5"
   }
 }

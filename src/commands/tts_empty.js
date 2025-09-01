@@ -1,7 +1,7 @@
-const { SlashCommandBuilder } = require('discord.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const TextToSpeech = require('../modules/tts/class/TextToSpeech.js');
 const DiscordVoice = require('../modules/discord_legacy/class/DiscordVoice.js');
+const I18nCommandBuilder = require('../modules/discord/command/I18nCommandBuilder').default;
 
 async function commandHandler(interaction) {
     // This command only can be used when session is available
@@ -18,10 +18,8 @@ async function commandHandler(interaction) {
 }
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName(i18n.get('en-US', 'command.empty.name'))
-        .setNameLocalizations(i18n.getAll('command.empty.name'))
-        .setDescription(i18n.get('en-US', 'command.empty.desc'))
-        .setDescriptionLocalizations(i18n.getAll('command.empty.desc')),
+    data: new I18nCommandBuilder('empty')
+        .setName()
+        .setDescription(),
     execute: commandHandler
 }
