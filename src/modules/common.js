@@ -68,7 +68,7 @@ const datetimePretty = customDate => {
 
 // check if application is running as development mode or doing slash-command related job
 function isDevMode() {
-    if (process.env.NODE_ENV == 'development' || process.env.SLASH_ACTION)
+    if (process.env.NODE_ENV == 'development' || process.env.DEV_MODE == 'true' || process.env.SLASH_ACTION)
         return true;
     else
         return false;

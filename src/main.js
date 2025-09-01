@@ -1,6 +1,7 @@
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const { ConversationManager } = require('./modules/conversation/Conversation');
 const slash = require('./modules/discord_legacy/slashCommand.js');
+const command = require('./modules/discord/command/Command');
 const thread = require('./modules/discord_legacy/thread.js');
 const config = require('./modules/config.js');
 const logger = require('./modules/logger/main.mod.js');
@@ -34,14 +35,15 @@ client.once(Events.ClientReady, async c => {
     if (config.status && config.status !== '') c.user.setActivity(config.status);
 
     // load registered slash commands
-    slash.load(c);
+    await command.load();
 });
 
 client.on(Events.InteractionCreate, interaction => {
     // filter only for chat interaction
     if (!interaction.isChatInputCommand()) return;
     // call slash command handler
-    slash.handler(interaction);
+    //slash.handler(interaction);
+    command.handle(interaction);
 });
 
 // Reply to a user who mentions the bot
@@ -100,3 +102,4 @@ process.on('SIGTERM', exitHandler);
 
 // initialize discord_legacy module
 client.login(config.token);
+//require('./modules/discord/command/CommandRegister').register();

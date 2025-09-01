@@ -1,4 +1,4 @@
-const { ChannelType, PermissionsBitField, SlashCommandBuilder, SlashCommandChannelOption} = require('discord.js');
+const { ChannelType, PermissionsBitField } = require('discord.js');
 const TTSUser = require('../modules/tts/class/TTSUser.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const { datetimePretty } = require('../modules/common.js');
@@ -6,20 +6,18 @@ const logger = require('../modules/logger/main.mod.js');
 const report = require('../modules/errorreport/main.mod.js');
 const { ConversationManager } = require("../modules/conversation/Conversation");
 const { ThreadOptions } = require("../modules/discord/thread/Thread");
+const I18nCommandBuilder = require("../modules/discord/command/I18nCommandBuilder").default;
+const I18nChannelOption = require("../modules/discord/command/option/I18nChannelOption").default;
 
 function buildCommand() {
-    const command = new SlashCommandBuilder();
-    command.setName(i18n.get('en-US', 'command.join.name'));
-    command.setNameLocalizations(i18n.getAll('command.join.name'));
-    command.setDescription(i18n.get('en-US', 'command.join.desc'));
-    command.setDescriptionLocalizations(i18n.getAll('command.join.desc'));
+    const command = new I18nCommandBuilder('join');
+    command.setName();
+    command.setDescription();
 
     // (optional) channel name as string option
-    const optChannel = new SlashCommandChannelOption();
-    optChannel.setName(i18n.get('en-US', 'command.join.opt1.name'));
-    optChannel.setNameLocalizations(i18n.getAll('command.join.opt1.name'));
-    optChannel.setDescription(i18n.get('en-US', 'command.join.opt1.desc'));
-    optChannel.setDescriptionLocalizations(i18n.getAll('command.join.opt1.desc'));
+    const optChannel = new I18nChannelOption('join', 1);
+    optChannel.setName();
+    optChannel.setDescription();
     optChannel.addChannelTypes(ChannelType.GuildVoice);
     optChannel.setRequired(false);
     command.addChannelOption(optChannel);
@@ -133,6 +131,5 @@ async function commandHandler(interaction) {
 
 module.exports = {
     data: buildCommand(),
-    extra: { ephemeral: false },
     execute: commandHandler
 }

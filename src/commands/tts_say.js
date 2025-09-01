@@ -1,4 +1,3 @@
-const { SlashCommandBuilder } = require('discord.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const logger = require('../modules/logger/main.mod.js');
 const MessageFixer = require('../modules/discord_legacy/messageFixer.js');
@@ -7,6 +6,8 @@ const TTSClass = require('../modules/tts/class/TextToSpeech.js');
 const TTSUser = require('../modules/tts/class/TTSUser.js');
 const DiscordVoice = require('../modules/discord_legacy/class/DiscordVoice.js');
 const config = require('../modules/config.js');
+const I18nCommandBuilder = require('../modules/discord/command/I18nCommandBuilder').default;
+const I18nStringOption = require('../modules/discord/command/option/I18nStringOption').default;
 
 async function commandHandler(interaction) {
     let voice = new DiscordVoice(interaction.guild.id);
@@ -56,15 +57,12 @@ async function commandHandler(interaction) {
 }
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName(i18n.get('en-US', 'command.say.name'))
-        .setNameLocalizations(i18n.getAll('command.say.name'))
-        .setDescription(i18n.get('en-US', 'command.say.desc'))
-        .setDescriptionLocalizations(i18n.getAll('command.say.desc'))
-        .addStringOption(option => option.setName(i18n.get('en-US', 'command.say.opt1.name'))
-            .setNameLocalizations(i18n.getAll('command.say.opt1.name'))
-            .setDescription(i18n.get('en-US', 'command.say.opt1.desc'))
-            .setDescriptionLocalizations(i18n.getAll('command.say.opt1.desc'))
+    data: new I18nCommandBuilder('say')
+        .setName()
+        .setDescription()
+        .addStringOption(new I18nStringOption('say', 1)
+            .setName()
+            .setDescription()
             .setRequired(true)),
     execute: commandHandler
 }
