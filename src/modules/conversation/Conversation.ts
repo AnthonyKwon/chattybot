@@ -96,7 +96,7 @@ export class ConversationManager {
      * @throws {@link ReferenceError} when conversation not created for current guild.
      * @alpha
      */
-    async destroy(): Promise<void> {
+    async destroy(): Promise<VoiceChannel> {
         // destroy current thread
         if (this.thread && await thread.validate(this.thread)) await thread.destroy(this.thread);
 
@@ -109,6 +109,8 @@ export class ConversationManager {
 
         // remove from conversation cache
         conversationCache.delete(this.guildId);
+
+        return this.channel;
     }
 
     /**
