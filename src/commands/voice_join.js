@@ -31,7 +31,7 @@ function verify(interaction, channel) {
     if (!channel) {
         // NOPE: channel does not exists or invalid channel id
         logger.error({ topic: 'discord_legacy.js', message: 'Failed to join channel: unknown channel' });
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.unknown_channel'));
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discordte.unknown_channel'));
         return false;
     }
 
@@ -39,7 +39,7 @@ function verify(interaction, channel) {
     if (channel.type !== ChannelType.GuildVoice) {
         // NOPE: this is not a voice channel
         logger.error({ topic: 'discord_legacy.js', message: 'Failed to join channel: channel type is not a voice' });
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.not_a_voice_channel'));
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.not_a_voice_channel'));
         return false;
     }
 
@@ -50,7 +50,7 @@ function verify(interaction, channel) {
         !channel.joinable) {
         // NOPE: I can't join to that channel
         logger.error({ topic: 'discord_legacy.js', message: `Failed to join voice channel: bot does not have permission to access channel ${channel.id}!` });
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.voice.no_permission').format(channel));
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.no_permission').format(channel));
         return false;
     }
 
@@ -59,7 +59,7 @@ function verify(interaction, channel) {
         !permissions.has(PermissionsBitField.Flags.ManageThreads)) {
         // NOPE: I can't create thread on there
         logger.error({ topic: 'discord_legacy.js', message: `Failed to join voice channel: bot does not have permission to create thread in channel ${channel.id}!` });
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.thread.no_permission').format(channel));
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.thread.no_permission').format(channel));
         return false;
     }
 
@@ -72,7 +72,7 @@ function verify(interaction, channel) {
     if (currChannelId === channel.id) {
         // NOPE: I'm trying to join same channel
         logger.error({ topic: 'discord_legacy.js', message: 'Failed to join voice channel: user tried to join bot into same channel currently in!' });
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.voice.already_joined').format(channel));
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.already_joined').format(channel));
         return false;
     }
 
@@ -89,7 +89,7 @@ async function commandHandler(interaction) {
     else if (!channel) {
         // NOPE: no channel provided, and user not joined into voice channel
         logger.error({ topic: 'discord_legacy.js', message: 'Failed to join voice channel: channel not provided' });
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord_legacy.voice.user_not_found').format(interaction.user));
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.user_not_found').format(interaction.user));
         return;
     }
 
@@ -114,12 +114,6 @@ async function commandHandler(interaction) {
             content: i18n.get(interaction.locale, 'message.discord.voice.joined').format(channel),
             ephemeral: true
         });
-
-        // handle away-from-keyboard situation
-        // ideally, this should be based on discord_legacy's onArchive event,
-        // but discord_legacy doesn't seems emit any event on thread archive
-        //thread.awayHandler = setTimeout(() => require('../modules/discord_legacy/thread.js')
-            //.onAway(thread), config.awayTime * 60000);
     } catch (err) {
         const result = report(err, interaction.user.id);
         logger.error({ topic: 'discord_legacy.js', message: 'error occured while joining voice channel!' });

@@ -5,7 +5,6 @@ import { isDevMode } from '../../common';
 /**
  * This also sets localizations automatically.
  * @inheritDoc
- * @class
  */
 export default class I18nCommandBuilder extends SlashCommandBuilder {
     /** I18n tag of this command. */
