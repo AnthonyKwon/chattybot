@@ -1,9 +1,6 @@
-import { ThreadAutoArchiveDuration } from 'discord.js';
+import { ThreadAutoArchiveDuration, ThreadChannel } from 'discord.js';
 
-/**
- * Options to create {@link ThreadChannel}.
- * @alpha
- */
+/** Options to create {@link ThreadChannel}. */
 export class ThreadOptions {
     /** Name of the thread */
     public name: string;

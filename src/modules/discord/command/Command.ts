@@ -7,9 +7,7 @@ import report from '../../errorreport/main.mod';
 
 const cache: Collection<string, object> = new Collection();
 
-/**
- * Load commands to client.
- */
+/** Load commands to client. */
 export async function load(): Promise<void> {
     // directory for command files
     const fileDir: string = path.join(globalThis.srcRoot, 'commands');
@@ -64,6 +62,7 @@ export async function handle(interaction: CommandInteraction): Promise<void> {
         logger.error({ topic: 'discord.command', message: `Error occurred while handling command!` });
         logger.error({ topic: 'discord.command', message: err.stack ? err.stack : err });
 
+        //TODO: revisit after error-report typescript rewrite
         /*
         const errorInteraction = { content: i18n.get(interaction.locale, 'error.generic').format(result), ephemeral: true };
         const result = report(err, interaction.user.id);

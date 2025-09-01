@@ -7,7 +7,6 @@ export { ThreadOptions };
  * @param origin - Origin interaction to create {@link ThreadChannel}
  * @param options - Options for create {@link ThreadChannel}
  * @returns {@link ThreadChannel} with provided options.
- * @alpha
  */
 export async function create(origin: CommandInteraction, options: ThreadOptions): Promise<ThreadChannel> {
     // get origin message from interaction
@@ -19,7 +18,6 @@ export async function create(origin: CommandInteraction, options: ThreadOptions)
 /**
  * Destroy current {@link ThreadChannel}.
  * @param channel - {@link ThreadChannel} to destroy
- * @alpha
  */
 export async function destroy(channel: ThreadChannel) {
     // I'm not sure if this even needed...

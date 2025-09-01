@@ -1,19 +1,25 @@
-import { Message, VoiceChannel } from 'discord.js';
-import TTSClass from "../tts/class/TextToSpeech";
-import TTSUser from "../tts/class/TTSUser";
-import MessageFixer from "../discord_legacy/messageFixer";
-import DiscordVoice from "../discord_legacy/class/DiscordVoice";
-import logger from "../logger/main.mod";
+import { Message } from 'discord.js';
+import { ConversationManager } from "../Conversation";
+import { play } from '../../discord/Voice';
+import TTSClass from "../../tts/class/TextToSpeech";
+import TTSUser from "../../tts/class/TTSUser";
+import MessageFixer from "../../tts/messageFixer";
+import logger from "../../logger/main.mod";
 
 /**
- * Handle message sent from user.x
- * @param channel - {@link VoiceChannel} to send TTS stream.
+ * Handle message sent from user.
  * @param message - {@link Message} to handle.
  * @alpha
  * @todo revisit after TTS typescript rework
  */
-export default async function MessageHandler(channel: VoiceChannel, message: Message) {
+export default async function onMessageReceive(message: Message) {
     await message.reply({ content: "FIXME", allowedMentions: { repliedUser: false } });
+
+    // refresh inactive timer of current conversation
+    const conversation = ConversationManager.get(message.guildId!)!;
+    conversation.refresh();
+
+    //TODO: this is copy-paste of old javascript code, needs rewrite
     try {
         // get params to initialize TTS module
         const paramBuilder = new TTSClass.ParameterBuilder();
@@ -21,7 +27,7 @@ export default async function MessageHandler(channel: VoiceChannel, message: Mes
         const params = await paramBuilder.build();
 
         // initialize TTS module wrapper
-        const tts = await TTSClass.getOrCreate(message.guild!.id, params);
+        const tts = await TTSClass.getOrCreate(message.guildId, params);
         const user = new TTSUser(message.guild, message.member);  // profile of the user
 
         // fix and build message
@@ -30,14 +36,13 @@ export default async function MessageHandler(channel: VoiceChannel, message: Mes
         if (text == '') return;  // NOPE: stop and exit
 
         // add message to TTS speak queue
-        const voice = new DiscordVoice(message.guild!.id);
         await tts.addQueue(user, text);
         // create player callback TTS to use
         const voiceCallback = async function (stream: any) {
             // play audio stream
-            const player = await voice.play(stream);
+            const player = await play(message.guild!.id, stream);
             // wait until player finish playing stream
-            await new Promise<void>(resolve => player!.on('stateChange', () => resolve()));
+            await new Promise<void>(resolve => player.on('stateChange', () => resolve()));
         }
         // request TTS to speak
         logger.verbose({ topic: 'tts', message: `${message.author} spoken: ${text}` });

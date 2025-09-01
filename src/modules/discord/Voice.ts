@@ -7,7 +7,6 @@ import { InvalidChannelError } from './error/InvalidChannelError';
  * Join the specified {@link VoiceChannel}
  * @param channel - {@link VoiceChannel} for bot to join
  * @returns {@link Promise} of {@link voice.VoiceConnection} bot used to join voice channel.
- * @alpha
  */
 export async function join(channel: VoiceChannel): Promise<voice.VoiceConnection> {
     // destroy existing voice connection (when have one)
@@ -33,7 +32,6 @@ export async function join(channel: VoiceChannel): Promise<voice.VoiceConnection
  * @param guildId - id of {@link Guild} to leave voice channel
  * @throws InvalidChannelError
  * when not connected to voice channel to leave.
- * @alpha
  */
 export function leave(guildId: string): void {
     const connection: voice.VoiceConnection | undefined = voice.getVoiceConnection(guildId);
@@ -62,7 +60,6 @@ export function isConnected(guildId: string): boolean {
  * @returns {@link Promise} of {@link voice.AudioPlayer} used to play audio.
  * @throws InvalidChannelError
  * when not connected to voice channel to speak.
- * @alpha
  */
 export function play(guildId: string, stream: Readable): Promise<voice.AudioPlayer> {
     // get bot's current voice connection on guild
@@ -92,6 +89,8 @@ export function play(guildId: string, stream: Readable): Promise<voice.AudioPlay
  * @param params - parameters to use in callback
  * @throws InvalidChannelError
  * when not connected to voice channel to handle event.
+ * @beta
+ * @todo Needs to investigate the issue that event does not fire when no one in Voice Channel.
  */
 export function onDisconnected(guildId: string, callback: Function, thisArg: any, ...params: any): void {
     // get bot's current voice connection on guild
@@ -103,6 +102,7 @@ export function onDisconnected(guildId: string, callback: Function, thisArg: any
     // check for disconnection and handle disconnect event
     connection.on(voice.VoiceConnectionStatus.Disconnected, async (oldState, newState): Promise<void> => {
         try {
+            console.log("Hello world!");
             await Promise.race([
                 voice.entersState(connection, voice.VoiceConnectionStatus.Signalling, 5_000),
                 voice.entersState(connection, voice.VoiceConnectionStatus.Connecting, 5_000),

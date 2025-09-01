@@ -1,8 +1,6 @@
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const { ConversationManager } = require('./modules/conversation/Conversation');
-const slash = require('./modules/discord_legacy/slashCommand.js');
 const command = require('./modules/discord/command/Command');
-const thread = require('./modules/discord_legacy/thread.js');
 const config = require('./modules/config.js');
 const logger = require('./modules/logger/main.mod.js');
 const appInfo = require('../package.json');
@@ -23,13 +21,7 @@ const client = new Client({
 
 client.once(Events.ClientReady, async c => {
     // create voice session map
-    logger.info({ topic: 'discord_legacy.js', message: `Connected to ${client.user.username}!` });
-
-    // check if user launched bot to register/unregister commands
-    if (process.env.SLASH_ACTION === 'register')
-        slash.register(config.token, c);
-    else if (process.env.SLASH_ACTION == 'unregister')
-        slash.unregister(config.token, c);
+    logger.info({ topic: 'discord', message: `Connected to ${client.user.username}!` });
 
     // set bot activity message if available
     if (config.status && config.status !== '') c.user.setActivity(config.status);
@@ -41,36 +33,56 @@ client.once(Events.ClientReady, async c => {
 client.on(Events.InteractionCreate, interaction => {
     // filter only for chat interaction
     if (!interaction.isChatInputCommand()) return;
+
     // call slash command handler
-    //slash.handler(interaction);
     command.handle(interaction);
 });
 
 // Reply to a user who mentions the bot
-client.on(Events.MessageCreate, async message => {
+client.on(Events.MessageCreate, message => {
     // ignore message sent from bot
     if (message.author.bot) return;
+
+    // ignore the message not from guild
+    if (!message.guild || !message.guildId) return;
 
     // get conversation from current guild
     const conversation = ConversationManager.get(message.guildId);
 
     // ignore the non-conversation message
-    if (!!!conversation) return;
+    if (!conversation ||
+        conversation.verify(message.guildId, message.channelId)) return;
 
-    await conversation.onMessage(message);
+    // emit conversation message received event
+    conversation.emit(`message-${message.guildId}`, message);
 });
 
-client.on(Events.ThreadDelete, t => {
+client.on(Events.ThreadDelete, thread => {
     // check if thread owner is same as bot user
-    if (t.ownerId !== t.client.user.id) return;
+    if (thread.ownerId !== thread.client.user.id) return;
 
-    // handle thread deletion by other factor 
-    thread.onDelete(t);
+    // get conversation from current guild
+    const conversation = ConversationManager.get(thread.guildId);
+
+    // ignore the event not related to conversation
+    if (!conversation) return;
+
+    // emit conversation thread deleted event
+    conversation.emit(`threadObsolete-${thread.guildId}`);
 });
 
 client.on(Events.ThreadUpdate, (oldThread, newThread) => {
-    // handle thread update by other factor
-    if (!oldThread.archived && newThread.archived) thread.onArchive(newThread);
+    // check if event is triggered by thread archive
+    if (!oldThread.archived && newThread.archived) {
+        // get conversation from current guild
+        const conversation = ConversationManager.get(newThread.guildId);
+
+        // ignore the event not related to conversation
+        if (!conversation) return;
+
+        // emit conversation thread deleted event
+        conversation.emit(`threadObsolete-${newThread.guildId}`);
+    }
 });
 
 // log unhandled error of discord_legacy.js
