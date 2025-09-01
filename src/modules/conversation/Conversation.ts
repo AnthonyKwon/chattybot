@@ -2,6 +2,7 @@ import { CommandInteraction, Message, ThreadChannel, VoiceChannel } from "discor
 import * as voice from "../discord/Voice";
 import * as thread from "../discord/thread/Thread";
 import { ObjectOccupiedError, OccupiedObject } from "./error/ObjectOccupiedError";
+import MessageHandler from "./MessageHandler";
 
 // cache for saving conversation data
 const conversationCache: Map<string, ConversationManager> = new Map();
@@ -124,6 +125,7 @@ export class ConversationManager {
         // ignore message not sent from current thread
         if (!this.thread || message.channelId !== this.thread.id) return;
 
-        await message.reply("핑퐁!");
+        // call external handler function
+        await MessageHandler(this.channel, message);
     }
 }
