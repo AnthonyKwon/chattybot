@@ -51,7 +51,7 @@ client.on(Events.MessageCreate, message => {
 
     // ignore the non-conversation message
     if (!conversation ||
-        conversation.verify(message.guildId, message.channelId)) return;
+        !conversation.verify(message.guildId, message.channelId)) return;
 
     // emit conversation message received event
     conversation.emit(`message-${message.guildId}`, message);
