@@ -4,7 +4,7 @@ const ParameterBuilder = require('../../ParameterBuilder.js');
 const config = require('../../../../config.js');
 let voiceListCache;
 
-async function getVoiceName(locale, preferredType, preferredCode) {
+async function getVoiceName(locale, preferredType, preferredName) {
     // load voice list from cache, or API request (if cache not available)
     if (!voiceListCache) {
 
@@ -12,7 +12,7 @@ async function getVoiceName(locale, preferredType, preferredCode) {
         [voiceListCache] = voiceListCache ?? await client.listVoices({});
     }
     // exact matching voice has found
-    const voiceCallback = v => v.name === `${locale}-${preferredType}-${preferredCode}`;
+    const voiceCallback = v => v.name === `${locale}-${preferredType}-${preferredName}`;
     let voice = voiceListCache.voices.find(voiceCallback);
     if (voice) return voice;
     // fall back to Neural2 from Studio

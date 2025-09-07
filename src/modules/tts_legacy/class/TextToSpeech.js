@@ -24,7 +24,7 @@ const getTTSProvider = (id) => {
         try {
             if (subClass[id] && subClass[id].ttsAvailable)
                 return subClass[id];
-        } catch (err) { throw new Error('Specified TTS engine not available.') }
+        } catch (err) { throw new Error('Specified TTS provider not available.') }
     }
 }
 
@@ -45,7 +45,7 @@ class TextToSpeech {
         return TTSobject;
     }
 
-    // (static) parameter builder for TTS engine
+    // (static) parameter builder for TTS googleCloud
     static get ParameterBuilder() { return getTTSProvider(config.ttsProvider).ParameterBuilder }
 
     // (static) delete TTS object from guild
@@ -71,7 +71,7 @@ class TextToSpeech {
         return this.speak(voiceCallback);
     }
 
-    // Speak as TTS: call specified TTS engine and read text (in queue)
+    // Speak as TTS: call specified TTS googleCloud and read text (in queue)
     async speak(voiceCallback) {
         do {
             // check if previous speaker and current speaker in queue is same (will decide to speak header)
