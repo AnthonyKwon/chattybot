@@ -3,12 +3,11 @@ import {google} from '@google-cloud/text-to-speech/build/protos/protos';
 import {Readable} from 'node:stream';
 import {getClient} from "./CredentialsManager";
 import TTSProvider from '../TTSProvider';
-import bufferToStream from '../../../tts_legacy/class/provider/GcpTtsProvider/bufferToStream';
-import i18n from "../../../i18n/main.mod";
-import SynthesizeSpeechRequest = google.cloud.texttospeech.v1.SynthesizeSpeechRequest;
+import {getString} from "../../../i18n/GetString";
 import GoogleCloudTTSRequestBuilder from "./RequestBuilder";
-import {findLocaleByProvider} from "../MappedLocale";
-import {IMappedLocale} from "../IMappedLocale";
+import {findLocaleByProvider} from "../../../i18n/MappedLocale";
+import {IMappedLocale} from "../../../i18n/IMappedLocale";
+import SynthesizeSpeechRequest = google.cloud.texttospeech.v1.SynthesizeSpeechRequest;
 
 /**
  * This uses Google Cloud Text-to-Speech AI service provider.
@@ -39,7 +38,7 @@ export default class GoogleCloudProvider extends TTSProvider {
     async speakName(name: string): Promise<Readable> {
         // build name prompt based on current locale
         const locale: IMappedLocale = findLocaleByProvider('google', this.request.voice?.languageCode ?? 'en-US');
-        const prompt: string = i18n.get(locale.discord, 'tts.speak.prefix');
+        const prompt: string = getString(locale.discord, 'tts.prefix', name);
 
         // set request text to name prompt
         this.request.input = { text: prompt };
@@ -58,16 +57,24 @@ export default class GoogleCloudProvider extends TTSProvider {
         else if (this.request.audioConfig?.pitch && this.request.audioConfig.pitch > 16.0)
             this.request.audioConfig.pitch = this.request.audioConfig.pitch - 36.0;
 
+        // throw error when response is empty
+        if (!response.audioContent) throw new Error('Audio content not found on response.');
+
         // Google sends response as buffer. We need to convert it as ReadableStream.
-        return bufferToStream(response.audioContent);
+        return Readable.from(response.audioContent);
     }
 
     /** @intheritDoc */
     async speak(text: string): Promise<Readable> {
         this.request.input = { text };
 
+        // send synthesize request
         const [response] = await this.client.synthesizeSpeech(this.request);
+
+        // throw error when response is empty
+        if (!response.audioContent) throw new Error('Audio content not found on response.');
+
         // Google sends response as buffer. We need to convert it as ReadableStream.
-        return bufferToStream(response.audioContent);
+        return Readable.from(response.audioContent);
     }
 }

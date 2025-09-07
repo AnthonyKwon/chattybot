@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { Collection, CommandInteraction, MessageFlags } from 'discord.js';
 import logger from '../../logger/main.mod';
-import i18n from '../../i18n/main.mod';
+import { getString } from "../../i18n/GetString";
 import report from '../../errorreport/main.mod';
 
 const cache: Collection<string, object> = new Collection();
@@ -46,7 +46,7 @@ export async function handle(interaction: CommandInteraction): Promise<void> {
     // alert user about this bot is guild-only
     if (!interaction.inGuild()) {
         logger.verbose({ topic: 'discord.command', message: `Interaction came from outside of guild, ignoring.` });
-        await interaction.reply(i18n.get(interaction.locale, 'error.discord.guild_only'));
+        await interaction.reply(getString(interaction.locale, 'error.discord.guild_only'));
         return;
     }
 
@@ -64,7 +64,7 @@ export async function handle(interaction: CommandInteraction): Promise<void> {
 
         //TODO: revisit after error-report typescript rewrite
         /*
-        const errorInteraction = { content: i18n.get(interaction.locale, 'error.generic').format(result), ephemeral: true };
+        const errorInteraction = { content: i18n_legacy.get(interaction.locale, 'error.generic').format(result), ephemeral: true };
         const result = report(err, interaction.user.id);
 
         if (interaction.replied || interaction.deferred)

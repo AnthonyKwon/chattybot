@@ -1,15 +1,12 @@
 import { google } from '@google-cloud/text-to-speech/build/protos/protos';
 import IVoice = google.cloud.texttospeech.v1.IVoice;
-import SsmlVoiceGender = google.cloud.texttospeech.v1.SsmlVoiceGender;
-import ListVoicesResponse = google.cloud.texttospeech.v1.ListVoicesResponse;
 import IListVoicesResponse = google.cloud.texttospeech.v1.IListVoicesResponse;
-import VoiceSelectionParams = google.cloud.texttospeech.v1.VoiceSelectionParams;
 import IVoiceSelectionParams = google.cloud.texttospeech.v1.IVoiceSelectionParams;
 import config from '../../../config';
 import { IFindVoiceOverrides } from './IFindVoiceOverrides';
 import { getClient } from './CredentialsManager';
-import { findLocale } from '../MappedLocale';
-import { IMappedLocale } from '../IMappedLocale';
+import { findLocale } from '../../../i18n/MappedLocale';
+import { IMappedLocale } from '../../../i18n/IMappedLocale';
 import { InvalidLocaleError } from '../../error/InvalidLocaleError';
 let voiceListCache: IListVoicesResponse | undefined;
 

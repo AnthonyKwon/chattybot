@@ -10,5 +10,5 @@
     "skipLibCheck": true,
     "outDir": "build"
   },
-  "include": ["src/**/*.js", "src/**/*.ts", "src/**/*.json", "global.d.ts"],
+  "include": ["src/**/*.js", "src/**/*.ts", "global.d.ts"],
 }

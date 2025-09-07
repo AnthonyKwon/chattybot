@@ -159,6 +159,14 @@ export class ConversationManager extends EventEmitter {
         return this._channel;
     }
 
+    async reset() {
+        // re-initialize the Text-to-Speech engine
+        this._tts = await TextToSpeech.create(this._channel.guild.preferredLocale);
+
+        // stop the current player
+        voice.stop(this._guildId);
+    }
+
     /** Text-to-Speech synthesizer of this conversation. */
     get TTS() {
         // throw error when tts object not found

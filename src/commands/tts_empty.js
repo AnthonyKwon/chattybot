@@ -1,5 +1,4 @@
-const i18n = require('../modules/i18n/main.mod.js');
-const TextToSpeech = require('../modules/tts_legacy/class/TextToSpeech.js');
+const { getString } = require('../modules/i18n/GetString');
 const { ConversationManager } = require("../modules/conversation/Conversation");
 const I18nCommandBuilder = require('../modules/discord/command/I18nCommandBuilder').default;
 
@@ -8,14 +7,15 @@ async function commandHandler(interaction) {
     const conversation = ConversationManager.get(interaction.guildId);
 
     if (!conversation) {
-        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.voice.not_joined'));
+        interaction.editReply(getString(interaction.guild.preferredLocale, 'error.botNotInVC'));
         return;
     }
 
     // Re-initialize TTSClass with empty queue
-    TextToSpeech.delete(interaction.guild.id);
+    await conversation.reset();
+
     // Notify to user
-    interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'message.tts_queue.empty'));
+    interaction.editReply(getString(interaction.guild.preferredLocale, 'message.command.queueReset'));
 }
 
 module.exports = {

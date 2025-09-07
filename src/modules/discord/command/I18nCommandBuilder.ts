@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import * as i18n from '../../i18n/main.mod';
+import { getString, getAllString } from '../../i18n/GetString';
 import { isDevMode } from '../../common';
 
 /**
@@ -22,8 +22,8 @@ export default class I18nCommandBuilder extends SlashCommandBuilder {
     /** Sets the name of this command. */
     setName(): this {
         // get name and it's localization variant
-        let name: string = i18n.get('en-US', `command.${this.i18nTag}.name`);
-        let nameI18n = i18n.getAll(`command.${this.i18nTag}.name`);
+        let name: string = getString('en-US', `command.${this.i18nTag}.name`);
+        let nameI18n = getAllString(`command.${this.i18nTag}.name`);
 
         // prepend "zz" on dev mode
         if (isDevMode()) {
@@ -39,8 +39,8 @@ export default class I18nCommandBuilder extends SlashCommandBuilder {
     /** Sets the description of this command. */
     setDescription(): this {
         // get description and it's localization variant
-        let description: string = i18n.get('en-US', `command.${this.i18nTag}.desc`);
-        let descI18n = i18n.getAll(`command.${this.i18nTag}.desc`);
+        let description: string = getString('en-US', `command.${this.i18nTag}.description`);
+        let descI18n = getAllString(`command.${this.i18nTag}.description`);
 
         // register to builder
         return super.setDescription(description)

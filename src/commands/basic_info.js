@@ -1,4 +1,4 @@
-const i18n = require('../modules/i18n/main.mod.js');
+const { getString } = require('../modules/i18n/GetString');
 const appInfo = require('../../package.json');
 const {isDevMode} = require("../modules/common");
 const I18nCommandBuilder = require('../modules/discord/command/I18nCommandBuilder').default;
@@ -6,9 +6,9 @@ const I18nCommandBuilder = require('../modules/discord/command/I18nCommandBuilde
 async function commandHandler(interaction) {
     let reply = '';
     // add maintenance message to reply
-    if (isDevMode()) reply += i18n.get(interaction.locale, 'message.info.maintenance').format(interaction.client.user) + '\n';
+    if (isDevMode()) reply += getString(interaction.locale, 'message.inDevMode') + '\n';
     // set reply message
-    reply += i18n.get(interaction.locale, 'message.info').format(interaction.client.user, appInfo.version, appInfo.repository.url);
+    reply += getString(interaction.locale, 'message.command.info', interaction.client.user, appInfo.version, appInfo.repository.url);
     interaction.editReply(reply);
 }
 

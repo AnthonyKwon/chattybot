@@ -2,8 +2,6 @@ import {google} from "@google-cloud/text-to-speech/build/protos/protos";
 import SynthesizeSpeechRequest = google.cloud.texttospeech.v1.SynthesizeSpeechRequest;
 import RequestBuilder from "../RequestBuilder";
 import {ConvertToParam, findVoice} from "./FindVoice";
-import {IFindVoiceOverrides} from "./IFindVoiceOverrides";
-import config from "../../../config";
 
 /**
  * @alpha

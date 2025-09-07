@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import config from '../../config';
+import config from '../config';
 import { IMappedLocale } from './IMappedLocale';
 
 let localeCache: IMappedLocale[] | undefined;    // locale map cache
@@ -13,7 +13,7 @@ let localeCache: IMappedLocale[] | undefined;    // locale map cache
 export function findLocale(target: string = config.locale): IMappedLocale {
     // load cache when not loaded
     if (!localeCache) {
-        const data = readFileSync(resolve(globalThis.appRoot, 'assets/loconv-map.json'));
+        const data = readFileSync(resolve(globalThis.appRoot, 'assets', 'i18n', 'cm', 'loconv-map.json'));
         localeCache = JSON.parse(data.toString());
     }
 

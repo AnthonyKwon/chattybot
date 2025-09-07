@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "li": {
+    "id": "en-US",
+    "name": "English, US"
+  },
+  "command": {
+    "empty": {
+      "name": "clear",
+      "description": "Reset and clear Text-to-speech engine."
+    },
+    "info": {
+      "name": "info",
+      "description": "Show information about myself."
+    },
+    "join": {
+      "name": "join",
+      "description": "Join the voice channel where you at.",
+      "options": [
+        {
+          "name": "channel",
+          "description": "(optional) voice channel to use the bot"
+        }
+      ]
+    },
+    "leave": {
+      "name": "leave",
+      "description": "Leave from the currently joined voice channel."
+    },
+    "locale": {
+      "name": "locale",
+      "description": "Get or set the locale of the bot on this server. (\"Manage Server\" permission required to set)",
+      "options": [
+        {
+          "name": "locale-id",
+          "description": "id of the new locale to set (https://discord.com/developers/docs/reference#locales)"
+        }
+      ]
+    },
+    "say": {
+      "name": "say",
+      "description": "Currently deprecated. Please use Thread-based instead.",
+      "options": [
+        {
+          "name": "text",
+          "description": "Text to speak"
+        }
+      ]
+    }
+  },
+  "error": {
+    "generic": [
+      ":octagonal_sign: Error occured while launching command!",
+      "Please send this Error ID to developer.",
+      "**Error ID:** {0}"
+    ],
+    "guildOnlyBot": [
+      "Sorry. I only can be used on the server  :cry:",
+      "Maybe you can invite me on your server?",
+      "You can check about my information at my profile!  :relaxed:"
+    ],
+    "unknownChannel": ":grey_question: Unknown channel. Did you entered **Channel ID** correctly?",
+    "alreadyJoined": ":loud_sound: :door: I'm already joined in **{0}**!",
+    "localeAlreadySet": ":no_entry_sign: Server locale has already set to specified one.",
+    "localeInvalid": ":grey_question: Unknown or invalid locale ID. Did you entered it correctly?",
+    "botNoPermission": ":hourglass_flowing_sand::no_entry_sign:  I don't have permission(s)(**{0}**) to do this action.",
+    "userNoPermission": ":hourglass_flowing_sand::no_entry_sign:  You don't have permission to do this action!",
+    "botNotInVC": ":loud_sound: :x: I don't joined in any voice channel now.",
+    "userNotInVC": ":loud_sound:  :no_entry_sign: I can't find {0} in any voice channel. Please join voice channel first.",
+    "textTooLong": ":loud_sound:  :page_with_curl: Text too long. Write within {0} letter(s)."
+  },
+  "message": {
+    "inDevMode": ":tools: **Developer mode** is enabled.",
+    "command": {
+      "info": [
+        ":information_source: {0} Discord TTS bot **version {1}**",
+        ":scroll: This program is licensed under the GNU General Public License, version 2.",
+        ":scroll: **License information:** <https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html>",
+        ":floppy_disk: **Repository:** <{2}>"
+      ],
+      "queueReset": ""
+    },
+    "conversation": {
+      "joined": ":loud_sound: Joined **{0}** channel.",
+      "left": ":loud_sound: :wave: Left **{0}** channel."
+    },
+    "discord": {
+      "permissions": {
+        "ManageGuild": "Manage Server"
+      }
+    },
+    "guildOptions": {
+      "locale": {
+        "current": [
+          "### Language preferences of {0}",
+          "Message (personal):  {1} *({2})*",
+          "Message (global):       {3} *({4})*",
+          "Voice:   {4}\n",
+          "**English, US** will be used instead if your language is unsupported. (except for voice)",
+          "You can check out for list of supported languages below.",
+          "<https://discord.com/developers/docs/reference#locales>"
+        ],
+        "successfullySet": ":white_check_mark: Server locale have been changed from {0} to {1}.",
+        "failed": ""
+      }
+    }
+  },
+  "tts": {
+    "prefix": "{0} says,",
+    "gender": {
+      "female": "Female",
+      "male": "Male",
+      "neutral": "Neutral"
+    }
+  }
+}

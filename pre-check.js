@@ -15,7 +15,6 @@ if (!existsSync(join(env, 'main.js'))) {
 global.appRoot = resolve(__dirname);
 global.srcRoot = join(appRoot, env)
 
-const { getClient, verify } = require(join(__dirname, env, 'modules/tts/class/provider/GcpTtsProvider/AuthHandler'));
 const config = require(join(__dirname, env, 'modules/config'))
 
 // some call requires asynchronous call, warp code with async function
@@ -30,6 +29,8 @@ async function preCheck() {
     // pre-check: check if authorization method available for GCP-TTS (when uses it)
     if (config.ttsProvider === "GcpTts")
     {
+        const { getClient, verify } = require(join(__dirname, env, 'modules/tts/provider/googleCloud/CredentialsManager'));
+
         // check if Workload Identity Federation available
         if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
             console.log('\x1b[33mGOOGLE_APPLICATION_CREDENTIALS\x1b[0m provided, pre-check might take longer.');
