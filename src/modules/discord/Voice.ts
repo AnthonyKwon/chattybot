@@ -3,6 +3,9 @@ import { VoiceChannel, Guild } from 'discord.js';
 import * as voice from '@discordjs/voice';
 import { InvalidChannelError } from './error/InvalidChannelError';
 
+// cache for saving player data
+const playerCache: Map<string, voice.AudioPlayer> = new Map();
+
 /**
  * Join the specified {@link VoiceChannel}
  * @param channel - {@link VoiceChannel} for bot to join
@@ -44,6 +47,20 @@ export function leave(guildId: string): void {
 }
 
 /**
+ * Stop the audio player.
+ * @param guildId id of the {@link Guild} to get player.
+ */
+export function stop(guildId: string): void {
+    const player: voice.AudioPlayer | undefined = playerCache.get(guildId);
+
+    // throw InvalidChannelError when player not exists
+    if (!player) throw new InvalidChannelError("Can't find any voice player to reset.");
+
+    // stop the target player
+    player.stop();
+}
+
+/**
  * check If bot is connected to voice channel in specified guild
  * @param guildId - id of the {@link Guild} to check connectivity
  * @returns result of connectivity check as {@link boolean}.
@@ -69,13 +86,17 @@ export function play(guildId: string, stream: Readable): Promise<voice.AudioPlay
     if (!connection) throw new InvalidChannelError("Can't find any voice connection to play.");
 
     // create audio player and resource
-    const player: voice.AudioPlayer = voice.createAudioPlayer({ behaviors: { noSubscriber: voice.NoSubscriberBehavior.Stop }});
+    const player: voice.AudioPlayer = playerCache.get(guildId) ??
+        voice.createAudioPlayer({ behaviors: { noSubscriber: voice.NoSubscriberBehavior.Stop }});
     const resource: voice.AudioResource<null> = voice.createAudioResource(stream, { inputType: voice.StreamType.OggOpus });
 
     // link player to audio connection
     connection.subscribe(player);
     // register resource and play it to voice connection
     player.play(resource);
+
+    // save current player to cache
+    playerCache.set(guildId, player);
 
     // return the audio player
     return voice.entersState(player, voice.AudioPlayerStatus.Playing, 5_000);

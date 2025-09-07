@@ -1,5 +1,5 @@
-import { IMappedLocale } from './IMappedLocale';
-import { findLocale } from './MappedLocale';
+import { IMappedLocale } from '../../i18n/IMappedLocale';
+import { findLocale } from '../../i18n/MappedLocale';
 
 /**
  * @alpha
