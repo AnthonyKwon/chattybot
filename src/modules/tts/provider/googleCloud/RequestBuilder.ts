@@ -1,8 +1,9 @@
 import {google} from "@google-cloud/text-to-speech/build/protos/protos";
 import SynthesizeSpeechRequest = google.cloud.texttospeech.v1.SynthesizeSpeechRequest;
 import RequestBuilder from "../RequestBuilder";
-import IVoice = google.cloud.texttospeech.v1.IVoice;
 import {ConvertToParam, findVoice} from "./FindVoice";
+import {IFindVoiceOverrides} from "./IFindVoiceOverrides";
+import config from "../../../config";
 
 /**
  * @alpha
@@ -10,8 +11,8 @@ import {ConvertToParam, findVoice} from "./FindVoice";
 export default class GoogleCloudTTSRequestBuilder extends RequestBuilder {
     private readonly params: SynthesizeSpeechRequest;
 
-    constructor() {
-        super();
+    constructor(locale?: string) {
+        super(locale);
         // sample parameters - this should not be passed directly
         this.params = new SynthesizeSpeechRequest({
             input: { text: 'Hello world! This is a test sentence for TTS engine. If you heard this and not an geek programmer, it might be something wrong.' },
@@ -25,8 +26,7 @@ export default class GoogleCloudTTSRequestBuilder extends RequestBuilder {
         // flush input text
         this.params.input = { text: '' };
         // set TTS voice configuration
-        const voice: IVoice = await findVoice();
-        this.params.voice = ConvertToParam(voice);
+        this.params.voice = ConvertToParam(await findVoice());
         // set TTS audio configuration
         this.params.audioConfig!.speakingRate = this._speed / 100;
         this.params.audioConfig!.pitch = (this._pitch - 100) / 10;

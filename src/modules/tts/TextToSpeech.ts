@@ -3,7 +3,8 @@ import config from "../config";
 import {IQueueableSpeech} from "./IQueueableSpeech";
 import TTSProvider from "./provider/TTSProvider";
 import getProvider from "./provider/GetProvider";
-import {InvalidProviderError} from "./provider/error/InvalidProviderError";
+import {InvalidProviderError} from "./error/InvalidProviderError";
+import GoogleCloudProvider from "./provider/googleCloud/GoogleCloudProvider";
 
 /**
  *
@@ -21,20 +22,17 @@ export default class TextToSpeech {
          this._last = last;
     }
 
-    static async create(): Promise<TextToSpeech> {
-         const provider = await getProvider(config.tts.provider);
-         const queue = new Array<IQueueableSpeech>();
+    static async create(locale?: string): Promise<TextToSpeech> {
+        // create provider based on config
+        const provider = await getProvider(config.tts.provider, locale);
+        const queue = new Array<IQueueableSpeech>();
 
-         // throw error when provider not found
-         if (!provider)
-             throw new InvalidProviderError(`Provider ${provider} is not valid.`);
+        // throw error when provider not found
+        if (!provider)
+            throw new InvalidProviderError(`Provider ${provider} is not valid.`);
 
-         // create new object and return it
-         return new TextToSpeech(provider, queue);
-    }
-
-    get RequestBuilder() {
-        return this._provider?.RequestBuilder;
+        // create new object and return it
+        return new TextToSpeech(provider, queue);
     }
 
     async addQueue(speech: IQueueableSpeech): Promise<void> {
@@ -54,7 +52,6 @@ export default class TextToSpeech {
 
         // repeat until queue becomes empty
         do {
-
             // synthesize name when author of previous and current speech does not match
             if (!this._last || (this._queue[0].author.id !== this._last.author.id))
                 await callback(await this._provider.speakName(this._queue[0].author.displayName));

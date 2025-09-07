@@ -11,14 +11,14 @@ export default abstract class RequestBuilder {
     protected _speed: number;
     protected _volume: number;
 
-    protected constructor() {
+    constructor(locale?: string) {
         // abstract class: prevent the class directly called
         // https://stackoverflow.com/a/48428063
         if (this.constructor === RequestBuilder)
             throw new Error('Abstract classes can\'t be instantiated.');
 
         this._gender = 'neutral';
-        this._locale = findLocale('en-US');
+        this._locale = findLocale(locale ?? 'en-US');
         this._volume = 100;
         this._pitch = 100;
         this._speed = 100;

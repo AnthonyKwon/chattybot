@@ -28,7 +28,7 @@ export function findLocale(target: string = config.locale): IMappedLocale {
  * @param target Locale to get mapping.
  * @returns The {@link IMappedLocale} of specified locale. Returns US English when search failed.
  */
-export function findLocaleByProvider(provider: string, target: string = config.locale): IMappedLocale {
+export function findLocaleByProvider(provider: string, target: string): IMappedLocale {
     // load cache when not loaded
     if (!localeCache) {
         const data = readFileSync(resolve(globalThis.appRoot, 'assets/loconv-map.json'));
