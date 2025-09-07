@@ -1,10 +1,10 @@
 const i18n = require('../modules/i18n/main.mod.js');
 const logger = require('../modules/logger/main.mod.js');
-const MessageFixer = require('../modules/tts/messageFixer.js');
+const MessageFixer = require('../modules/tts_legacy/messageFixer.js');
 const report = require('../modules/errorreport/main.mod.js');
 const { play } = require('../modules/discord/Voice');
-const TTSClass = require('../modules/tts/class/TextToSpeech.js');
-const TTSUser = require('../modules/tts/class/TTSUser.js');
+const TTSClass = require('../modules/tts_legacy/class/TextToSpeech.js');
+const TTSUser = require('../modules/tts_legacy/class/TTSUser.js');
 const config = require('../modules/config.js');
 const I18nCommandBuilder = require('../modules/discord/command/I18nCommandBuilder').default;
 const I18nStringOption = require('../modules/discord/command/option/I18nStringOption').default;

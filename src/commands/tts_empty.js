@@ -1,5 +1,5 @@
 const i18n = require('../modules/i18n/main.mod.js');
-const TextToSpeech = require('../modules/tts/class/TextToSpeech.js');
+const TextToSpeech = require('../modules/tts_legacy/class/TextToSpeech.js');
 const { ConversationManager } = require("../modules/conversation/Conversation");
 const I18nCommandBuilder = require('../modules/discord/command/I18nCommandBuilder').default;
 

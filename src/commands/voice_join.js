@@ -1,5 +1,5 @@
 const { ChannelType, PermissionsBitField } = require('discord.js');
-const TTSUser = require('../modules/tts/class/TTSUser.js');
+const TTSUser = require('../modules/tts_legacy/class/TTSUser.js');
 const i18n = require('../modules/i18n/main.mod.js');
 const { datetimePretty } = require('../modules/common.js');
 const logger = require('../modules/logger/main.mod.js');

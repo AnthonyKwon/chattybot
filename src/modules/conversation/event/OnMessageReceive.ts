@@ -1,9 +1,9 @@
 import { Message } from 'discord.js';
 import { ConversationManager } from "../Conversation";
 import { play } from '../../discord/Voice';
-import TTSClass from "../../tts/class/TextToSpeech";
-import TTSUser from "../../tts/class/TTSUser";
-import MessageFixer from "../../tts/messageFixer";
+import TTSClass from "../../tts_legacy/class/TextToSpeech";
+import TTSUser from "../../tts_legacy/class/TTSUser";
+import MessageFixer from "../../tts_legacy/messageFixer";
 import logger from "../../logger/main.mod";
 
 /**
