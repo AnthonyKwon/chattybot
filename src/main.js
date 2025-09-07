@@ -65,7 +65,8 @@ client.on(Events.ThreadDelete, thread => {
     const conversation = ConversationManager.get(thread.guildId);
 
     // ignore the event not related to conversation
-    if (!conversation) return;
+    if (!conversation ||
+        !conversation.verify(thread.guildId, thread.id)) return;
 
     // emit conversation thread deleted event
     conversation.emit(`threadObsolete-${thread.guildId}`);
