@@ -7,6 +7,7 @@ import onMessageReceive from "./event/OnMessageReceive";
 import onVoiceInactive from "./event/OnVoiceInactive";
 import config from "../config";
 import logger from "../logger/main.mod";
+import TextToSpeech from "../tts/TextToSpeech";
 
 // cache for saving conversation data
 const conversationCache: Map<string, ConversationManager> = new Map();
@@ -14,14 +15,14 @@ const conversationCache: Map<string, ConversationManager> = new Map();
 /**
  * Manages Text-to-Speech conversation, wrapping {@link VoiceChannel} and {@link ThreadChannel}.
  * @alpha
- * @todo Manage Text-to-Speech also here, but after TTS typescript rework.
  */
 export class ConversationManager extends EventEmitter {
-    private readonly guildId: string;
-    private readonly origin: CommandInteraction;
-    private thread: ThreadChannel | undefined;
-    private timer: NodeJS.Timeout | undefined;
-    private readonly channel: VoiceChannel;
+    private readonly _guildId: string;
+    private readonly _origin: CommandInteraction;
+    private _thread: ThreadChannel | undefined;
+    private _timer: NodeJS.Timeout | undefined;
+    private readonly _channel: VoiceChannel;
+    private _tts: TextToSpeech | undefined;
 
     /**
      * @private
@@ -31,9 +32,9 @@ export class ConversationManager extends EventEmitter {
     private constructor(origin: CommandInteraction, channel: VoiceChannel) {
         super();
         // build new conversation data
-        this.guildId = channel.guild.id;
-        this.origin = origin;
-        this.channel = channel;
+        this._guildId = channel.guild.id;
+        this._origin = origin;
+        this._channel = channel;
     }
 
     /**
@@ -81,10 +82,10 @@ export class ConversationManager extends EventEmitter {
      */
     verify(guildId: string, channelId: string): boolean {
         // check if guild id matches
-        if (guildId !== this.guildId) return false;
+        if (guildId !== this._guildId) return false;
 
         // check if thread id matches
-        if (!this.thread || channelId !== this.thread.id) return false;
+        if (!this._thread || channelId !== this._thread.id) return false;
 
         // return true when every test passes
         return true;
@@ -97,31 +98,34 @@ export class ConversationManager extends EventEmitter {
      */
     async start(threadOptions: thread.ThreadOptions): Promise<void> {
         // check if client is able to connect voice channel in specified guild
-        if (voice.isConnected(this.guildId))
+        if (voice.isConnected(this._guildId))
             throw new ObjectOccupiedError('Client already connected to voice channel in this guild.', OccupiedObject.Voice);
 
         // join voice channel
-        await voice.join(this.channel);
+        await voice.join(this._channel);
 
         // register VC on disconnection event
-        voice.onDisconnected(this.guildId, async () => {
-            logger.verbose({ topic: 'conversation', message: `Destroying session in ${this.guildId} as disconnected from voice channel.`});
+        voice.onDisconnected(this._guildId, async () => {
+            logger.verbose({ topic: 'conversation', message: `Destroying session in ${this._guildId} as disconnected from voice channel.`});
             await this.destroy();
             await this.setOrigin(':cry:');
         }, this);
 
         // register conversation related events
-        this.on(`message-${this.guildId}`, onMessageReceive);    // new message on thread
-        this.on(`threadObsolete-${this.guildId}`, () => {
-            logger.verbose({ topic: 'conversation', message: `Destroying session in ${this.guildId} as associated Thread got obsolete.`});
+        this.on(`message-${this._guildId}`, onMessageReceive);    // new message on thread
+        this.on(`threadObsolete-${this._guildId}`, () => {
+            logger.verbose({ topic: 'conversation', message: `Destroying session in ${this._guildId} as associated Thread got obsolete.`});
             this.destroy();
         });  // linked thread archived or deleted
 
         // register timeout on voice channel inactive
-        this.timer = setTimeout(onVoiceInactive, config.awayTime * 60000, this.guildId);
+        this._timer = setTimeout(onVoiceInactive, config.awayTime * 60000, this._guildId);
 
         // create new thread from origin interaction
-        this.thread = await thread.create(this.origin, threadOptions);
+        this._thread = await thread.create(this._origin, threadOptions);
+
+        // create new Text-to-Speech synthesizer
+        this._tts = await TextToSpeech.create(this._channel.guild.preferredLocale);
 
         // alter user that conversation session is started
         await this.setOrigin(':ballot_box_with_check:');
@@ -134,30 +138,37 @@ export class ConversationManager extends EventEmitter {
      */
     async destroy(): Promise<VoiceChannel> {
         // destroy current thread
-        if (this.thread && await thread.validate(this.thread)) await thread.destroy(this.thread);
+        if (this._thread && await thread.validate(this._thread)) await thread.destroy(this._thread);
 
         // unregister conversation event
-        this.removeAllListeners(`message-${this.guildId}`);  // new message on thread
-        this.removeAllListeners(`threadObsolete-${this.guildId}`);  // linked thread archived or deleted
+        this.removeAllListeners(`message-${this._guildId}`);  // new message on thread
+        this.removeAllListeners(`threadObsolete-${this._guildId}`);  // linked thread archived or deleted
 
         // unregister timeout on voice channel inactive
-        clearTimeout(this.timer);
+        clearTimeout(this._timer);
 
         // leave voice channel in current guild
-        if (voice.isConnected(this.guildId)) voice.leave(this.guildId);
+        if (voice.isConnected(this._guildId)) voice.leave(this._guildId);
 
         // alert user that conversation session is destroyed
         await this.setOrigin(':wave:')
 
         // remove from conversation cache
-        conversationCache.delete(this.guildId);
+        conversationCache.delete(this._guildId);
 
-        return this.channel;
+        return this._channel;
+    }
+
+    /** Text-to-Speech synthesizer of this conversation. */
+    get TTS() {
+        // throw error when tts object not found
+        if (!this._tts) throw new Error(`TTS object not found.`);
+        return this._tts;
     }
 
     /** Refresh inactivity timer.  */
     refresh(): void {
-        if (this.timer) this.timer.refresh();
+        if (this._timer) this._timer.refresh();
     }
 
     /**
@@ -166,6 +177,6 @@ export class ConversationManager extends EventEmitter {
      */
     async setOrigin(text: string) {
         const epoch = Math.floor(Date.now() / 1000);  // unix epoch of current time
-        await this.origin.editReply(`${this.channel} ${text} <t:${epoch}:R>`);
+        await this._origin.editReply(`${this._channel} ${text} <t:${epoch}:R>`);
     }
 }

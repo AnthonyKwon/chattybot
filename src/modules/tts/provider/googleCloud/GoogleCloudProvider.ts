@@ -18,24 +18,27 @@ export default class GoogleCloudProvider extends TTSProvider {
     private client: TextToSpeechClient;
     private readonly request: SynthesizeSpeechRequest;
 
-    constructor() {
+    protected constructor(request: SynthesizeSpeechRequest) {
         super();
         this.client = getClient();
-        this.request = new SynthesizeSpeechRequest();
+        this.request = request;
     }
 
     /** @inheritDoc */
     static get available(): boolean { return true; }
 
     /** @inheritDoc */
-    get RequestBuilder(): typeof GoogleCloudTTSRequestBuilder {
-        return GoogleCloudTTSRequestBuilder;
+    static async create(locale?: string): Promise<GoogleCloudProvider> {
+        const builder = new GoogleCloudTTSRequestBuilder(locale);
+        const request = await builder.build();
+
+        return new GoogleCloudProvider(request);
     }
 
     /** @inheritDoc */
     async speakName(name: string): Promise<Readable> {
         // build name prompt based on current locale
-        const locale: IMappedLocale = findLocaleByProvider('google');
+        const locale: IMappedLocale = findLocaleByProvider('google', this.request.voice?.languageCode ?? 'en-US');
         const prompt: string = i18n.get(locale.discord, 'tts.speak.prefix');
 
         // set request text to name prompt

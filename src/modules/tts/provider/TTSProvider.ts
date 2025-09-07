@@ -1,5 +1,4 @@
 import { Readable } from 'node:stream';
-import RequestBuilder from "./RequestBuilder";
 
 /**
  * Represents upstream Text-to-Speech provider service.
@@ -15,9 +14,9 @@ export default abstract class TTSProvider {
         return false;
     }
 
-    /** Create request data from provided information. */
-    get RequestBuilder(): typeof RequestBuilder {
-        throw new Error('Method "RequestBuilder()" must be implemented.')
+    /** Creates a new provider instance. */
+    static create(locale?: string): Promise<TTSProvider> {
+        throw new Error('Method "create()" must be implemented.');
     }
 
     /**

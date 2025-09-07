@@ -10,7 +10,7 @@ import { IFindVoiceOverrides } from './IFindVoiceOverrides';
 import { getClient } from './CredentialsManager';
 import { findLocale } from '../MappedLocale';
 import { IMappedLocale } from '../IMappedLocale';
-import { InvalidLocaleError } from '../error/InvalidLocaleError';
+import { InvalidLocaleError } from '../../error/InvalidLocaleError';
 let voiceListCache: IListVoicesResponse | undefined;
 
 /**
