@@ -1,7 +1,7 @@
 const { ChannelType, PermissionsBitField, Locale} = require('discord.js');
 const { getString } = require('../modules/i18n/GetString');
 const { datetimePretty } = require('../modules/common.js');
-const logger = require('../modules/logger/main.mod.js');
+const logger = require('../modules/logger_legacy/main.mod.js');
 const report = require('../modules/errorreport/main.mod.js');
 const { ConversationManager } = require("../modules/conversation/Conversation");
 const { ThreadOptions } = require("../modules/discord/thread/Thread");
