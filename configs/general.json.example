@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "discord": {
+    "token": "your-bot-token-here",
+    "inviteLink": "https://your-invite-link-here/"
+  },
+  "log": {
+    "timeLimit": 24,
+    "sizeLimit": 100
+  },
+  "defaultLocale": "en-US",
+  "inactiveTimeout": 15
+}

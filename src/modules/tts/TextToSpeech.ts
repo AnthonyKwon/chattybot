@@ -1,4 +1,4 @@
-import config from "../config";
+import config from "../config/ConfigLoader";
 import {IQueueableSpeech} from "./IQueueableSpeech";
 import TTSProvider from "./provider/TTSProvider";
 import getProvider from "./provider/GetProvider";

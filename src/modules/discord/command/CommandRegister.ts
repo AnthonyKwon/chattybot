@@ -1,8 +1,8 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import { REST, Routes } from 'discord.js';
-import config from '../../config';
-import logger from '../../logger/main.mod';
+import config from '../../config/ConfigLoader';
+import logger from '../../logger_legacy/main.mod';
 
 const fileDir: string = path.join(globalThis.srcRoot, 'commands');
 const files: string[] = fs.readdirSync(fileDir).filter(file => file.endsWith('.js'));
@@ -33,7 +33,7 @@ export async function register() {
     // register commands to Discord
     try {
         // create rest api agent to communicate with Discord
-        const rest: REST = new REST({ version: '10' }).setToken(config.token);
+        const rest: REST = new REST({ version: '10' }).setToken(config.discord.token);
 
         // get id of current user
         const user: any = await rest.get(Routes.user('@me'));
@@ -58,7 +58,7 @@ export async function unregister() {
 
     try {
         // create rest api agent to communicate with Discord
-        const rest = new REST().setToken(config.token);
+        const rest = new REST().setToken(config.discord.token);
 
         // get id of current user
         const user: any = await rest.get(Routes.user('@me'));

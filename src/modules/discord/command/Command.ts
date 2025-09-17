@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import { Collection, CommandInteraction, MessageFlags } from 'discord.js';
-import logger from '../../logger/main.mod';
+import logger from '../../logger_legacy/main.mod';
 import { getString } from "../../i18n/GetString";
 import report from '../../errorreport/main.mod';
 

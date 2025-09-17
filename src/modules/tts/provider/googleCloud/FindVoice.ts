@@ -2,7 +2,7 @@ import { google } from '@google-cloud/text-to-speech/build/protos/protos';
 import IVoice = google.cloud.texttospeech.v1.IVoice;
 import IListVoicesResponse = google.cloud.texttospeech.v1.IListVoicesResponse;
 import IVoiceSelectionParams = google.cloud.texttospeech.v1.IVoiceSelectionParams;
-import config from '../../../config';
+import config from '../../../config/ConfigLoader';
 import { IFindVoiceOverrides } from './IFindVoiceOverrides';
 import { getClient } from './CredentialsManager';
 import { findLocale } from '../../../i18n/MappedLocale';
@@ -86,6 +86,10 @@ async function findVoiceByProp(locale: IMappedLocale, type: string, gender: stri
  * When all `type` search fails, fallback {@link IListVoicesResponse}(en-US-Standard-A) will return.
  */
 export async function findVoice(overrides?: IFindVoiceOverrides): Promise<IVoice> {
+    // throw Error if provider options are not set
+    if (!config.tts.providerOptions || !config.tts.providerOptions.GoogleCloud)
+        throw new Error('GoogleCloud ProviderOptions must be provided.');
+
     // get provider information from config
     const locale: IMappedLocale | undefined = overrides?.locale ?? findLocale();
     const types: string[] = config.tts.providerOptions.GoogleCloud.preferredTypes;
@@ -98,7 +102,7 @@ export async function findVoice(overrides?: IFindVoiceOverrides): Promise<IVoice
     if ((!overrides && config.tts.providerOptions.GoogleCloud.defaultVariant) ||
         (overrides && overrides.variant)) {
         // get provider variant from config
-        const variant: string = overrides?.variant ?? config.tts.providerOptions.GoogleCloud.defaultVariant;
+        const variant: string | undefined = overrides?.variant ?? config.tts.providerOptions.GoogleCloud.defaultVariant;
 
         // check for every voice type
         for (const type of types) {

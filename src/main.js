@@ -1,11 +1,11 @@
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 const { ConversationManager } = require('./modules/conversation/Conversation');
 const command = require('./modules/discord/command/Command');
-const config = require('./modules/config.js');
-const logger = require('./modules/logger/main.mod.js');
+const config = require('./modules/config/ConfigLoader').default;
+const logger = require('./modules/logger_legacy/main.mod.js');
 const appInfo = require('../package.json');
 
-// initialize logger module for main
+// initialize logger_legacy module for main
 logger.info({ topic: appInfo.name, message: `version ${appInfo.version}` });
 
 
@@ -114,5 +114,5 @@ process.on('SIGINT', exitHandler);
 process.on('SIGTERM', exitHandler);
 
 // initialize discord_legacy module
-client.login(config.token);
+client.login(config.discord.token);
 //require('./modules/discord/command/CommandRegister').register();

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const logger = require('../logger/main.mod.js');
+const logger = require('../logger_legacy/main.mod.js');
 
 // parse date-time for filename
 const datetime = () => {

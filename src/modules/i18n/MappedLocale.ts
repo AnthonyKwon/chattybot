@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import config from '../config';
+import config from '../config/ConfigLoader';
 import { IMappedLocale } from './IMappedLocale';
 
 let localeCache: IMappedLocale[] | undefined;    // locale map cache
@@ -10,7 +10,7 @@ let localeCache: IMappedLocale[] | undefined;    // locale map cache
  * @param target Locale to get mapping. Gets value from config when not set.
  * @returns The {@link IMappedLocale} of specified locale. Returns US English when search failed.
  */
-export function findLocale(target: string = config.locale): IMappedLocale {
+export function findLocale(target: string = config.defaultLocale): IMappedLocale {
     // load cache when not loaded
     if (!localeCache) {
         const data = readFileSync(resolve(globalThis.appRoot, 'assets', 'i18n', 'cm', 'loconv-map.json'));
