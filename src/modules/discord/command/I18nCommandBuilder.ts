@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { getString, getAllString } from '../../i18n/GetString';
-import { isDevMode } from '../../common';
 
 /**
  * This also sets localizations automatically.
@@ -26,7 +25,7 @@ export default class I18nCommandBuilder extends SlashCommandBuilder {
         let nameI18n = getAllString(`command.${this.i18nTag}.name`);
 
         // prepend "zz" on dev mode
-        if (isDevMode()) {
+        if (global.devMode) {
             name = `zz${name}`;
             Object.keys(nameI18n).forEach(i => nameI18n[i] = `zz${nameI18n[i as keyof typeof nameI18n]}`);
         }
