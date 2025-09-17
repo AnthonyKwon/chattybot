@@ -2,7 +2,7 @@ const { Client, Events, GatewayIntentBits } = require('discord.js');
 const { ConversationManager } = require('./modules/conversation/Conversation');
 const command = require('./modules/discord/command/Command');
 const config = require('./modules/config/ConfigLoader').default;
-const logger = require('./modules/logger_legacy/main.mod.js');
+const logger = require('./modules/log/Logger').default;
 const appInfo = require('../package.json');
 
 // initialize logger_legacy module for main

@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { REST, Routes } from 'discord.js';
 import config from '../../config/ConfigLoader';
-import logger from '../../logger_legacy/main.mod';
+import logger from '../../log/Logger';
 
 const fileDir: string = path.join(globalThis.srcRoot, 'commands');
 const files: string[] = fs.readdirSync(fileDir).filter(file => file.endsWith('.js'));

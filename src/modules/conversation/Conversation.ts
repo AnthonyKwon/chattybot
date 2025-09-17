@@ -6,7 +6,7 @@ import { ObjectOccupiedError, OccupiedObject } from "./error/ObjectOccupiedError
 import onMessageReceive from "./event/OnMessageReceive";
 import onVoiceInactive from "./event/OnVoiceInactive";
 import config from "../config/ConfigLoader";
-import logger from "../logger_legacy/main.mod";
+import logger from "../log/Logger";
 import TextToSpeech from "../tts/TextToSpeech";
 
 // cache for saving conversation data
