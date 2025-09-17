@@ -3,6 +3,7 @@ import { ConversationManager } from "../Conversation";
 import { play } from '../../discord/Voice';
 import logger from "../../logger/main.mod";
 import {IQueueableSpeech} from "../../tts/IQueueableSpeech";
+import {fixMessage} from "../FixMessage";
 
 /**
  * Handle message sent from user.
@@ -17,7 +18,7 @@ export default async function onMessageReceive(message: Message) {
     try {
         // create speech data to synthesize
         const author: GuildMember | null = message.member;
-        const text: string = message.content;  //TODO: messageFixer
+        const text: string = fixMessage(message);
 
         // ignore when author or invalid or text contains nothing
         if (!author || !text) return;
