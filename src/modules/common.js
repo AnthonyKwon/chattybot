@@ -1,20 +1,3 @@
-const { Readable } = require('stream');
-
-/* replace all in string */
-function replaceAll(string, search, replace) {
-    return string.split(search).join(replace);
-}
-
-/*
- * Add padding zero
- * https://stackoverflow.com/a/9744576
-*/
-const paddy = (num, padlen, padchar) => {
-    var pad_char = typeof padchar !== 'undefined' ? padchar : '0';
-    var pad = new Array(1 + padlen).join(pad_char);
-    return (pad + num).slice(-pad.length);
-}
-
 const datetimePretty = customDate => {
     const currDate = new Date();
     let dateString = String(currDate.getFullYear()).padStart(4, '0');
@@ -34,20 +17,7 @@ function isDevMode() {
         return false;
 }
 
-const parseTime = param => {
-    let time = paddy(Math.floor(param) % 1000, 3);
-    time = Math.floor(param / 1000) > 1 ?
-        `${paddy((Math.floor(param / 1000)) % 60, 2)}.${time}` : `00.${time}`;
-    time = Math.floor((param / (1000 * 60))) ?
-        `${paddy(Math.floor((param / (1000 * 60))) % 60, 2)}:${time}` : `00:${time}`;
-    time = Math.floor((param / (1000 * 60 * 60))) ?
-        `${param / (1000 * 60 * 60)}:${time}` : `00:${time}`
-    return time;
-}
-
 module.exports = {
     datetimePretty,
-    isDevMode,
-    parseTime,
-    replaceAll
+    isDevMode
 }
