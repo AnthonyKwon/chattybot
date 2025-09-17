@@ -1,5 +1,5 @@
 import { EventEmitter } from 'node:events';
-import { CommandInteraction, ThreadChannel, VoiceChannel } from "discord.js";
+import {CommandInteraction, Message, ThreadChannel, VoiceChannel} from "discord.js";
 import * as voice from "../discord/Voice";
 import * as thread from "../discord/thread/Thread";
 import { ObjectOccupiedError, OccupiedObject } from "./error/ObjectOccupiedError";
@@ -17,8 +17,10 @@ const conversationCache: Map<string, ConversationManager> = new Map();
  * @alpha
  */
 export class ConversationManager extends EventEmitter {
+    private _destroyed: boolean = false;
     private readonly _guildId: string;
-    private readonly _origin: CommandInteraction;
+    private readonly _originInteraction: CommandInteraction;
+    private _origin: Message | undefined;
     private _thread: ThreadChannel | undefined;
     private _timer: NodeJS.Timeout | undefined;
     private readonly _channel: VoiceChannel;
@@ -33,7 +35,7 @@ export class ConversationManager extends EventEmitter {
         super();
         // build new conversation data
         this._guildId = channel.guild.id;
-        this._origin = origin;
+        this._originInteraction = origin;
         this._channel = channel;
     }
 
@@ -107,7 +109,7 @@ export class ConversationManager extends EventEmitter {
         // register VC on disconnection event
         voice.onDisconnected(this._guildId, async () => {
             logger.verbose({ topic: 'conversation', message: `Destroying session in ${this._guildId} as disconnected from voice channel.`});
-            await this.destroy();
+            await this.destroy(true);
             await this.setOrigin(':cry:');
         }, this);
 
@@ -121,6 +123,9 @@ export class ConversationManager extends EventEmitter {
         // register timeout on voice channel inactive
         this._timer = setTimeout(onVoiceInactive, config.awayTime * 60000, this._guildId);
 
+        // fetch message object from origin interaction
+        this._origin = await this._originInteraction.fetchReply();
+
         // create new thread from origin interaction
         this._thread = await thread.create(this._origin, threadOptions);
 
@@ -128,15 +133,23 @@ export class ConversationManager extends EventEmitter {
         this._tts = await TextToSpeech.create(this._channel.guild.preferredLocale);
 
         // alter user that conversation session is started
-        await this.setOrigin(':ballot_box_with_check:');
+        const epoch = Math.floor(Date.now() / 1000);  // unix epoch of current time
+        await this._originInteraction.editReply(`${this._channel} :ballot_box_with_check: <t:${epoch}:R>`);  // swap origin to Message object
     }
+
+    /** Tells if current conversation is destroyed. */
+    get destroyed(): boolean { return this._destroyed; }
 
     /**
      * Destroy current conversation.
+     * @param quiet If true, origin message will not be updated.
      * @throws {@link ReferenceError} when conversation not created for current guild.
      * @alpha
      */
-    async destroy(): Promise<VoiceChannel> {
+    async destroy(quiet: Boolean = false): Promise<VoiceChannel> {
+        // mark this conversation as destroyed
+        this._destroyed = true;
+
         // destroy current thread
         if (this._thread && await thread.validate(this._thread)) await thread.destroy(this._thread);
 
@@ -151,7 +164,7 @@ export class ConversationManager extends EventEmitter {
         if (voice.isConnected(this._guildId)) voice.leave(this._guildId);
 
         // alert user that conversation session is destroyed
-        await this.setOrigin(':wave:')
+        if (!quiet) await this.setOrigin(':wave:')
 
         // remove from conversation cache
         conversationCache.delete(this._guildId);
@@ -184,7 +197,10 @@ export class ConversationManager extends EventEmitter {
      * @param text - content to set.
      */
     async setOrigin(text: string) {
+        // ignore if type of origin is not Message (conversation is not started yet)
+        if (!this._origin) return;
+
         const epoch = Math.floor(Date.now() / 1000);  // unix epoch of current time
-        await this._origin.editReply(`${this._channel} ${text} <t:${epoch}:R>`);
+        await this._origin.edit(`${this._channel} ${text} <t:${epoch}:R>`);
     }
 }

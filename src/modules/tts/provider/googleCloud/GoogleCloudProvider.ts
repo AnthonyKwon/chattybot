@@ -43,19 +43,23 @@ export default class GoogleCloudProvider extends TTSProvider {
         // set request text to name prompt
         this.request.input = { text: prompt };
         // decrease or increase pitch
-        if (this.request.audioConfig?.pitch && this.request.audioConfig.pitch >= -16.0)
-            this.request.audioConfig.pitch -= 4.0;
-        else if (this.request.audioConfig?.pitch && this.request.audioConfig.pitch < -16.0)
-            this.request.audioConfig.pitch = this.request.audioConfig.pitch + 36.0;
+        if (typeof this.request.audioConfig?.pitch === 'number') {
+            if (this.request.audioConfig.pitch >= -16.0)
+                this.request.audioConfig.pitch -= 4.0;
+            else if (this.request.audioConfig.pitch < -16.0)
+                this.request.audioConfig.pitch = this.request.audioConfig.pitch + 36.0;
+        }
 
         // send synthesize request
         const [response] = await this.client.synthesizeSpeech(this.request);
 
         // restore pitch to its original value
-        if (this.request.audioConfig?.pitch  && this.request.audioConfig.pitch <= 16.0)
-            this.request.audioConfig.pitch += 4.0;
-        else if (this.request.audioConfig?.pitch && this.request.audioConfig.pitch > 16.0)
-            this.request.audioConfig.pitch = this.request.audioConfig.pitch - 36.0;
+        if (typeof this.request.audioConfig?.pitch === 'number') {
+            if (this.request.audioConfig.pitch <= 16.0)
+                this.request.audioConfig.pitch += 4.0;
+            else if (this.request.audioConfig.pitch > 16.0)
+                this.request.audioConfig.pitch = this.request.audioConfig.pitch - 36.0;
+        }
 
         // throw error when response is empty
         if (!response.audioContent) throw new Error('Audio content not found on response.');

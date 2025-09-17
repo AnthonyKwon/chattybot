@@ -9,8 +9,9 @@
   "main": "pre-check.js",
   "dependencies": {
     "@discordjs/opus": "^0.10.0",
-    "@discordjs/voice": "^0.16.1",
+    "@discordjs/voice": "^0.19.0",
     "@google-cloud/text-to-speech": "^5.2.0",
+    "@snazzah/davey": "^0.1.6",
     "discord.js": "^14.21.0",
     "google-auth-library": "^10.3.0",
     "json5": "^2.2.3",

@@ -123,7 +123,6 @@ export function onDisconnected(guildId: string, callback: Function, thisArg: any
     // check for disconnection and handle disconnect event
     connection.on(voice.VoiceConnectionStatus.Disconnected, async (oldState, newState): Promise<void> => {
         try {
-            console.log("Hello world!");
             await Promise.race([
                 voice.entersState(connection, voice.VoiceConnectionStatus.Signalling, 5_000),
                 voice.entersState(connection, voice.VoiceConnectionStatus.Connecting, 5_000),
