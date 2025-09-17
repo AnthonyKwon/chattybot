@@ -49,7 +49,7 @@ function verify(interaction, channel) {
         !channel.joinable) {
         // NOPE: I can't join to that channel
         logger.error({ topic: 'discord_legacy.js', message: `Failed to get voice channel info: bot does not have permission to access channel ${channel.id}!` });
-        interaction.editReply(getString(interaction.guild.preferredLocale, 'error.botNoPermission', channel));
+        interaction.editReply(getString(interaction.guild.preferredLocale, 'error.botNoPermission', channel.toString()));
         return false;
     }
 
@@ -58,7 +58,7 @@ function verify(interaction, channel) {
         !permissions.has(PermissionsBitField.Flags.ManageThreads)) {
         // NOPE: I can't create thread on there
         logger.error({ topic: 'discord_legacy.js', message: `Failed to join voice channel: bot does not have permission to create thread in channel ${channel.id}!` });
-        interaction.editReply(getString(interaction.guild.preferredLocale, 'error.botNoPermission', channel));
+        interaction.editReply(getString(interaction.guild.preferredLocale, 'error.botNoPermission', channel.toString()));
         return false;
     }
 
@@ -71,7 +71,7 @@ function verify(interaction, channel) {
     if (currChannelId === channel.id) {
         // NOPE: I'm trying to join same channel
         logger.error({ topic: 'discord_legacy.js', message: 'Failed to join voice channel: user tried to join bot into same channel currently in!' });
-        interaction.editReply(getString(interaction.guild.preferredLocale, 'error.alreadyJoined', channel));
+        interaction.editReply(getString(interaction.guild.preferredLocale, 'error.alreadyJoined', channel.toString()));
         return false;
     }
 
@@ -88,7 +88,7 @@ async function commandHandler(interaction) {
     else if (!channel) {
         // NOPE: no channel provided, and user not joined into voice channel
         logger.error({ topic: 'discord_legacy.js', message: 'Failed to join voice channel: channel not provided' });
-        interaction.editReply(getString(interaction.guild.preferredLocale, 'error.userNotInVC', interaction.user));
+        interaction.editReply(getString(interaction.guild.preferredLocale, 'error.userNotInVC', interaction.user.toString()));
         return;
     }
 
@@ -107,7 +107,7 @@ async function commandHandler(interaction) {
         // send success reply to user
         logger.verbose({ topic: 'discord.js', message: `Joined voice channel ${channel}.` });
         interaction.followUp({
-            content: getString(interaction.locale, 'message.conversation.joined', `<#${channel.id}>`),
+            content: getString(interaction.locale, 'message.conversation.joined', channel.toString()),
             ephemeral: true
         });
     } catch (err) {

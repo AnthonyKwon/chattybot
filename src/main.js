@@ -50,7 +50,7 @@ client.on(Events.MessageCreate, message => {
     const conversation = ConversationManager.get(message.guildId);
 
     // ignore the non-conversation message
-    if (!conversation ||
+    if (!conversation || conversation.destroyed ||
         !conversation.verify(message.guildId, message.channelId)) return;
 
     // emit conversation message received event
@@ -65,7 +65,7 @@ client.on(Events.ThreadDelete, thread => {
     const conversation = ConversationManager.get(thread.guildId);
 
     // ignore the event not related to conversation
-    if (!conversation ||
+    if (!conversation || conversation.destroyed ||
         !conversation.verify(thread.guildId, thread.id)) return;
 
     // emit conversation thread deleted event

@@ -13,8 +13,12 @@ async function commandHandler(interaction) {
     const conversation = ConversationManager.get(interaction.guild.id);
     const channel = await conversation.destroy();
 
+    // check channel availability before sending reply
+    // (in case of user sending command to destroying conversation)
+    if (!interaction.channel) return;
+
     // send reply to user interaction
-    interaction.editReply(getString(interaction.locale, 'message.conversation.left', `<#${channel}>`));
+    interaction.editReply(getString(interaction.locale, 'message.conversation.left', channel.toString()));
 }
 
 module.exports = {

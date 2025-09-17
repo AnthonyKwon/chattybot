@@ -1,18 +1,16 @@
-import { CommandInteraction, Message, ThreadChannel } from "discord.js";
+import { Message, ThreadChannel } from "discord.js";
 import { ThreadOptions } from "./ThreadOptions";
 export { ThreadOptions };
 
 /**
  * Create new {@link ThreadChannel}.
- * @param origin - Origin interaction to create {@link ThreadChannel}
+ * @param origin - Origin message to start {@link ThreadChannel}
  * @param options - Options for create {@link ThreadChannel}
  * @returns {@link ThreadChannel} with provided options.
  */
-export async function create(origin: CommandInteraction, options: ThreadOptions): Promise<ThreadChannel> {
-    // get origin message from interaction
-    const originMessage: Message = await origin.fetchReply();
+export async function create(origin: Message, options: ThreadOptions): Promise<ThreadChannel> {
     // create thread for origin message
-    return await originMessage.startThread(options);
+    return await origin.startThread(options);
 }
 
 /**

@@ -14,8 +14,8 @@ export default async function onVoiceInactive(guildId: string): Promise<void> {
 
     // destroy the current conversation session
     logger.verbose({ topic: 'conversation', message: `Destroying session in ${guildId} as it inactive for too long.`});
-    await conversation.destroy();
+    await conversation.destroy(true);
 
-    // swap alert message emoji
+    // alert user that conversation session is destroyed
     await conversation.setOrigin(':sleeping:');
 }

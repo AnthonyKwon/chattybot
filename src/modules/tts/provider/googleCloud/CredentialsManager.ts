@@ -1,6 +1,10 @@
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
-import * as path from'node:path';
-let clientCache: TextToSpeechClient | undefined;
+import * as path from 'node:path';
+
+// Text-to-Speech client cache
+const cache: unique symbol = Symbol.for("ChattyBot:GoogleCloudClientCache");
+const getCache = () => (global as any)[cache];
+const setCache = (value: TextToSpeechClient) => (global as any)[cache] = value;
 
 /**
  * Create google cloud Text-to-Speech client.<br/>
@@ -8,8 +12,9 @@ let clientCache: TextToSpeechClient | undefined;
  * @returns New or cached {@link TextToSpeechClient}.
  */
 export function getClient(): TextToSpeechClient {
+    let client: TextToSpeechClient = getCache();
     // check if cache is available
-    if (!clientCache) {
+    if (!client) {
         let clientOptions: {} | undefined;
 
         // check if additional options needed (for Service Account Key auth)
@@ -21,11 +26,11 @@ export function getClient(): TextToSpeechClient {
         }
 
         // try to authenticate with provided credentials and save it in cache
-        clientCache = new TextToSpeechClient(clientOptions);
+        client = setCache(new TextToSpeechClient(clientOptions));
     }
 
     // return client saved in cache
-    return clientCache;
+    return client;
 }
 
 /**
