@@ -1,6 +1,5 @@
 const { ChannelType, PermissionsBitField, Locale, AttachmentBuilder } = require('discord.js');
 const { getString } = require('../modules/i18n/GetString');
-const { datetimePretty } = require('../modules/common.js');
 const logger = require('../modules/log/Logger').default;
 const { createReport } = require('../modules/log/report/Report');
 const { ConversationManager } = require("../modules/conversation/Conversation");
@@ -8,6 +7,16 @@ const { ThreadOptions } = require("../modules/discord/thread/Thread");
 const {resolve} = require("path");
 const I18nCommandBuilder = require("../modules/discord/command/I18nCommandBuilder").default;
 const I18nChannelOption = require("../modules/discord/command/option/I18nChannelOption").default;
+
+function customDateString(date) {
+    let dateString = String(date.getFullYear()).padStart(4, '0');
+    dateString = `${dateString}/${String(date.getMonth() + 1).padStart(2, '0')}`;
+    dateString = `${dateString}/${String(date.getDate()).padStart(2, '0')}`;
+    dateString = `${dateString} ${String(date.getHours()).padStart(2, '0')}`;
+    dateString = `${dateString}:${String(date.getMinutes()).padStart(2, '0')}`;
+    dateString = `${dateString}:${String(date.getSeconds()).padStart(2, '0')}`;
+    return dateString;
+}
 
 function buildCommand() {
     const command = new I18nCommandBuilder('join');
@@ -98,7 +107,8 @@ async function commandHandler(interaction) {
 
     try {
         // use TTSUser class to parse username properly
-        const threadName = `🧵 - ${interaction.member.displayName} (${datetimePretty()})`;
+        const date = new Date();
+        const threadName = `🧵 - ${interaction.member.displayName} (${customDateString(date)})`;
         const options = new ThreadOptions(threadName, 60, 3);
 
         // try to start the conversation
