@@ -1,9 +1,10 @@
 import path from 'node:path';
 import fs from 'node:fs';
-import { Collection, CommandInteraction, MessageFlags } from 'discord.js';
-import logger from '../../logger_legacy/main.mod';
-import { getString } from "../../i18n/GetString";
-import report from '../../errorreport/main.mod';
+import {AttachmentBuilder, Collection, CommandInteraction, InteractionReplyOptions, MessageFlags} from 'discord.js';
+import logger from '../../log/Logger';
+import {createReport} from '../../log/report/Report';
+import {getString} from "../../i18n/GetString";
+import {resolve} from "path";
 
 const cache: Collection<string, object> = new Collection();
 
@@ -58,19 +59,26 @@ export async function handle(interaction: CommandInteraction): Promise<void> {
         // launch command action
         await command.execute(interaction);
     } catch(err: any) {
-        // create error report of current error
         logger.error({ topic: 'discord.command', message: `Error occurred while handling command!` });
         logger.error({ topic: 'discord.command', message: err.stack ? err.stack : err });
 
-        //TODO: revisit after error-report typescript rewrite
-        /*
-        const errorInteraction = { content: i18n_legacy.get(interaction.locale, 'error.generic').format(result), ephemeral: true };
-        const result = report(err, interaction.user.id);
+        // create an error report
+        const report = createReport(err, interaction.user.id);
 
+        // exit if error report is not available
+        if (!report) return;
+
+        // build interaction to send report
+        const errorInteraction: InteractionReplyOptions = {
+            content: getString(interaction.locale, 'error.generic', report),
+            files: [ (new AttachmentBuilder(resolve(global.appRoot, 'logs/report', report))) ],
+            flags: MessageFlags.Ephemeral
+        };
+
+        // send report interaction
         if (interaction.replied || interaction.deferred)
             await interaction.followUp(errorInteraction);
         else
             await interaction.reply(errorInteraction);
-         */
     }
 }

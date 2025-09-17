@@ -1,5 +1,5 @@
 import { ConversationManager } from '../Conversation';
-import logger from '../../logger_legacy/main.mod';
+import logger from '../../log/Logger';
 
 /**
  *

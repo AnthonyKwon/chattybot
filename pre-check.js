@@ -1,7 +1,7 @@
 const { existsSync } = require('fs');
 
 const { join, resolve } = require("node:path");
-const env = process.env.DEV_MODE == 'true' ? 'src' : 'build';
+const env = process.env.DEV_MODE == 'true' ? 'build' : 'build';
 
 // pre-check: check if user transpiled typescript
 if (!existsSync(join(env, 'main.js'))) {

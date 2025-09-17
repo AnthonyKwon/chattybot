@@ -1,10 +1,11 @@
-const { ChannelType, PermissionsBitField, Locale} = require('discord.js');
+const { ChannelType, PermissionsBitField, Locale, AttachmentBuilder } = require('discord.js');
 const { getString } = require('../modules/i18n/GetString');
 const { datetimePretty } = require('../modules/common.js');
-const logger = require('../modules/logger_legacy/main.mod.js');
-const report = require('../modules/errorreport/main.mod.js');
+const logger = require('../modules/log/Logger').default;
+const { createReport } = require('../modules/log/report/Report');
 const { ConversationManager } = require("../modules/conversation/Conversation");
 const { ThreadOptions } = require("../modules/discord/thread/Thread");
+const {resolve} = require("path");
 const I18nCommandBuilder = require("../modules/discord/command/I18nCommandBuilder").default;
 const I18nChannelOption = require("../modules/discord/command/option/I18nChannelOption").default;
 
@@ -111,11 +112,23 @@ async function commandHandler(interaction) {
             ephemeral: true
         });
     } catch (err) {
-        const result = report(err, interaction.user.id);
         logger.error({ topic: 'discord_legacy.js', message: 'error occurred while joining voice channel!' });
         logger.error({ topic: 'discord_legacy.js', message: err.stack });
-        // send error message to discord_legacy channel
-        interaction.editReply(getString(interaction.guild.preferredLocale, 'error.generic', result));
+
+        // create an error report
+        const report = createReport(err, interaction.user.id);
+
+        // exit if error report is not available
+        if (!report) return;
+
+        // build interaction to send report
+        const errorInteraction = {
+            content: getString(interaction.guild.preferredLocale, 'error.generic', report),
+            files: [ (new AttachmentBuilder(resolve(global.appRoot, 'logs/report', report))) ]
+        };
+
+        // send error message to discord channel
+        interaction.editReply(errorInteraction);
     }
 }
 

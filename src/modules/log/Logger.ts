@@ -4,7 +4,7 @@ import config from '../config/ConfigLoader';
 import path from "path";
 
 // set winston log level to verbose, if app is running on dev mode
-const logLevel = global.devMode ? 'verbose' : 'warn';
+const logLevel = global.devMode ? 'verbose' : 'info';
 
 // get log rotation time and size limit from config
 const timeLimit: string = `${config.log.timeLimit ?? 24}h`;
@@ -30,8 +30,7 @@ export default winston.createLogger({
             symlinkName: 'latest.log',
             format: winston.format.combine(
                 winston.format.timestamp(),
-                winston.format.json(),
-                winston.format.printf(info => `{"timestamp":"${info.timestamp}", "topic":"${info.topic}", "level":"${info.level}", "message":"${info.message}"}`)),
+                winston.format.cli()),
             level: logLevel,
         })
     ]
