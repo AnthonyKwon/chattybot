@@ -1,17 +1,17 @@
 const path = require('path');
 const winston = require('winston');
 require('winston-daily-rotate-file');
-const config = require('../config');
+const config = require('../config/ConfigLoader').default;
 const { isDevMode } = require('../common');
 
 // set winston log level to verbose, if app is running on dev mode
 const logLevel = isDevMode() ? 'verbose' : 'warn';
 
 // get log rotation time and size limit from config
-const timeLimit = `${config['log-rotate'].timeLimit ?? 24}h`;
-const sizeLimit = `${config['log-rotate'].sizeLimit ?? 100}k`;
+const timeLimit = `${config.log.timeLimit ?? 24}h`;
+const sizeLimit = `${config.log.sizeLimit ?? 100}k`;
 
-// create new logger object and export it
+// create new logger_legacy object and export it
 module.exports = winston.createLogger({
     transports: [
         new winston.transports.Console({

@@ -1,7 +1,7 @@
 import {GuildMember, Message} from 'discord.js';
 import { ConversationManager } from "../Conversation";
 import { play } from '../../discord/Voice';
-import logger from "../../logger/main.mod";
+import logger from "../../logger_legacy/main.mod";
 import {IQueueableSpeech} from "../../tts/IQueueableSpeech";
 import {fixMessage} from "../FixMessage";
 

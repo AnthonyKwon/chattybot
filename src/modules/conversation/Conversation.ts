@@ -5,8 +5,8 @@ import * as thread from "../discord/thread/Thread";
 import { ObjectOccupiedError, OccupiedObject } from "./error/ObjectOccupiedError";
 import onMessageReceive from "./event/OnMessageReceive";
 import onVoiceInactive from "./event/OnVoiceInactive";
-import config from "../config";
-import logger from "../logger/main.mod";
+import config from "../config/ConfigLoader";
+import logger from "../logger_legacy/main.mod";
 import TextToSpeech from "../tts/TextToSpeech";
 
 // cache for saving conversation data
@@ -121,7 +121,7 @@ export class ConversationManager extends EventEmitter {
         });  // linked thread archived or deleted
 
         // register timeout on voice channel inactive
-        this._timer = setTimeout(onVoiceInactive, config.awayTime * 60000, this._guildId);
+        this._timer = setTimeout(onVoiceInactive, config.inactiveTimeout * 60000, this._guildId);
 
         // fetch message object from origin interaction
         this._origin = await this._originInteraction.fetchReply();

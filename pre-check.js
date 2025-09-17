@@ -12,22 +12,23 @@ if (!existsSync(join(env, 'main.js'))) {
 }
 
 // define the application path
+global.devMode = !!process.env.DEV_MODE;
 global.appRoot = resolve(__dirname);
-global.srcRoot = join(appRoot, env)
+global.srcRoot = join(appRoot, env);
 
-const config = require(join(__dirname, env, 'modules/config'))
+const config = require(join(__dirname, env, 'modules/config/ConfigLoader')).default;
 
 // some call requires asynchronous call, warp code with async function
 async function preCheck() {
     // pre-check: check if settings file exists
-    if (!existsSync('./configs/settings.json5')) {
+    if (!existsSync('./configs/general.json') || !existsSync('./configs/tts.json')) {
         console.error('\x1b[41mFailed to locate settings configuration!\x1b[0m');
-        console.error('You can refer \x1b[33m"configs/settings.json5.example"\x1b[0m to create new one.');
+        console.error('You can refer \x1b[33m"configs/general.json.example"\x1b[0m and \x1b[33m"configs/tts.json.example"\x1b[0m to create new one.');
         process.exit(1);
     }
 
     // pre-check: check if authorization method available for GCP-TTS (when uses it)
-    if (config.ttsProvider === "GcpTts")
+    if (config.tts.provider === "GoogleCloud")
     {
         const { getClient, verify } = require(join(__dirname, env, 'modules/tts/provider/googleCloud/CredentialsManager'));
 

@@ -9,7 +9,8 @@
     "provider": "GoogleCloud",
     "providerOptions": {
       "GoogleCloud": {
-        "preferredTypes": ["Chirp3-HD", "Studio", "Neural2", "Wavenet", "Standard"]
+        "preferredTypes": ["Chirp3-HD", "Studio", "Neural2", "Wavenet", "Standard"],
+        "defaultVariant": "Achernar"
       }
     },
   }
