@@ -4,7 +4,7 @@ import { REST, Routes } from 'discord.js';
 import config from '../../config/ConfigLoader';
 import logger from '../../log/Logger';
 
-const fileDir: string = path.join(globalThis.srcRoot, 'commands');
+const fileDir: string = path.join(globalThis.appRoot, 'build', 'commands');
 const files: string[] = fs.readdirSync(fileDir).filter(file => file.endsWith('.js'));
 
 /** Register commands to Discord. */
@@ -14,16 +14,7 @@ export async function register() {
     // import all commands in directory
     for (const file of files) {
         const fullPath: string = path.join(fileDir, file);
-        const command = (await import(fullPath)).default;
-
-        // prepend special header when running as dev mode
-        if (process.env.NODE_ENV === 'development') {
-            // prepend "zz" to command when running as development environment
-            Object.keys(command.data.name_localizations).forEach(key => command.data.name_localizations[key] = `zz${command.data.name_localizations[key]}`);
-            // prepend "(dev)" to description when running as development environment
-            Object.keys(command.data.description_localizations).forEach(key =>
-                command.data.description_localizations[key] = `(dev) ${command.data.description_localizations[key]}`);
-        }
+        const command = (await import(fullPath)).default.default;
 
         // add current command to array
         commands.push(command.data.toJSON());

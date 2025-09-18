@@ -3,6 +3,7 @@ import {getString} from '../modules/i18n/GetString';
 import I18nStringOption from '../modules/discord/command/option/I18nStringOption';
 import I18nCommandBuilder from '../modules/discord/command/I18nCommandBuilder';
 import {getDiscordLocale} from "../modules/i18n/GetCurrentLocale";
+import {ICommand} from "../modules/discord/command/ICommand";
 
 async function commandHandler(interaction: ChatInputCommandInteraction) {
     const currLocale = interaction.guild!.preferredLocale;
@@ -57,7 +58,7 @@ async function commandHandler(interaction: ChatInputCommandInteraction) {
     await interaction.editReply(getString(interaction.locale, 'message.guildOptions.locale.successfullySet', currLocale, newLocale));
 }
 
-module.exports = {
+const command: ICommand =  {
     data: new I18nCommandBuilder('locale')
         .setName()
         .setDescription()
@@ -68,3 +69,5 @@ module.exports = {
     ephemeral: true,
     execute: commandHandler
 }
+
+export default command;

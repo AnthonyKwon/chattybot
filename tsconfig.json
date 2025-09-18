@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "commonjs",
-    "allowJs": true,
-    "checkJs": false,
+    "module": "nodenext",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -12,5 +10,5 @@
     "rootDir": "src",
     "outDir": "build"
   },
-  "include": ["src/**/*.js", "src/**/*.ts", "global.d.ts"],
+  "include": ["src/**/*.ts", "global.d.ts"],
 }

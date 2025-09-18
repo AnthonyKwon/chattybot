@@ -2,6 +2,7 @@ import {CommandInteraction, VoiceBasedChannel} from 'discord.js';
 import { ConversationManager } from '../modules/conversation/Conversation';
 import { getString } from '../modules/i18n/GetString';
 import I18nCommandBuilder from "../modules/discord/command/I18nCommandBuilder";
+import {ICommand} from "../modules/discord/command/ICommand";
 
 async function commandHandler(interaction: CommandInteraction) {
     const conversation: ConversationManager | undefined = ConversationManager.get(interaction.guild!.id);
@@ -23,10 +24,12 @@ async function commandHandler(interaction: CommandInteraction) {
     await interaction.editReply(getString(interaction.locale, 'message.conversation.left', channel.toString()));
 }
 
-module.exports = {
+const command: ICommand = {
     data: new I18nCommandBuilder('leave')
         .setName()
         .setDescription(),
     ephemeral: true,
     execute: commandHandler
 }
+
+export default command;
