@@ -1,5 +1,5 @@
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
-import * as path from 'node:path';
+import { join } from 'node:path';
 
 // Text-to-Speech client cache
 const cache: unique symbol = Symbol.for("ChattyBot:GoogleCloudClientCache");
@@ -20,8 +20,7 @@ export function getClient(): TextToSpeechClient {
         // check if additional options needed (for Service Account Key auth)
         if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
             clientOptions = {
-                projectId: require('configs/gcp-credentials.json').project_id,
-                keyFilename: path.join(appRoot, 'configs/gcp-credentials.json')
+                keyFilename: join(global.appRoot, 'configs/gcp-credentials.json')
             };
         }
 
