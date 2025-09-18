@@ -94,16 +94,20 @@ client.on(Events.Error, err => {
 });
 
 // exit with error on unhandled Rejection
-process.on('unhandledRejection', (err: Error) => {
+process.on('unhandledRejection', async (err: Error) => {
     logger.error({ topic: appName, message: 'An unhandled Rejection has occurred, application will exit!' });
     logger.error({ topic: appName, message: err.stack });
+    // give it some time to write log properly
+    await new Promise(resolve => setTimeout(resolve, 500));
     process.exit(1);
 });
 
 // exit with error on uncaught Exception
-process.on('uncaughtException', (err: Error) => {
+process.on('uncaughtException', async (err: Error) => {
     logger.error({ topic: appName, message: 'An uncaught Exception has thrown, application will exit!' });
     logger.error({ topic: appName, message: err.stack });
+    // give it some time to write log properly
+    await new Promise(resolve => setTimeout(resolve, 500));
     process.exit(1);
 });
 
