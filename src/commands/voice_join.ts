@@ -73,7 +73,7 @@ async function commandHandler(interaction: ChatInputCommandInteraction) {
     try {
         verify(channel, interaction.channel as GuildTextBasedChannel | null);
     } catch (err: any) {
-        logger.verbose({ topic: 'discord:command', message: `Ignored channel join request. Reason: ${err.message}` });
+        logger.verbose({ topic: 'discord.command', message: `Ignored channel join request. Reason: ${err.message}` });
         await interaction.editReply(getString(locale, `error.${err.message}`, interaction.channel!.toString()));
         return;
     }
@@ -90,14 +90,14 @@ async function commandHandler(interaction: ChatInputCommandInteraction) {
         await conversation.start(options);
 
         // send success reply to user
-        logger.verbose({ topic: 'discord:command', message: `Joined voice channel ${channel}.` });
+        logger.verbose({ topic: 'discord.command', message: `Joined voice channel ${channel}.` });
         await interaction.followUp({
             content: getString(interaction.locale, 'message.conversation.joined', channel.toString()),
             flags: MessageFlags.Ephemeral
         });
     } catch (err: any) {
-        logger.error({ topic: 'discord:command', message: 'error occurred while joining voice channel!' });
-        logger.error({ topic: 'discord:command', message: err.stack });
+        logger.error({ topic: 'discord.command', message: 'error occurred while joining voice channel!' });
+        logger.error({ topic: 'discord.command', message: err.stack });
 
         // create an error report
         const report = createReport(err, interaction.user.id);
