@@ -60,6 +60,7 @@ export interface ILocalizedString {
         guildOptions: {
             locale: {
                 current: string[],
+                modifiable: string[],
                 successfullySet: string,
                 failed: string
             }

@@ -3,6 +3,7 @@ import {IQueueableSpeech} from "./IQueueableSpeech";
 import TTSProvider from "./provider/TTSProvider";
 import getProvider from "./provider/GetProvider";
 import {InvalidProviderError} from "./error/InvalidProviderError";
+import {IRequestBuilderOptions} from "./provider/IRequestBuilderOptions";
 
 /**
  *
@@ -20,9 +21,9 @@ export default class TextToSpeech {
          this._last = last;
     }
 
-    static async create(locale?: string): Promise<TextToSpeech> {
+    static async create(options? :IRequestBuilderOptions): Promise<TextToSpeech> {
         // create provider based on config
-        const provider = await getProvider(config.tts.provider, locale);
+        const provider = await getProvider(config.tts.provider, options);
         const queue = new Array<IQueueableSpeech>();
 
         // throw error when provider not found

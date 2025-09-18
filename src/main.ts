@@ -1,16 +1,12 @@
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
 import { Client, Events, GatewayIntentBits } from 'discord.js';
 import { ConversationManager } from './modules/conversation/Conversation';
 import * as command from './modules/discord/command/Command';
 import config from './modules/config/ConfigLoader';
 import logger from './modules/log/Logger';
-
-// get package information from package.json
-const appInfo = JSON.parse(readFileSync(resolve(global.appRoot, 'package.json'), 'utf8'));
+import { name as appName, version } from '../package.json';
 
 // initialize logger module for main
-logger.info({ topic: appInfo.name, message: `version ${appInfo.version}` });
+logger.info({ topic: appName, message: `version ${version}` });
 
 
 // create discord client object
@@ -99,15 +95,15 @@ client.on(Events.Error, err => {
 
 // exit with error on unhandled Rejection
 process.on('unhandledRejection', (err: Error) => {
-    logger.error({ topic: appInfo.name, message: 'An unhandled Rejection has occurred, application will exit!' });
-    logger.error({ topic: appInfo.name, message: err.stack });
+    logger.error({ topic: appName, message: 'An unhandled Rejection has occurred, application will exit!' });
+    logger.error({ topic: appName, message: err.stack });
     process.exit(1);
 });
 
 // exit with error on uncaught Exception
 process.on('uncaughtException', (err: Error) => {
-    logger.error({ topic: appInfo.name, message: 'An uncaught Exception has thrown, application will exit!' });
-    logger.error({ topic: appInfo.name, message: err.stack });
+    logger.error({ topic: appName, message: 'An uncaught Exception has thrown, application will exit!' });
+    logger.error({ topic: appName, message: err.stack });
     process.exit(1);
 });
 

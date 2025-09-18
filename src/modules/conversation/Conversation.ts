@@ -8,6 +8,7 @@ import onVoiceInactive from "./event/OnVoiceInactive";
 import config from "../config/ConfigLoader";
 import logger from "../log/Logger";
 import TextToSpeech from "../tts/TextToSpeech";
+import {IRequestBuilderOptions} from "../tts/provider/IRequestBuilderOptions";
 
 // cache for saving conversation data
 const conversationCache: Map<string, ConversationManager> = new Map();
@@ -130,7 +131,9 @@ export class ConversationManager extends EventEmitter {
         this._thread = await thread.create(this._origin, threadOptions);
 
         // create new Text-to-Speech synthesizer
-        this._tts = await TextToSpeech.create(this._channel.guild.preferredLocale);
+        const locale: string = this._channel.guild.preferredLocale ?? config.defaultLocale;
+        const options: IRequestBuilderOptions = { locale: locale };
+        this._tts = await TextToSpeech.create(options);
 
         // alter user that conversation session is started
         const epoch = Math.floor(Date.now() / 1000);  // unix epoch of current time
@@ -174,7 +177,9 @@ export class ConversationManager extends EventEmitter {
 
     async reset() {
         // re-initialize the Text-to-Speech engine
-        this._tts = await TextToSpeech.create(this._channel.guild.preferredLocale);
+        const locale: string = this._channel.guild.preferredLocale ?? config.defaultLocale;
+        const options: IRequestBuilderOptions = { locale: locale };
+        this._tts = await TextToSpeech.create(options);
 
         // stop the current player
         voice.stop(this._guildId);

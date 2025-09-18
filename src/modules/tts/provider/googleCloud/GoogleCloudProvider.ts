@@ -8,6 +8,7 @@ import GoogleCloudTTSRequestBuilder from "./RequestBuilder";
 import {findLocaleByProvider} from "../../../i18n/MappedLocale";
 import {IMappedLocale} from "../../../i18n/IMappedLocale";
 import SynthesizeSpeechRequest = google.cloud.texttospeech.v1.SynthesizeSpeechRequest;
+import {IRequestBuilderOptions} from "../IRequestBuilderOptions";
 
 /**
  * This uses Google Cloud Text-to-Speech AI service provider.
@@ -27,8 +28,8 @@ export default class GoogleCloudProvider extends TTSProvider {
     static get available(): boolean { return true; }
 
     /** @inheritDoc */
-    static async create(locale?: string): Promise<GoogleCloudProvider> {
-        const builder = new GoogleCloudTTSRequestBuilder(locale);
+    static async create(options?: IRequestBuilderOptions): Promise<GoogleCloudProvider> {
+        const builder = new GoogleCloudTTSRequestBuilder(options);
         const request = await builder.build();
 
         return new GoogleCloudProvider(request);

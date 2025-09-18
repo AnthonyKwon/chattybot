@@ -92,13 +92,16 @@
     "guildOptions": {
       "locale": {
         "current": [
-          "### Language preferences of {0}",
-          "Message (personal):  {1} *({2})*",
-          "Message (global):       {3} *({4})*",
-          "Voice:   {4}\n",
-          "**English, US** will be used instead if your language is unsupported. (except for voice)",
-          "You can check out for list of supported languages below.",
-          "<https://discord.com/developers/docs/reference#locales>"
+          "## Language preferences of {0}",
+          "**Personal messages**: {1} [{2}]",
+          "**Server messages & Voice**: {3} [{4}]\n",
+          "Personal messages follow your Discord language,",
+          "and Server language is set by server manager.{5}",
+          "-# - **{6}** will be used instead for unsupported language."
+        ],
+        "modifiable": [
+          "*You have enough permission to change server language.*",
+          "-# - [Check out here](<https://discord.com/developers/docs/reference#locales>) for list of supported languages."
         ],
         "successfullySet": ":white_check_mark: Server locale have been changed from {0} to {1}.",
         "failed": ""
