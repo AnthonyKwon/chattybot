@@ -63,6 +63,9 @@ export interface ILocalizedString {
                 successfullySet: string,
                 failed: string
             }
+        },
+        fix: {
+            link: string
         }
     },
     tts: {

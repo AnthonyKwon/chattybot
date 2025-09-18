@@ -103,6 +103,9 @@
         "successfullySet": ":white_check_mark: 서버 언어가 {0}(에)서 {1}(으)로 변경되었습니다.",
         "failed": ""
       }
+    },
+    "fix": {
+      "link": "링크"
     }
   },
   "tts": {

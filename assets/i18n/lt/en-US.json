@@ -103,6 +103,9 @@
         "successfullySet": ":white_check_mark: Server locale have been changed from {0} to {1}.",
         "failed": ""
       }
+    },
+    "fix": {
+      "link": "Link"
     }
   },
   "tts": {
