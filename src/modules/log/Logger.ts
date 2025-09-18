@@ -30,7 +30,7 @@ export default winston.createLogger({
             symlinkName: 'latest.log',
             format: winston.format.combine(
                 winston.format.timestamp(),
-                winston.format.cli()),
+                winston.format.printf(info => `[${info.timestamp} | ${info.level} | ${info.topic}] ${info.message}`)),
             level: logLevel,
         })
     ]
