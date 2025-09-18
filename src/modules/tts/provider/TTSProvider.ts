@@ -1,11 +1,7 @@
 import { Readable } from 'node:stream';
 import { IRequestBuilderOptions } from './IRequestBuilderOptions';
 
-/**
- * Represents upstream Text-to-Speech provider service.
- * @alpha
- * @todo Complete JSDocs
- */
+/** Represents upstream Text-to-Speech provider service. */
 export default abstract class TTSProvider {
     /**
      * Reports if Text-to-speech provider is available.<br/>
@@ -15,20 +11,20 @@ export default abstract class TTSProvider {
         return false;
     }
 
-    /** Creates a new provider instance. */
+    /** Create new provider instance. */
     static create(options?: IRequestBuilderOptions): Promise<TTSProvider> {
         throw new Error('Method "create()" must be implemented.');
     }
 
     /**
-     * Synthesize name of the message author.
-     * @param name - Name of the author.
+     * Synthesize the name of the author.
+     * @param name Name of the author.
      */
     abstract speakName(name: string): Promise<Readable>;
 
     /**
-     * Synthesize text from TTS provider.
-     * @param text - Text to speak.
+     * Synthesize the requested content.
+     * @param text Content to synthesize.
      */
     abstract speak(text: string): Promise<Readable>;
 }

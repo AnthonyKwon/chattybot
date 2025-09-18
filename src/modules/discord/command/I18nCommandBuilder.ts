@@ -11,7 +11,7 @@ export default class I18nCommandBuilder extends SlashCommandBuilder {
 
     /**
      * @inheritDoc
-     * @param tag - I18n tag of this command.
+     * @param tag I18n tag of this command.
      */
     constructor(tag: string) {
         super();

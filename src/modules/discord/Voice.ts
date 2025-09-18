@@ -8,7 +8,7 @@ const playerCache: Map<string, voice.AudioPlayer> = new Map();
 
 /**
  * Join the specified {@link VoiceBasedChannel}
- * @param channel - {@link VoiceBasedChannel} for bot to join
+ * @param channel {@link VoiceBasedChannel} for bot to join
  * @returns {@link Promise} of {@link voice.VoiceConnection} bot used to join voice channel.
  */
 export async function join(channel: VoiceBasedChannel): Promise<voice.VoiceConnection> {
@@ -32,7 +32,7 @@ export async function join(channel: VoiceBasedChannel): Promise<voice.VoiceConne
 
 /**
  * Leave the specified {@link VoiceBasedChannel}
- * @param guildId - id of {@link Guild} to leave voice channel
+ * @param guildId id of {@link Guild} to leave voice channel
  * @throws InvalidChannelError
  * when not connected to voice channel to leave.
  */
@@ -62,7 +62,7 @@ export function stop(guildId: string): void {
 
 /**
  * check If bot is connected to voice channel in specified guild
- * @param guildId - id of the {@link Guild} to check connectivity
+ * @param guildId id of the {@link Guild} to check connectivity
  * @returns result of connectivity check as {@link boolean}.
  */
 export function isConnected(guildId: string): boolean {
@@ -72,8 +72,8 @@ export function isConnected(guildId: string): boolean {
 
 /**
  * Play audio to voice channel
- * @param guildId - id of {@link Guild} to play audio in voice channel
- * @param stream - {@link Readable} to play in voice channel
+ * @param guildId id of {@link Guild} to play audio in voice channel
+ * @param stream {@link Readable} to play in voice channel
  * @returns {@link Promise} of {@link voice.AudioPlayer} used to play audio.
  * @throws InvalidChannelError
  * when not connected to voice channel to speak.
@@ -104,13 +104,11 @@ export function play(guildId: string, stream: Readable): Promise<voice.AudioPlay
 
 /**
  * Handle disconnection event of {@link VoiceBasedChannel}
- * @param guildId - id of {@link Guild} to fetch the voice channel
- * @param callback - callback function to run
- * @param thisArg - {@link this} value to use in callback
- * @param params - parameters to use in callback
- * @throws InvalidChannelError
- * when not connected to voice channel to handle event.
- * @beta
+ * @param guildId id of {@link Guild} to fetch the voice channel
+ * @param callback callback function to run
+ * @param thisArg {@link this} value to use in callback
+ * @param params parameters to use in callback
+ * @throws InvalidChannelError when not connected to voice channel to handle event.
  * @todo Needs to investigate the issue that event does not fire when no one in Voice Channel.
  */
 export function onDisconnected(guildId: string, callback: Function, thisArg: any, ...params: any): void {
