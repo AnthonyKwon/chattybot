@@ -1,0 +1,52 @@
+import { Message, ThreadChannel } from "discord.js";
+import { ThreadOptions } from "./ThreadOptions";
+export { ThreadOptions };
+
+/**
+ * Create new {@link ThreadChannel}.
+ * @param origin Origin message to start {@link ThreadChannel}
+ * @param options Options for create {@link ThreadChannel}
+ * @returns {@link ThreadChannel} with provided options.
+ */
+export async function create(origin: Message, options: ThreadOptions): Promise<ThreadChannel> {
+    // create thread for origin message
+    return await origin.startThread(options);
+}
+
+/**
+ * Destroy current {@link ThreadChannel}.
+ * @param channel {@link ThreadChannel} to destroy
+ */
+export async function destroy(channel: ThreadChannel) {
+    // I'm not sure if this even needed...
+    await channel.delete();
+}
+
+/**
+ * Check thread availability by changing properties.<br/>
+ * It uses quite hacky method, so it might have issues.
+ * @param channel {@link ThreadChannel} to check availability
+ * @returns Bot availability to target {@link ThreadChannel}.
+ */
+export async function validate(channel: ThreadChannel): Promise<boolean> {
+    /**
+     * Check thread availability by changing properties.
+     * properties changed when check succeeds,
+     * throws 'Missing Access' or 'Unknown Channel' error when the check failed.
+     * This is a very hacky way; it might have lots of problems.
+     */
+    try {
+        await channel.setAutoArchiveDuration(60);
+        // check success; channel exists
+        return true;
+    } catch (err: any) {
+        // check failed; channel exists but no permission
+        if (err.message === 'Missing Access')
+            return false;
+        // check failed; channel not exists
+        else if (err.message === 'Unknown Channel')
+            return false;
+        // exception; unknown error occurred
+        else throw err;
+    }
+}

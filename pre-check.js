@@ -1,19 +1,49 @@
 const { existsSync } = require('fs');
-const { getClient, verify } = require('./modules/tts/class/provider/GcpTtsProvider/AuthHandler');
-const config = require('./modules/config')
+const { join, resolve } = require("node:path");
+
+// pre-check: check if user transpiled typescript
+if (!existsSync('./build/main.js')) {
+    console.error('\x1b[41mFailed to locate application core!\x1b[0m');
+    console.error('Check if you have run \x1b[33m"npm run build"\x1b[0m.');
+    console.error('This is required to application to work correctly.');
+    process.exit(1);
+}
+
+// define the application path
+global.devMode = !!process.env.DEV_MODE;
+global.appRoot = resolve(__dirname);
+
+// skip extra check and if user asked for slash command actions
+if (!!process.env.COMMAND_ACTION) {
+    global.devMode = true;
+    const { register, unregister } = require('./build/modules/discord/command/CommandRegister');
+    if (process.env.COMMAND_ACTION === 'register') register();
+    else if (process.env.COMMAND_ACTION === 'unregister') unregister();
+    else {
+        console.error(`\x1b[41mUnknwon command action:\x1b[0m ${process.env.COMMAND_ACTION}`);
+        console.error('Please check documentation about command actions.');
+        process.exit(1);
+    }
+    return;
+}
+
+// load additional modules which requires app build
+const config = require('./build/modules/config/ConfigLoader').default;
 
 // some call requires asynchronous call, warp code with async function
 async function preCheck() {
     // pre-check: check if settings file exists
-    if (!existsSync('./configs/settings.json5')) {
+    if (!existsSync('./configs/general.json') || !existsSync('./configs/tts.json')) {
         console.error('\x1b[41mFailed to locate settings configuration!\x1b[0m');
-        console.error('You can refer \x1b[33m"configs/settings.json5.example"\x1b[0m to create new one.');
+        console.error('You can refer \x1b[33m"configs/general.json.example"\x1b[0m and \x1b[33m"configs/tts.json.example"\x1b[0m to create new one.');
         process.exit(1);
     }
 
     // pre-check: check if authorization method available for GCP-TTS (when uses it)
-    if (config.ttsProvider === "GcpTts")
+    if (config.tts.provider === "GoogleCloud")
     {
+        const { getClient, verify } = require('./build/modules/tts/provider/googleCloud/CredentialsManager');
+
         // check if Workload Identity Federation available
         if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
             console.log('\x1b[33mGOOGLE_APPLICATION_CREDENTIALS\x1b[0m provided, pre-check might take longer.');
@@ -43,6 +73,6 @@ async function preCheck() {
     }
 }
 
-// pre-check done. start main application
-preCheck().then(() => require('./main'));
+// pre-check done. configure app and start main application
+preCheck().then(() => require('./build/main'));
 

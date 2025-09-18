@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "li": {
+    "id": "en-US",
+    "name": "English, US"
+  },
+  "command": {
+    "empty": {
+      "name": "clear",
+      "description": "Reset and clear Text-to-speech engine."
+    },
+    "info": {
+      "name": "info",
+      "description": "Show information about myself."
+    },
+    "join": {
+      "name": "join",
+      "description": "Join the voice channel where you at.",
+      "options": [
+        {
+          "name": "channel",
+          "description": "(optional) voice channel to use the bot"
+        }
+      ]
+    },
+    "leave": {
+      "name": "leave",
+      "description": "Leave from the currently joined voice channel."
+    },
+    "locale": {
+      "name": "locale",
+      "description": "Get or set the locale of the bot on this server. (\"Manage Server\" permission required to set)",
+      "options": [
+        {
+          "name": "locale-id",
+          "description": "id of the new locale to set (https://discord.com/developers/docs/reference#locales)"
+        }
+      ]
+    },
+    "say": {
+      "name": "say",
+      "description": "Currently deprecated. Please use Thread-based instead.",
+      "options": [
+        {
+          "name": "text",
+          "description": "Text to speak"
+        }
+      ]
+    }
+  },
+  "error": {
+    "generic": [
+      ":octagonal_sign: Error occured while launching command!",
+      "Please send this Error ID to developer.",
+      "**Error ID:** {0}"
+    ],
+    "guildOnlyBot": [
+      "Sorry. I only can be used on the server  :cry:",
+      "Maybe you can invite me on your server?",
+      "You can check about my information at my profile!  :relaxed:"
+    ],
+    "alreadyJoined": ":loud_sound: :door: I'm already joined in **{0}**!",
+    "botNotInVC": ":loud_sound: :x: I don't joined in any voice channel now.",
+    "invalidLocale": ":grey_question: Unknown or invalid locale ID. Did you entered it correctly?",
+    "invalidTextChannel": ":no_entry_sign:  This is not available on Threads, Forum, Voice Text Channel, etc. Please use other normal Text Channel.",
+    "invalidVoiceChannel": ":no_entry_sign:  Invalid voice channel. Please specify correct channel or join channel first.",
+    "localeAlreadySet": ":no_entry_sign: Server locale has already set to specified one.",
+    "botNoPermission": ":hourglass_flowing_sand::no_entry_sign:  I don't have permission(s)(**{0}**) to do this action.",
+    "userNoPermission": ":hourglass_flowing_sand::no_entry_sign:  You don't have permission to do this action!",
+    "textTooLong": ":loud_sound:  :page_with_curl: Text too long. Write within {0} letter(s)."
+  },
+  "message": {
+    "inDevMode": ":tools: **Developer mode** is enabled.",
+    "command": {
+      "info": [
+        ":information_source: {0} Discord TTS bot **version {1}**",
+        ":scroll: This program is licensed under the GNU General Public License, version 2.",
+        ":scroll: **License information:** <https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html>",
+        ":floppy_disk: **Repository:** <{2}>"
+      ],
+      "queueReset": ""
+    },
+    "conversation": {
+      "joined": ":loud_sound: Joined **{0}** channel.",
+      "left": ":loud_sound: :wave: Left **{0}** channel."
+    },
+    "discord": {
+      "permissions": {
+        "ManageGuild": "Manage Server"
+      }
+    },
+    "guildOptions": {
+      "locale": {
+        "current": [
+          "## Language preferences of {0}",
+          "**Personal messages**: {1} [{2}]",
+          "**Server messages & Voice**: {3} [{4}]\n",
+          "Personal messages follow your Discord language,",
+          "and Server language is set by server manager.{5}",
+          "-# - **{6}** will be used instead for unsupported language."
+        ],
+        "modifiable": [
+          "*You have enough permission to change server language.*",
+          "-# - [Check out here](<https://discord.com/developers/docs/reference#locales>) for list of supported languages."
+        ],
+        "successfullySet": ":white_check_mark: Server locale have been changed from {0} to {1}.",
+        "failed": ""
+      }
+    },
+    "fix": {
+      "link": "Link"
+    }
+  },
+  "tts": {
+    "prefix": "{0} says,",
+    "gender": {
+      "female": "Female",
+      "male": "Male",
+      "neutral": "Neutral"
+    }
+  }
+}

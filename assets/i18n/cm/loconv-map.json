@@ -1,0 +1,130 @@
+[
+    {
+        "discord": "bg",
+        "google": "bg-BG"
+    },
+    {
+        "discord": "cs",
+        "google": "cs-CZ"
+    },
+    {
+        "discord": "da",
+        "google": "da-DK"
+    },
+    {
+        "discord": "de",
+        "google": "de-DE"
+    },
+    {
+        "discord": "el",
+        "google": "el-GR"
+    },
+    {
+        "discord": "en-GB",
+        "google": "en-GB"
+    },
+    {
+        "discord": "en-US",
+        "google": "en-US"
+    },
+    {
+        "discord": "es-419",
+        "google": "es-US"
+    },
+    {
+        "discord": "es-ES",
+        "google": "es-ES"
+    },
+    {
+        "discord": "fi",
+        "google": "fi-FI"
+    },
+    {
+        "discord": "fr",
+        "google": "fr-FR"
+    },
+    {
+        "discord": "hi",
+        "google": "hi-IN"
+    },
+    {
+        "discord": "hr",
+        "google": "sr-RS"
+    },
+    {
+        "discord": "hu",
+        "google": "hu-HU"
+    },
+    {
+        "discord": "id",
+        "google": "id-ID"
+    },
+    {
+        "discord": "it",
+        "google": "it-IT"
+    },
+    {
+        "discord": "ja",
+        "google": "ja-JP"
+    },
+    {
+        "discord": "ko",
+        "google": "ko-KR"
+    },
+    {
+        "discord": "lt",
+        "google": "lt-LT"
+    },
+    {
+        "discord": "nl",
+        "google": "nl-BE"
+    },
+    {
+        "discord": "no",
+        "google": "nb-NO"
+    },
+    {
+        "discord": "pl",
+        "google": "pl-PL"
+    },
+    {
+        "discord": "pt-BR",
+        "google": "pt-BR"
+    },
+    {
+        "discord": "ro",
+        "google": "ro-RO"
+    },
+    {
+        "discord": "ru",
+        "google": "ru-RU"
+    },
+    {
+        "discord": "sv-SE",
+        "google": "sv-SE"
+    },
+    {
+        "discord": "th",
+        "google": "th-TH"
+    },
+    {
+        "discord": "tr",
+        "google": "tr-TR"
+    },
+    {
+        "discord": "uk",
+        "google": "uk-UA"
+    },
+    {
+        "discord": "vi",
+        "google": "vi-VN"
+    },
+    {
+        "discord": "zh-CN",
+        "google": "cmn-CN"
+    },
+    {
+        "discord": "zh-TW",
+        "google": "cmn-TW"
+    }
+]

@@ -1,0 +1,87 @@
+import { IMappedLocale } from '../../i18n/IMappedLocale';
+import { findLocale } from '../../i18n/MappedLocale';
+import { IRequestBuilderOptions } from './IRequestBuilderOptions';
+
+/** Builds Text-to-Speech request, to be used by provider. */
+export default abstract class RequestBuilder {
+    protected _gender: string | undefined;
+    protected _locale: IMappedLocale | undefined;
+    protected _pitch: number | undefined;
+    protected _speed: number | undefined;
+    protected _volume: number | undefined;
+
+    /**
+     * @param options {@link IRequestBuilderOptions} to be used by provider.
+     */
+    constructor(options?: IRequestBuilderOptions) {
+        // abstract class: prevent the class directly called
+        // https://stackoverflow.com/a/48428063
+        if (this.constructor === RequestBuilder)
+            throw new Error('Abstract classes can\'t be instantiated.');
+
+        // assign properties from user-provided options
+        if (options) {
+            this._gender = options.gender;
+            this._locale = options.locale ? findLocale(options.locale) : undefined;
+            this._volume = options.volume;
+            this._pitch = options.pitch;
+            this._speed = options.speed;
+        }
+    }
+
+    get locale(): IMappedLocale { return this._locale ?? findLocale('en-US'); }
+    get gender(): string { return this._gender ?? 'neutral' }
+    get volume(): number { return this._volume ?? 100 }
+    get pitch(): number { return this._pitch ?? 100 }
+    get speed(): number { return this._speed ?? 100 }
+
+    /**
+     * @param value Locale to set
+     */
+    set locale(value: IMappedLocale) {
+        this._locale = value;
+    }
+
+    /**
+     * @param value Gender to set. Must be one of "male", "female", or "neutral".
+     */
+    set gender(value: string) {
+        if (['male', 'female', 'neutral'].includes(value))
+            this._gender = value;
+        else
+            throw new Error(`Gender "${value}" is not available.`);
+    }
+
+    /**
+     * @param value Volume to set. Must be between 0 ~ 200.
+     */
+    set volume(value: number) {
+        if (value >= 0 && value <= 200)
+            this._volume = value
+        else
+            throw new Error(`Volume Gain "${value}" is out of range.`)
+    }
+
+    /**
+     * @param value Pitch to set. Must be between 0 ~ 200.
+     */
+    set pitch(value: number) {
+        if (value >= 0 && value <= 200)
+            this._pitch = value
+        else
+            throw new Error(`Pitch "${value}" is out of range.`)
+    }
+
+    /**
+     * @param value Speed to set. Must be between 50 ~ 200.
+     */
+    set speed(value: number) {
+        if (value >= 50 && value <= 200)
+            this._speed = value
+        else
+            throw new Error(`Speed "${value}" is out of range.`)
+    }
+
+    /** Build the request based on options. **/
+    abstract build(): any;
+}
