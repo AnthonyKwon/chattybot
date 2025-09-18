@@ -21,6 +21,7 @@ import I18nCommandBuilder from '../modules/discord/command/I18nCommandBuilder';
 import I18nChannelOption from '../modules/discord/command/option/I18nChannelOption';
 import {getCurrentLocale} from '../modules/i18n/GetCurrentLocale';
 import {resolveTimestamp} from '../modules/conversation/FixMessage';
+import {ICommand} from "../modules/discord/command/ICommand";
 
 interface IChannelVerifyResult {
     success: boolean,
@@ -33,9 +34,9 @@ function verify(voiceChannel: VoiceBasedChannel, textChannel: GuildTextBasedChan
     if (!textChannel || !voiceChannel)
         return { success: false, reason: 'unknownChannel' };
 
-    // fail when voice channel is not valid type
-    if (voiceChannel.type !== ChannelType.GuildVoice)
-        return { success: false, reason: 'invalidChannel' };
+    // fail when text channel is not valid type
+    if (textChannel.type !== ChannelType.GuildText)
+        return { success: false, reason: 'invalidTextChannel' };
 
     // fail when bot have not enough permission to voice channel (Connect, Speak)
     let permissions = voiceChannel.permissionsFor(voiceChannel.client.user);
@@ -128,7 +129,7 @@ async function commandHandler(interaction: ChatInputCommandInteraction) {
     }
 }
 
-module.exports = {
+const command: ICommand = {
     data: new I18nCommandBuilder('join')
         .setName()
         .setDescription()
@@ -140,3 +141,5 @@ module.exports = {
             .setRequired(false)),
     execute: commandHandler
 }
+
+export default command;

@@ -1,24 +1,25 @@
 import path from 'node:path';
 import fs from 'node:fs';
+import {resolve} from 'path';
 import {AttachmentBuilder, Collection, CommandInteraction, InteractionReplyOptions, MessageFlags} from 'discord.js';
 import logger from '../../log/Logger';
 import {createReport} from '../../log/report/Report';
-import {getString} from "../../i18n/GetString";
-import {resolve} from "path";
+import {getString} from '../../i18n/GetString';
+import {ICommand} from './ICommand';
 
-const cache: Collection<string, object> = new Collection();
+const cache: Collection<string, ICommand> = new Collection();
 
 /** Load commands to client. */
 export async function load(): Promise<void> {
     // directory for command files
-    const fileDir: string = path.join(globalThis.srcRoot, 'commands');
+    const fileDir: string = path.join(globalThis.appRoot, 'build', 'commands');
     // array of command files name
     const files: string[] = fs.readdirSync(fileDir).filter(file => file.endsWith('.js'));
 
     // import all commands in directory
     for (const file of files) {
         const fullPath: string = path.join(fileDir, file);
-        const command = (await import(fullPath)).default;
+        const command: ICommand = (await import(fullPath)).default.default;
 
         // save currently loaded command into cache
         cache.set(command.data.name, command);

@@ -25,14 +25,12 @@
   "scripts": {
     "build": "tsc",
     "start": "node .",
-    "dev": "npm run development",
-    "development": "NODE_ENV=development tsx watch .",
-    "register": "SLASH_ACTION=register tsx src/main.js",
-    "registerDev": "NODE_ENV=development tsx watch watch src/main.js",
-    "unregister": "SLASH_ACTION=unregister tsx src/main.js"
+    "dev": "npm run build && DEV_MODE=true npm run start",
+    "register": "COMMAND_ACTION=register npm run start",
+    "registerDev": "DEV_MODE=true npm run register",
+    "unregister": "COMMAND_ACTION=unregister npm run start"
   },
   "devDependencies": {
-    "discord-api-types": "^0.38.22",
-    "tsx": "^4.20.5"
+    "discord-api-types": "^0.38.22"
   }
 }

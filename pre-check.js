@@ -1,10 +1,8 @@
 const { existsSync } = require('fs');
-
 const { join, resolve } = require("node:path");
-const env = process.env.DEV_MODE == 'true' ? 'build' : 'build';
 
 // pre-check: check if user transpiled typescript
-if (!existsSync(join(env, 'main.js'))) {
+if (!existsSync('./build/main.js')) {
     console.error('\x1b[41mFailed to locate application core!\x1b[0m');
     console.error('Check if you have run \x1b[33m"npm run build"\x1b[0m.');
     console.error('This is required to application to work correctly.');
@@ -14,9 +12,22 @@ if (!existsSync(join(env, 'main.js'))) {
 // define the application path
 global.devMode = !!process.env.DEV_MODE;
 global.appRoot = resolve(__dirname);
-global.srcRoot = join(appRoot, env);
 
-const config = require(join(__dirname, env, 'modules/config/ConfigLoader')).default;
+// skip extra check and if user asked for slash command actions
+if (!!process.env.COMMAND_ACTION) {
+    const { register, unregister } = require('./build/modules/discord/command/CommandRegister');
+    if (process.env.COMMAND_ACTION === 'register') register();
+    else if (process.env.COMMAND_ACTION === 'unregister') unregister();
+    else {
+        console.error(`\x1b[41mUnknwon command action:\x1b[0m ${process.env.COMMAND_ACTION}`);
+        console.error('Please check documentation about command actions.');
+        process.exit(1);
+    }
+    return;
+}
+
+// load additional modules which requires app build
+const config = require('./build/modules/config/ConfigLoader').default;
 
 // some call requires asynchronous call, warp code with async function
 async function preCheck() {
@@ -30,7 +41,7 @@ async function preCheck() {
     // pre-check: check if authorization method available for GCP-TTS (when uses it)
     if (config.tts.provider === "GoogleCloud")
     {
-        const { getClient, verify } = require(join(__dirname, env, 'modules/tts/provider/googleCloud/CredentialsManager'));
+        const { getClient, verify } = require(join(__dirname, 'build/modules/tts/provider/googleCloud/CredentialsManager'));
 
         // check if Workload Identity Federation available
         if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
@@ -62,5 +73,5 @@ async function preCheck() {
 }
 
 // pre-check done. configure app and start main application
-preCheck().then(() => require(join(__dirname, env, 'main')));
+preCheck().then(() => require(join(__dirname, 'build/main')));
 
