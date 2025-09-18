@@ -1,4 +1,4 @@
-import {CommandInteraction, VoiceChannel} from 'discord.js';
+import {CommandInteraction, VoiceBasedChannel} from 'discord.js';
 import { ConversationManager } from '../modules/conversation/Conversation';
 import { getString } from '../modules/i18n/GetString';
 import I18nCommandBuilder from "../modules/discord/command/I18nCommandBuilder";
@@ -13,7 +13,7 @@ async function commandHandler(interaction: CommandInteraction) {
     }
 
     // get conversation from cache and leave
-    const channel: VoiceChannel = await conversation.destroy();
+    const channel: VoiceBasedChannel = await conversation.destroy();
 
     // check channel availability before sending reply
     // (in case of user sending command to destroying conversation)

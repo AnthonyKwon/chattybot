@@ -1,5 +1,5 @@
 import { EventEmitter } from 'node:events';
-import {CommandInteraction, Message, ThreadChannel, VoiceChannel} from "discord.js";
+import {CommandInteraction, Message, ThreadChannel, VoiceBasedChannel} from "discord.js";
 import * as voice from "../discord/Voice";
 import * as thread from "../discord/thread/Thread";
 import { ObjectOccupiedError, OccupiedObject } from "./error/ObjectOccupiedError";
@@ -14,7 +14,7 @@ import {IRequestBuilderOptions} from "../tts/provider/IRequestBuilderOptions";
 const conversationCache: Map<string, ConversationManager> = new Map();
 
 /**
- * Manages Text-to-Speech conversation, wrapping {@link VoiceChannel} and {@link ThreadChannel}.
+ * Manages Text-to-Speech conversation, wrapping {@link VoiceBasedChannel} and {@link ThreadChannel}.
  * @alpha
  */
 export class ConversationManager extends EventEmitter {
@@ -24,7 +24,7 @@ export class ConversationManager extends EventEmitter {
     private _origin: Message | undefined;
     private _thread: ThreadChannel | undefined;
     private _timer: NodeJS.Timeout | undefined;
-    private readonly _channel: VoiceChannel;
+    private readonly _channel: VoiceBasedChannel;
     private _tts: TextToSpeech | undefined;
 
     /**
@@ -32,7 +32,7 @@ export class ConversationManager extends EventEmitter {
      * this constructor only meant to be called by {@link create},
      * do not use from outside.
      */
-    private constructor(origin: CommandInteraction, channel: VoiceChannel) {
+    private constructor(origin: CommandInteraction, channel: VoiceBasedChannel) {
         super();
         // build new conversation data
         this._guildId = channel.guild.id;
@@ -47,7 +47,7 @@ export class ConversationManager extends EventEmitter {
      * @returns new {@link ConversationManager} with provided parameters.
      * @alpha
      */
-    static create(origin: CommandInteraction, channel: VoiceChannel): ConversationManager {
+    static create(origin: CommandInteraction, channel: VoiceBasedChannel): ConversationManager {
         // return conversation session from cache if exists
         if (conversationCache.has(channel.guild.id))
             return conversationCache.get(channel.guild.id)!;
@@ -149,7 +149,7 @@ export class ConversationManager extends EventEmitter {
      * @throws {@link ReferenceError} when conversation not created for current guild.
      * @alpha
      */
-    async destroy(quiet: Boolean = false): Promise<VoiceChannel> {
+    async destroy(quiet: Boolean = false): Promise<VoiceBasedChannel> {
         // mark this conversation as destroyed
         this._destroyed = true;
 

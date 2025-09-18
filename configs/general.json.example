@@ -2,12 +2,14 @@
   "version": 1,
   "discord": {
     "token": "your-bot-token-here",
-    "inviteLink": "https://your-invite-link-here/"
+    "inviteLink": "https://your-invite-link-here/",
+    "archiveDuration": 60
   },
   "log": {
     "timeLimit": 24,
     "sizeLimit": 100
   },
   "defaultLocale": "en-US",
+  "cooldown": 0,
   "inactiveTimeout": 15
 }
