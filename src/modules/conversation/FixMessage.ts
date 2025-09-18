@@ -1,4 +1,7 @@
-import { Message } from "discord.js";
+import { Message } from 'discord.js';
+import { getString } from '../i18n/GetString';
+import { getCurrentLocale } from '../i18n/GetCurrentLocale';
+import {getRelativeTime} from "../i18n/GetDateTime";
 //
 const skipMark = '󳋖󵐈';
 
@@ -31,58 +34,59 @@ function resolveSnowflake(message: string, data: Message): string {
  * Resolve timestamp in the message to string.
  * @param message Current message.
  * @param data Data object for the message.
- * @todo complete localization
  */
 function resolveTimestamp(message: string, data: Message): string {
     const timestampRegex: RegExp = /<t:(\d+)(:[DdFfRTt])?>/g;
     return message.replace(timestampRegex, function(_match, timestamp: string, printFormat: string): string {
-        console.log(Number.parseInt(timestamp));
         const date = new Date(Number.parseInt(timestamp) * 1000);
         if (printFormat === ':t')
-            return date.toLocaleTimeString(data.guild?.preferredLocale, { hour: "numeric", minute: "numeric", second: undefined });
+            return date.toLocaleTimeString(getCurrentLocale(data), { hour: "numeric", minute: "numeric", second: undefined });
         else if (printFormat === ':T')
-            return date.toLocaleTimeString(data.guild?.preferredLocale, { hour: "numeric", minute: "numeric", second: "numeric" });
+            return date.toLocaleTimeString(getCurrentLocale(data), { hour: "numeric", minute: "numeric", second: "numeric" });
         else if (printFormat === ':d')
-            return date.toLocaleDateString(data.guild?.preferredLocale, { year: "numeric", month: "numeric", day: "numeric" });
+            return date.toLocaleDateString(getCurrentLocale(data), { year: "numeric", month: "numeric", day: "numeric" });
         else if (printFormat === ':D')
-            return date.toLocaleDateString(data.guild?.preferredLocale, { year: "numeric", month: "long", day: "numeric" });
+            return date.toLocaleDateString(getCurrentLocale(data), { year: "numeric", month: "long", day: "numeric" });
         else if (printFormat === ':F')
-            return date.toLocaleString(data.guild?.preferredLocale, { year: "numeric", month: "long", day: "numeric", weekday: "long", hour: "numeric", minute: "numeric", second: undefined });
+            return date.toLocaleString(getCurrentLocale(data), { year: "numeric", month: "long", day: "numeric", weekday: "long", hour: "numeric", minute: "numeric", second: undefined });
         else if (printFormat === ':R') {
-            // get time difference between current and target time
             const now = new Date();
-            let diff = now.valueOf() - date.valueOf();
-            const diffMonth = now.getUTCMonth() - date.getUTCMonth();
-            const diffYear = now.getUTCFullYear() - date.getUTCFullYear();
-            // second
-            diff = Math.floor(diff / 1000);
-            if (diff > -60 && diff < 60) return `${diff} 초 전`;
-            // minute
-            diff = Math.floor(diff / 60);
-            if (diff > -60 && diff < 60) return `${diff} 분 전`;
-            // hour
-            diff = Math.floor(diff / 60);
-            if (diff > -24 && diff < 24) return `${diff} 시간 전`;
-            // day
-            if (diffMonth === 0 && diffYear === 0) return `${Math.floor(diff / 24)} 일 전`;
-            // month
-            if (diffYear === 0) return `${diffMonth} 개월 전`;
-            // year
-            return `${diffYear} 년 전`;
+            const locale = getCurrentLocale(data);
+
+            // ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf
+            // get Year differences between now target date
+            let diff: number = Math.floor((+now - +date) / 31557600000) * -1;
+            if (diff !== 0) return getRelativeTime(locale, diff, 'year');
+            // get Month differences
+            diff = (now.getUTCMonth() - date.getUTCMonth()) * -1;
+            if (Math.floor((+now - +date) / 2548800000) !== 0 &&
+                diff !== 0) return getRelativeTime(locale, diff, 'month');
+            // get Day differences
+            diff = Math.floor((+now - +date) / 86400000) * -1;
+            if (diff !== 0) return getRelativeTime(locale, diff, 'day');
+            // get Hour differences
+            diff = Math.floor((+now - +date) / 3600000) * -1;
+            if (diff !== 0) return getRelativeTime(locale, diff, 'hour');
+            // get Minute differences
+            diff = Math.floor((+now - +date) / 60000) * -1;
+            if (diff !== 0) return getRelativeTime(locale, diff, 'minute');
+            // get Second differences
+            diff = Math.floor((+now - +date) / 1000) * -1;
+            return getRelativeTime(locale, diff, 'second');
         }
         else
-            return date.toLocaleString(data.guild?.preferredLocale, { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: undefined });
+            return date.toLocaleString(getCurrentLocale(data), { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: undefined });
     });
 }
 
 /**
  * Replace link to dummy text.
  * @param message Current Message.
- * @todo complete localization
+ * @param data Data object for the Message.
  */
-function removeURI(message: string): string {
+function removeURI(message: string, data: Message): string {
     const uriRegex: RegExp = /(https?|ftp|mailto|file|data|irc):\/?\/?((?:[\w]+(?:\:[\w]+)?@)?(?:[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*|\[[A-Fa-f0-9:]+\]))(:[\d]{1,5})?(\/[a-zA-Z0-9\.~!*'();:@=+$,\/%#\[\]-]*)?(\?[\w\.~!*'();:@&=+$,?%\[\]-]*)?(#[\w\.~!*'();:@&=+$,?%#\[\]-]*)?/g;
-    return message.replace(uriRegex, `${skipMark}(링크)${skipMark}`);
+    return message.replace(uriRegex, `${skipMark}(${getString(getCurrentLocale(data), 'message.fix.link')})${skipMark}`);
 }
 
 function removeSpecialChar(message: string): string {
@@ -110,7 +114,7 @@ export function fixMessage(data: Message): string {
     newMessage = resolveTimestamp(newMessage, data);
 
     // replace link to dummy text
-    newMessage = removeURI(newMessage);
+    newMessage = removeURI(newMessage, data);
 
     // remove special characters from message
     newMessage = removeSpecialChar(newMessage);
