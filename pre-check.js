@@ -42,7 +42,7 @@ async function preCheck() {
     // pre-check: check if authorization method available for GCP-TTS (when uses it)
     if (config.tts.provider === "GoogleCloud")
     {
-        const { getClient, verify } = require(join(__dirname, 'build/modules/tts/provider/googleCloud/CredentialsManager'));
+        const { getClient, verify } = require('./build/modules/tts/provider/googleCloud/CredentialsManager');
 
         // check if Workload Identity Federation available
         if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
@@ -74,5 +74,5 @@ async function preCheck() {
 }
 
 // pre-check done. configure app and start main application
-preCheck().then(() => require(join(__dirname, 'build/main')));
+preCheck().then(() => require('./build/main'));
 
