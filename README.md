@@ -96,4 +96,4 @@ Pull requests are welcome\! For major changes, please open an issue first to dis
 
 ## 📜 License
 
-This project is licensed under the [GNU General Public License, version 2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.htmlhttps://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
+This project is licensed under the [GNU General Public License, version 2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
