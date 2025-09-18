@@ -4,10 +4,10 @@ import {
     ChannelType,
     ChatInputCommandInteraction,
     GuildMember,
+    GuildTextBasedChannel,
     Locale,
     MessageFlags,
     PermissionsBitField,
-    GuildTextBasedChannel,
     VoiceBasedChannel
 } from 'discord.js';
 import {generate} from 'random-words';
@@ -23,32 +23,27 @@ import {getCurrentLocale} from '../modules/i18n/GetCurrentLocale';
 import {resolveTimestamp} from '../modules/conversation/FixMessage';
 import {ICommand} from "../modules/discord/command/ICommand";
 
-interface IChannelVerifyResult {
-    success: boolean,
-    reason?: string
-}
-
 // channel verification: lots of checks before joining to voice channel
-function verify(voiceChannel: VoiceBasedChannel, textChannel: GuildTextBasedChannel): IChannelVerifyResult {
-    // fail when channel is not available
-    if (!textChannel || !voiceChannel)
-        return { success: false, reason: 'unknownChannel' };
+function verify(voiceChannel: VoiceBasedChannel | undefined, textChannel: GuildTextBasedChannel | null): asserts voiceChannel is VoiceBasedChannel {
+    // fail when voice channel is not available
+    if (!voiceChannel)
+        throw new Error('invalidVoiceChannel');
 
-    // fail when text channel is not valid type
-    if (textChannel.type !== ChannelType.GuildText)
-        return { success: false, reason: 'invalidTextChannel' };
+    // fail when text channel is unknown or not a valid type
+    if (!textChannel || textChannel.type !== ChannelType.GuildText)
+        throw new Error('invalidTextChannel');
 
     // fail when bot have not enough permission to voice channel (Connect, Speak)
     let permissions = voiceChannel.permissionsFor(voiceChannel.client.user);
     const voicePermissions = new PermissionsBitField(3_145_728n);
     if (!voiceChannel.joinable || !permissions || !permissions.has(voicePermissions))
-        return { success: false, reason: 'botNoPermission' };
+        throw new Error ('botNoPermission');
 
     // failed when bot not enough permissions to text channel (Create Public Threads, Manage Threads)
     permissions = textChannel.permissionsFor(textChannel.client.user);
     const textPermissions = new PermissionsBitField(51_539_607_552n);
     if (!permissions || !permissions.has(textPermissions))
-        return { success: false, reason: 'botNoPermission' };
+        throw new Error('botNoPermission');
 
     // get currently joined voice channel (if has one) 
     const voice = require('@discordjs/voice');
@@ -57,10 +52,10 @@ function verify(voiceChannel: VoiceBasedChannel, textChannel: GuildTextBasedChan
 
     // fail when bot already joined into same channel
     if (currChannelId === voiceChannel.id)
-        return { success: false, reason: 'alreadyJoined' };
+        throw new Error('alreadyJoined');
 
     // YEP: all checks passed. bot can join to this channel
-    return { success: true };
+    return;
 }
 
 async function commandHandler(interaction: ChatInputCommandInteraction) {
@@ -71,23 +66,15 @@ async function commandHandler(interaction: ChatInputCommandInteraction) {
     let channel = interaction.options.getChannel(getString(Locale.EnglishUS, 'command.join.options.0.name')) as VoiceBasedChannel | undefined;
 
     // fetch user-joined voice channel (when option not available)
-    if (!channel && member.voice.channel) {
-        // verify the channel first
-        const channelFetchResult = verify(member.voice.channel, interaction.channel as GuildTextBasedChannel);
-        if (!channelFetchResult.success) {
-            logger.verbose({ topic: 'discord:command', message: `Ignored channel join request. Reason: ${channelFetchResult.reason}` });
-            await interaction.editReply(getString(locale, `error.${channelFetchResult.reason}`, interaction.channel!.toString()));
-            return;
-        }
-
-        // set user-joined channel as current channel
+    if (!channel && member.voice.channel)
         channel = member.voice.channel;
-    }
 
-    // show error and exit when user not in voice channel
-    if (!channel) {
-        logger.verbose({ topic: 'discord:command', message: 'Ignored channel join request. Reason: channel not provided and user not in voice channel.' });
-        await interaction.editReply(getString(locale, 'error.userNotInVC', interaction.user.toString()));
+    // verify the channel first
+    try {
+        verify(channel, interaction.channel as GuildTextBasedChannel | null);
+    } catch (err: any) {
+        logger.verbose({ topic: 'discord:command', message: `Ignored channel join request. Reason: ${err.message}` });
+        await interaction.editReply(getString(locale, `error.${err.message}`, interaction.channel!.toString()));
         return;
     }
 

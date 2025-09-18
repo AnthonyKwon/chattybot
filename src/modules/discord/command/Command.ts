@@ -30,14 +30,12 @@ export async function load(): Promise<void> {
 /**
  * Handle command interaction from client.
  * @param interaction - Interaction to handle.
- * @alpha
  */
 export async function handle(interaction: CommandInteraction): Promise<void> {
     logger.verbose({ topic: 'discord.command', message: `Interaction received.` });
 
     // retrieve command from cache
-    //TODO: fix this "any" type after completing typescript rewrite
-    const command: any = cache.get(interaction.commandName);
+    const command: ICommand | undefined = cache.get(interaction.commandName);
 
     // show error on command not exist
     if (!command) {
