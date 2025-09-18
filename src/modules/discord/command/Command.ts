@@ -45,7 +45,7 @@ export async function handle(interaction: CommandInteraction): Promise<void> {
     }
 
     // alert user about this bot is guild-only
-    if (!interaction.inGuild()) {
+    if (!interaction.guild || !interaction.inGuild()) {
         logger.verbose({ topic: 'discord.command', message: `Interaction came from outside of guild, ignoring.` });
         await interaction.reply(getString(interaction.locale, 'error.discord.guild_only'));
         return;
