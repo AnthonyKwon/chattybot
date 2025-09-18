@@ -15,7 +15,6 @@ const conversationCache: Map<string, ConversationManager> = new Map();
 
 /**
  * Manages Text-to-Speech conversation, wrapping {@link VoiceBasedChannel} and {@link ThreadChannel}.
- * @alpha
  */
 export class ConversationManager extends EventEmitter {
     private _destroyed: boolean = false;
@@ -45,7 +44,6 @@ export class ConversationManager extends EventEmitter {
      * @param origin - Interaction message where conversation has started
      * @param channel - Voice channel to connect
      * @returns new {@link ConversationManager} with provided parameters.
-     * @alpha
      */
     static create(origin: CommandInteraction, channel: VoiceBasedChannel): ConversationManager {
         // return conversation session from cache if exists
@@ -97,7 +95,6 @@ export class ConversationManager extends EventEmitter {
     /**
      * Start current conversation session.
      * @throws {@link ObjectOccupiedError} when voice already created and in use for current guild.
-     * @alpha
      */
     async start(threadOptions: thread.ThreadOptions): Promise<void> {
         // check if client is able to connect voice channel in specified guild
@@ -147,7 +144,6 @@ export class ConversationManager extends EventEmitter {
      * Destroy current conversation.
      * @param quiet If true, origin message will not be updated.
      * @throws {@link ReferenceError} when conversation not created for current guild.
-     * @alpha
      */
     async destroy(quiet: Boolean = false): Promise<VoiceBasedChannel> {
         // mark this conversation as destroyed

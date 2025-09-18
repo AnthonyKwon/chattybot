@@ -4,8 +4,8 @@ export { ThreadOptions };
 
 /**
  * Create new {@link ThreadChannel}.
- * @param origin - Origin message to start {@link ThreadChannel}
- * @param options - Options for create {@link ThreadChannel}
+ * @param origin Origin message to start {@link ThreadChannel}
+ * @param options Options for create {@link ThreadChannel}
  * @returns {@link ThreadChannel} with provided options.
  */
 export async function create(origin: Message, options: ThreadOptions): Promise<ThreadChannel> {
@@ -15,7 +15,7 @@ export async function create(origin: Message, options: ThreadOptions): Promise<T
 
 /**
  * Destroy current {@link ThreadChannel}.
- * @param channel - {@link ThreadChannel} to destroy
+ * @param channel {@link ThreadChannel} to destroy
  */
 export async function destroy(channel: ThreadChannel) {
     // I'm not sure if this even needed...
@@ -25,7 +25,7 @@ export async function destroy(channel: ThreadChannel) {
 /**
  * Check thread availability by changing properties.<br/>
  * It uses quite hacky method, so it might have issues.
- * @param channel - {@link ThreadChannel} to check availability
+ * @param channel {@link ThreadChannel} to check availability
  * @returns Bot availability to target {@link ThreadChannel}.
  */
 export async function validate(channel: ThreadChannel): Promise<boolean> {

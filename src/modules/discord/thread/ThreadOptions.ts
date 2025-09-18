@@ -11,9 +11,9 @@ export class ThreadOptions {
 
     /**
      * Create new {@link ThreadOptions} object.
-     * @param name - name of the thread
-     * @param autoArchiveDuration - auto-archive duration
-     * @param rateLimitPeruser - cooldown of the chat
+     * @param name name of the thread
+     * @param autoArchiveDuration auto-archive duration
+     * @param rateLimitPeruser cooldown of the chat
      */
     constructor(name: string, autoArchiveDuration: ThreadAutoArchiveDuration = ThreadAutoArchiveDuration.OneHour, rateLimitPeruser: number = 0) {
         this.name = name;

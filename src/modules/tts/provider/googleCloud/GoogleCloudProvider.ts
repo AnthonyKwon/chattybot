@@ -10,10 +10,7 @@ import {IMappedLocale} from "../../../i18n/IMappedLocale";
 import SynthesizeSpeechRequest = google.cloud.texttospeech.v1.SynthesizeSpeechRequest;
 import {IRequestBuilderOptions} from "../IRequestBuilderOptions";
 
-/**
- * This uses Google Cloud Text-to-Speech AI service provider.
- * @alpha
- */
+/** This uses Google Cloud Text-to-Speech AI service provider. */
 export default class GoogleCloudProvider extends TTSProvider {
     private client: TextToSpeechClient;
     private readonly request: SynthesizeSpeechRequest;

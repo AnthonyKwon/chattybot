@@ -41,7 +41,6 @@ async function findVoiceExact(voiceName: string): Promise<IVoice | undefined> {
  * @param locale `locale` of the target voice.
  * @param type `type` of the target voice.
  * @param gender `ssmlGender` of the target voice.
- * @param variant preferred `variant` of the target voice.
  * @returns The {@link IVoice} of provided properties.
  */
 async function findVoiceByProp(locale: IMappedLocale, type: string, gender: string): Promise<IVoice | undefined> {
@@ -137,18 +136,21 @@ export async function findVoice(overrides?: IFindVoiceOverrides): Promise<IVoice
     };
 }
 
+/**
+ * Convert {@link IVoice} into {@link IVoiceSelectionParams}
+ * @param voice {@link IVoice} to convert
+ * @returns converted {@link IVoiceSelectionParams}
+ */
 export function ConvertToParam(voice: IVoice): IVoiceSelectionParams {
-    let languageCode: string | undefined;
-
-    //
+    // return empty object when voice is invalid
     if (!voice) return {};
 
-    //
-    if (voice.languageCodes && voice.languageCodes.length >= 0)
-        languageCode = voice.languageCodes[0];
+    // return empty object when language code is invalid
+    if (!voice.languageCodes || voice.languageCodes.length == 0)
+        return {};
 
     return {
-        languageCode: languageCode,
+        languageCode: voice.languageCodes[0],
         name: voice.name,
         ssmlGender: voice.ssmlGender
     };

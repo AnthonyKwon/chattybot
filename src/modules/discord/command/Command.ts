@@ -29,7 +29,7 @@ export async function load(): Promise<void> {
 
 /**
  * Handle command interaction from client.
- * @param interaction - Interaction to handle.
+ * @param interaction Interaction to handle.
  */
 export async function handle(interaction: CommandInteraction): Promise<void> {
     logger.verbose({ topic: 'discord.command', message: `Interaction received.` });

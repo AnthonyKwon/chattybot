@@ -5,11 +5,7 @@ import getProvider from "./provider/GetProvider";
 import {InvalidProviderError} from "./error/InvalidProviderError";
 import {IRequestBuilderOptions} from "./provider/IRequestBuilderOptions";
 
-/**
- *
- * @alpha
- * @todo Complete JSDocs
- */
+/** Represents Text-to-Speech synthesizer with Queueable messages. */
 export default class TextToSpeech {
     protected _last: IQueueableSpeech | undefined;
     protected _provider: TTSProvider | undefined;
@@ -21,6 +17,11 @@ export default class TextToSpeech {
          this._last = last;
     }
 
+    /**
+     * Create new Text-to-Speech instance.
+     * @param options {@link IRequestBuilderOptions} to be used by provider.
+     * @returns The created {@link TextToSpeech} object
+     */
     static async create(options? :IRequestBuilderOptions): Promise<TextToSpeech> {
         // create provider based on config
         const provider = await getProvider(config.tts.provider, options);
@@ -34,6 +35,10 @@ export default class TextToSpeech {
         return new TextToSpeech(provider, queue);
     }
 
+    /**
+     * Add message to current queue.
+     * @param speech {@IQueueableSpeech} message to put in queue.
+     */
     async addQueue(speech: IQueueableSpeech): Promise<void> {
         // ignore when queue is not initialized
         if (!this._queue) return;
@@ -42,6 +47,10 @@ export default class TextToSpeech {
         this._queue.push(speech);
     }
 
+    /**
+     * Speech the message in queue. Will be ignored if already speaking.
+     * @param callback Function to handle speech {@link Readable} stream.
+     */
     async speak(callback: Function): Promise<void> {
         // ignore when queue or provider not initialized
         if (!this._queue || !this._provider) return;

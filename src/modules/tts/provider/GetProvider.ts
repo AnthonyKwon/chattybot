@@ -5,10 +5,9 @@ import { IRequestBuilderOptions } from "./IRequestBuilderOptions";
 
 /**
  * Get Text-to-Speech provider from its id.
- * @param id - id of the provider.
- * @param options - {@link IRequestBuilderOptions} to used by provider.
+ * @param id id of the provider.
+ * @param options {@link IRequestBuilderOptions} to used by provider.
  * @returns Matching {@link TTSProvider} object.
- * @alpha
  */
 export default async function getProvider(id: string, options?: IRequestBuilderOptions): Promise<TTSProvider> {
     // try to import the Text-to-Speech provider

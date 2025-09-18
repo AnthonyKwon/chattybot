@@ -7,8 +7,7 @@ import {fixMessage} from "../FixMessage";
 
 /**
  * Handle message sent from user.
- * @param message - {@link Message} to handle.
- * @alpha
+ * @param message {@link Message} to handle.
  */
 export default async function onMessageReceive(message: Message) {
     // refresh inactive timer of current conversation

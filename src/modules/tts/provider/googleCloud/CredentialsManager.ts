@@ -34,7 +34,7 @@ export function getClient(): TextToSpeechClient {
 
 /**
  * Authenticate and verify Text-to-Speech client.
- * @param client - {@link TextToSpeechClient} to verify.
+ * @param client {@link TextToSpeechClient} to verify.
  */
 export async function verify(client: TextToSpeechClient): Promise<void> {
     // send the locale list request with invalid locale for testing

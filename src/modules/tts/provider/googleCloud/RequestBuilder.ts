@@ -6,12 +6,13 @@ import {IFindVoiceOverrides} from "./IFindVoiceOverrides";
 import config from '../../../config/ConfigLoader';
 import {IRequestBuilderOptions} from "../IRequestBuilderOptions";
 
-/**
- * @alpha
- */
+/** @inheritDoc */
 export default class GoogleCloudTTSRequestBuilder extends RequestBuilder {
     private readonly params: SynthesizeSpeechRequest;
 
+    /**
+     * @param options {@link IRequestBuilderOptions} to be used by provider.
+     */
     constructor(options?: IRequestBuilderOptions) {
         super(options);
         // sample parameters - this should not be passed directly
