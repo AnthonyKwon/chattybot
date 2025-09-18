@@ -2,6 +2,7 @@ import { readdirSync, readFileSync,  } from 'fs';
 import { resolve } from "path";
 import {ILocalizedString} from "./ILocalizedString";
 import path from "node:path";
+import logger from "../log/Logger";
 let localeCache: Map<string, ILocalizedString> | undefined;
 
 // I think I need some time to understand it. TypeScript is too hard :(
@@ -58,9 +59,10 @@ export function getString(locale: string, id: string, ...param: string[]): strin
                     : match
             });
         }
-    } catch(err) {
+    } catch(err: any) {
         // fallback to id on error
-        //TODO: log failure
+        logger.error({ topic: 'i18n', message: `Error occurred while parsing locale!` });
+        logger.error({ topic: 'i18n', message: err.stack ? err.stack : err });
         returnString = id;
     }
 
