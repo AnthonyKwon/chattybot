@@ -67,17 +67,22 @@ export async function handle(interaction: CommandInteraction): Promise<void> {
         // exit if error report is not available
         if (!report) return;
 
-        // build interaction to send report
-        const errorInteraction: InteractionReplyOptions = {
-            content: getString(interaction.locale, 'error.generic', report),
-            files: [ (new AttachmentBuilder(resolve(global.appRoot, 'logs/report', report))) ],
-            flags: MessageFlags.Ephemeral
-        };
+        try {
+            // build interaction to send report
+            const errorInteraction: InteractionReplyOptions = {
+                content: getString(interaction.locale, 'error.generic', report),
+                files: [(new AttachmentBuilder(resolve(global.appRoot, 'logs/report', report)))],
+                flags: MessageFlags.Ephemeral
+            };
 
-        // send report interaction
-        if (interaction.replied || interaction.deferred)
-            await interaction.followUp(errorInteraction);
-        else
-            await interaction.reply(errorInteraction);
+            // send report interaction
+            if (interaction.replied || interaction.deferred)
+                await interaction.followUp(errorInteraction);
+            else
+                await interaction.reply(errorInteraction);
+        } catch(err: any) {
+            logger.error({ topic: 'discord.command', message: `Error occurred while sending report. Report will not sent.` });
+            logger.error({ topic: 'discord.command', message: err.stack ? err.stack : err });
+        }
     }
 }
