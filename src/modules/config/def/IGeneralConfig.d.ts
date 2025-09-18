@@ -3,12 +3,14 @@ export interface IGeneralConfig {
     discord: {
         token: string,
         inviteLink: string,
-        status?: string
+        status?: string,
+        archiveDuration: number
     },
     log: {
         timeLimit: number,
         sizeLimit: number
     },
     defaultLocale: string,
+    cooldown: number,
     inactiveTimeout: number
 }

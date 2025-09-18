@@ -35,7 +35,7 @@ function resolveSnowflake(message: string, data: Message): string {
  * @param message Current message.
  * @param data Data object for the message.
  */
-function resolveTimestamp(message: string, data: Message): string {
+export function resolveTimestamp(message: string, data: Message): string {
     const timestampRegex: RegExp = /<t:(\d+)(:[DdFfRTt])?>/g;
     return message.replace(timestampRegex, function(_match, timestamp: string, printFormat: string): string {
         const date = new Date(Number.parseInt(timestamp) * 1000);

@@ -1,5 +1,5 @@
 import { Readable } from 'node:stream';
-import { VoiceChannel, Guild } from 'discord.js';
+import { VoiceBasedChannel, Guild } from 'discord.js';
 import * as voice from '@discordjs/voice';
 import { InvalidChannelError } from './error/InvalidChannelError';
 
@@ -7,11 +7,11 @@ import { InvalidChannelError } from './error/InvalidChannelError';
 const playerCache: Map<string, voice.AudioPlayer> = new Map();
 
 /**
- * Join the specified {@link VoiceChannel}
- * @param channel - {@link VoiceChannel} for bot to join
+ * Join the specified {@link VoiceBasedChannel}
+ * @param channel - {@link VoiceBasedChannel} for bot to join
  * @returns {@link Promise} of {@link voice.VoiceConnection} bot used to join voice channel.
  */
-export async function join(channel: VoiceChannel): Promise<voice.VoiceConnection> {
+export async function join(channel: VoiceBasedChannel): Promise<voice.VoiceConnection> {
     // destroy existing voice connection (when have one)
     if (voice.getVoiceConnection(channel.guildId)) leave(channel.guildId);
 
@@ -31,7 +31,7 @@ export async function join(channel: VoiceChannel): Promise<voice.VoiceConnection
 }
 
 /**
- * Leave the specified {@link VoiceChannel}
+ * Leave the specified {@link VoiceBasedChannel}
  * @param guildId - id of {@link Guild} to leave voice channel
  * @throws InvalidChannelError
  * when not connected to voice channel to leave.
@@ -103,7 +103,7 @@ export function play(guildId: string, stream: Readable): Promise<voice.AudioPlay
 }
 
 /**
- * Handle disconnection event of {@link VoiceChannel}
+ * Handle disconnection event of {@link VoiceBasedChannel}
  * @param guildId - id of {@link Guild} to fetch the voice channel
  * @param callback - callback function to run
  * @param thisArg - {@link this} value to use in callback
