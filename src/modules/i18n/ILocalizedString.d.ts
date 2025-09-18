@@ -38,8 +38,10 @@ export interface ILocalizedString {
             alreadyJoined: string,
             botNotInVC: string,
             invalidLocale: string,
+            invalidTextChannel: string,
+            invalidVoiceChannel: string,
             localeAlreadySet: string,
-            userNotInVC: string
+            textTooLong: string
         }
     },
     message: {

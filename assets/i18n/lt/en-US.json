@@ -59,14 +59,14 @@
       "Maybe you can invite me on your server?",
       "You can check about my information at my profile!  :relaxed:"
     ],
-    "unknownChannel": ":grey_question: Unknown channel. Did you entered **Channel ID** correctly?",
     "alreadyJoined": ":loud_sound: :door: I'm already joined in **{0}**!",
+    "botNotInVC": ":loud_sound: :x: I don't joined in any voice channel now.",
+    "invalidLocale": ":grey_question: Unknown or invalid locale ID. Did you entered it correctly?",
+    "invalidTextChannel": ":no_entry_sign:  This is not available on Threads, Forum, Voice Text Channel, etc. Please use other normal Text Channel.",
+    "invalidVoiceChannel": ":no_entry_sign:  Invalid voice channel. Please specify correct channel or join channel first.",
     "localeAlreadySet": ":no_entry_sign: Server locale has already set to specified one.",
-    "localeInvalid": ":grey_question: Unknown or invalid locale ID. Did you entered it correctly?",
     "botNoPermission": ":hourglass_flowing_sand::no_entry_sign:  I don't have permission(s)(**{0}**) to do this action.",
     "userNoPermission": ":hourglass_flowing_sand::no_entry_sign:  You don't have permission to do this action!",
-    "botNotInVC": ":loud_sound: :x: I don't joined in any voice channel now.",
-    "userNotInVC": ":loud_sound:  :no_entry_sign: I can't find {0} in any voice channel. Please join voice channel first.",
     "textTooLong": ":loud_sound:  :page_with_curl: Text too long. Write within {0} letter(s)."
   },
   "message": {
