@@ -39,7 +39,7 @@ export async function handle(interaction: CommandInteraction): Promise<void> {
 
     // show error on command not exist
     if (!command) {
-        logger.error({ topic: 'Discord', message: `No command matching ${interaction.commandName} was found.` });
+        logger.error({ topic: 'discord', message: `No command matching ${interaction.commandName} was found.` });
         return;
     }
 

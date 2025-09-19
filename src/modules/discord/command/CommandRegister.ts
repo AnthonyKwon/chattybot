@@ -57,7 +57,7 @@ export async function unregister() {
         logger.info({ topic: 'discord.command', message: `Unregistering as ${user.username}. (${userId})` });
 
         // send unregister request to Discord
-        const data: any = await rest.put(
+        await rest.put(
             Routes.applicationCommands(userId),
             { body: [] }
         );
