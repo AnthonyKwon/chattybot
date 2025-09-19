@@ -1,5 +1,5 @@
 const { existsSync } = require('fs');
-const { join, resolve } = require("node:path");
+const { resolve } = require("node:path");
 
 // pre-check: check if user transpiled typescript
 if (!existsSync('./build/main.js')) {
@@ -41,7 +41,7 @@ async function preCheck() {
     // pre-check: check if authorization method available for GCP-TTS (when uses it)
     if (config.tts.provider === "GoogleCloud")
     {
-        const { getClient, verify } = require('./build/modules/tts/provider/googleCloud/CredentialsManager');
+        const { getClient, authenticate } = require('./build/modules/tts/provider/googleCloud/CredentialsManager');
 
         // check if Workload Identity Federation available
         if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
@@ -51,7 +51,7 @@ async function preCheck() {
                 // try to authenticate with provided credentials
                 const client = await getClient();
                 // verify if credentials working correctly
-                await verify(client);
+                await authenticate(client);
             } catch (err) {
                 console.error(err);
                 // credentials not working, show error and exit

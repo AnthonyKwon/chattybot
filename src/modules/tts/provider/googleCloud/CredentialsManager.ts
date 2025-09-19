@@ -1,9 +1,10 @@
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
 import { join } from 'node:path';
+import logger from "../../../log/Logger";
 
 // Text-to-Speech client cache
 const cache: unique symbol = Symbol.for("ChattyBot:GoogleCloudClientCache");
-const getCache = () => (global as any)[cache];
+const getCache = () => (global as any)[cache] as TextToSpeechClient;
 const setCache = (value: TextToSpeechClient) => (global as any)[cache] = value;
 
 /**
@@ -33,15 +34,17 @@ export function getClient(): TextToSpeechClient {
 }
 
 /**
- * Authenticate and verify Text-to-Speech client.
- * @param client {@link TextToSpeechClient} to verify.
+ * Authenticate the Text-to-Speech client.
+ * @param client {@link TextToSpeechClient} to authenticate.
  */
-export async function verify(client: TextToSpeechClient): Promise<void> {
+export async function authenticate(client: TextToSpeechClient): Promise<void> {
     // send the locale list request with invalid locale for testing
     // this should return empty voices list object like below
     // { voices: [] }
     const [result] = await client.listVoices({ languageCode: 'ne-RD' });
     // check if API returned correct empty object
     if (!result || !result.voices)
-        throw new Error('Failed to verify client credentials.');
+        throw new Error('Failed to authenticate client credentials.');
+
+    logger.info({ topic: 'tts.provider.googleCloud', message: `Authenticated. Using project "${await client.getProjectId()}".` });
 }
