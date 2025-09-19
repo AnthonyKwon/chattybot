@@ -11,8 +11,8 @@ import { IRequestBuilderOptions } from "./IRequestBuilderOptions";
  */
 export default async function getProvider(id: string, options?: IRequestBuilderOptions): Promise<TTSProvider> {
     // try to import the Text-to-Speech provider
-    const upperId: string = id.charAt(0).toUpperCase() + id.slice(1);  // convert to CamelCase
-    const provider = (await import(path.join(__dirname, id, `${upperId}Provider.js`))).default.default;
+    const providerPath: string = id.charAt(0).toLowerCase() + id.slice(1);  // convert to CamelCase
+    const provider = (await import(path.join(__dirname, providerPath, `${id}Provider.js`))).default.default;
 
     // return provider when available
     if (provider && provider.available) return provider.create(options);
