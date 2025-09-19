@@ -15,7 +15,6 @@ global.appRoot = resolve(__dirname);
 
 // skip extra check and if user asked for slash command actions
 if (!!process.env.COMMAND_ACTION) {
-    global.devMode = true;
     const { register, unregister } = require('./build/modules/discord/command/CommandRegister');
     if (process.env.COMMAND_ACTION === 'register') register();
     else if (process.env.COMMAND_ACTION === 'unregister') unregister();

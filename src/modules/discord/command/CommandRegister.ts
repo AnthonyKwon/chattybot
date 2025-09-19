@@ -29,7 +29,7 @@ export async function register() {
         // get id of current user
         const user: any = await rest.get(Routes.user('@me'));
         const userId: string = user.id;
-        logger.verbose({ topic: 'discord.command', message: `Registering as ${user.username}. (${userId})` });
+        logger.info({ topic: 'discord.command', message: `Registering as ${user.username}. (${userId})` });
 
         // send register request to Discord
         const data: any = await rest.put(
@@ -54,7 +54,7 @@ export async function unregister() {
         // get id of current user
         const user: any = await rest.get(Routes.user('@me'));
         const userId: string = user.id;
-        logger.verbose({ topic: 'discord.command', message: `Unregistering as ${user.username}. (${userId})` });
+        logger.info({ topic: 'discord.command', message: `Unregistering as ${user.username}. (${userId})` });
 
         // send unregister request to Discord
         const data: any = await rest.put(
