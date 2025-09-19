@@ -8,7 +8,6 @@ import { name as appName, version } from '../package.json';
 // initialize logger module for main
 logger.info({ topic: appName, message: `version ${version}` });
 
-
 // create discord client object
 const client = new Client({
     intents: [
@@ -38,7 +37,6 @@ client.on(Events.InteractionCreate, interaction => {
     command.handle(interaction);
 });
 
-// Reply to a user who mentions the bot
 client.on(Events.MessageCreate, message => {
     // ignore message sent from bot
     if (message.author.bot) return;
@@ -86,6 +84,23 @@ client.on(Events.ThreadUpdate, (oldThread, newThread) => {
         conversation.emit(`threadObsolete-${newThread.guildId}`);
     }
 });
+
+client.on(Events.VoiceStateUpdate, (oldState, newState) => {
+    // check if disconnected user is this bot
+    if (oldState.member?.id !== oldState.client.user.id) return;
+
+    // ignore when event is not fired by disconnection
+    if (!oldState.channel || newState.channel) return;
+
+    // get conversation from current guild
+    const conversation = ConversationManager.get(oldState.guild.id);
+
+    // ignore the event not related to conversation
+    if (!conversation || conversation.destroyed) return;
+
+    // emit conversation thread deleted event
+    conversation.emit(`voiceDisconnect-${oldState.guild.id}`);
+})
 
 // log unhandled error of discord.js
 client.on(Events.Error, err => {

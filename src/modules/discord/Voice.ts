@@ -104,33 +104,3 @@ export function play(guildId: string, stream: Readable): Promise<voice.AudioPlay
     // return the audio player
     return voice.entersState(player, voice.AudioPlayerStatus.Playing, 5_000);
 }
-
-/**
- * Handle disconnection event of {@link VoiceBasedChannel}
- * @param guildId id of {@link Guild} to fetch the voice channel
- * @param callback callback function to run
- * @param thisArg {@link this} value to use in callback
- * @param params parameters to use in callback
- * @throws InvalidChannelError when not connected to voice channel to handle event.
- * @todo Needs to investigate the issue that event does not fire when no one in Voice Channel.
- */
-export function onDisconnected(guildId: string, callback: Function, thisArg: any, ...params: any): void {
-    // get bot's current voice connection on guild
-    const connection: voice.VoiceConnection | undefined = voice.getVoiceConnection(guildId);
-
-    // throw InvalidChannelError when connection not exists
-    if (!connection) throw new InvalidChannelError("Can't find any voice connection to handle event.");
-
-    // check for disconnection and handle disconnect event
-    connection.on(voice.VoiceConnectionStatus.Disconnected, async (oldState, newState): Promise<void> => {
-        try {
-            await Promise.race([
-                voice.entersState(connection, voice.VoiceConnectionStatus.Signalling, 5_000),
-                voice.entersState(connection, voice.VoiceConnectionStatus.Connecting, 5_000),
-            ]);
-            // Seems to be reconnecting to a new channel - ignore disconnect
-        } catch(err) {
-            callback.apply(thisArg, params);
-        }
-    });
-}

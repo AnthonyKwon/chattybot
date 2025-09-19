@@ -104,19 +104,17 @@ export class ConversationManager extends EventEmitter {
         // join voice channel
         await voice.join(this._channel);
 
-        // register VC on disconnection event
-        voice.onDisconnected(this._guildId, async () => {
-            logger.verbose({ topic: 'conversation', message: `Destroying session in ${this._guildId} as disconnected from voice channel.`});
-            await this.destroy(true);
-            await this.setOrigin(':cry:');
-        }, this);
-
         // register conversation related events
         this.on(`message-${this._guildId}`, onMessageReceive);    // new message on thread
         this.on(`threadObsolete-${this._guildId}`, () => {
             logger.verbose({ topic: 'conversation', message: `Destroying session in ${this._guildId} as associated Thread got obsolete.`});
             this.destroy();
         });  // linked thread archived or deleted
+        this.on(`voiceDisconnect-${this._guildId}`, async () => {
+            logger.verbose({ topic: 'conversation', message: `Destroying session in ${this._guildId} as disconnected from voice channel.`});
+            await this.destroy(true);
+            await this.setOrigin(':cry:');
+        });  // disconnected from voice channel
 
         // register timeout on voice channel inactive (when enabled)
         if (config.inactiveTimeout)
@@ -156,6 +154,7 @@ export class ConversationManager extends EventEmitter {
         // unregister conversation event
         this.removeAllListeners(`message-${this._guildId}`);  // new message on thread
         this.removeAllListeners(`threadObsolete-${this._guildId}`);  // linked thread archived or deleted
+        this.removeAllListeners(`voiceDisconnect-${this._guildId}`);  // disconnected from voice channel
 
         // unregister timeout on voice channel inactive
         clearTimeout(this._timer);
