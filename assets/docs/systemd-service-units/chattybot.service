@@ -1,0 +1,14 @@
+[Unit]
+Description=Discord Voice Channel Text-To-Speech Bot
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Restart=on-failure
+Type=simple
+#Environment=GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/credentials
+ExecStart=/usr/bin/npm run start
+WorkingDirectory=/path/to/your/chattybot
+
+[Install]
+WantedBy=multi-user.target

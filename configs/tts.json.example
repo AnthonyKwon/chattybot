@@ -1,17 +1,15 @@
 {
   "version": 1,
-  "tts": {
-    "gender": "neutral",
-    "pitch": 100,
-    "speed": 120,
-    "volume": 100,
-    "allowSSML": false,
-    "provider": "GoogleCloud",
-    "providerOptions": {
-      "GoogleCloud": {
-        "preferredTypes": ["Chirp3-HD", "Studio", "Neural2", "Wavenet", "Standard"],
-        "defaultVariant": "Achernar"
-      }
-    },
+  "gender": "neutral",
+  "pitch": 100,
+  "speed": 120,
+  "volume": 100,
+  "allowSSML": false,
+  "provider": "GoogleCloud",
+  "providerOptions": {
+    "GoogleCloud": {
+      "preferredTypes": ["Chirp3-HD", "Studio", "Neural2", "Wavenet", "Standard"],
+      "defaultVariant": "Achernar"
+    }
   }
 }

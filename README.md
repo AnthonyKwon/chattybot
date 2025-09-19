@@ -11,7 +11,16 @@ Chatty is a simple, open-source Text-to-Speech (TTS) bot for Discord, designed t
 
 ## 📋 Requirements
 
-* **Node.js**: Version 20 or higher.
+* **Node.js** 22.12.0+
+* **Build Tools** (for sodium)
+  * Windows user can install dependencies by this command:
+    ```batch
+    npm install --global --production --add-python-to-path windows-build-tools
+    ```
+  * macOS/Linux needs packages below:
+    * `make`
+    * `gcc` with C++ support
+    * `libtool`
 
 ## 🚀 Installation
 
@@ -64,7 +73,7 @@ You can authenticate with Google Cloud TTS in two ways:
    Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the path of your credentials file:
 
     ```bash
-    export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/credentials.json
+    export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/credentials
     ```
 
 2. **Service Account Keys:**
@@ -82,17 +91,20 @@ There are two ways to run Chatty:
 
   This will start the bot with minimal console logging.
 
+
 * **Development Mode**:
 
     ```bash
     npm run dev
     ```
 
-  This will start the bot in development mode, with more verbose logging.
+  This will start the bot in development mode, with more verbose logging.  
+
+We also have systemd unit file in [here](assets/docs/systemd-service-units/chattybot.service).
 
 ## 🙌 Contributing
 
-Pull requests are welcome\! For major changes, please open an issue first to discuss what you would like to change.
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
 ## 📜 License
 
