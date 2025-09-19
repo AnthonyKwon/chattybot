@@ -118,8 +118,9 @@ export class ConversationManager extends EventEmitter {
             this.destroy();
         });  // linked thread archived or deleted
 
-        // register timeout on voice channel inactive
-        this._timer = setTimeout(onVoiceInactive, config.inactiveTimeout * 60000, this._guildId);
+        // register timeout on voice channel inactive (when enabled)
+        if (config.inactiveTimeout)
+            this._timer = setTimeout(onVoiceInactive, config.inactiveTimeout * 60000, this._guildId);
 
         // fetch message object from origin interaction
         this._origin = await this._originInteraction.fetchReply();

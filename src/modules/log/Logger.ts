@@ -7,8 +7,8 @@ import path from "path";
 const logLevel = global.devMode ? 'verbose' : 'info';
 
 // get log rotation time and size limit from config
-const timeLimit: string = `${config.log.timeLimit ?? 24}h`;
-const sizeLimit: string = `${config.log.sizeLimit ?? 100}k`;
+const timeLimit: string | undefined = config.log && config.log.timeLimit ? `${config.log.timeLimit}h` : undefined;
+const sizeLimit: string | undefined = config.log && config.log.timeLimit ? `${config.log.sizeLimit}k` : undefined;
 
 export default winston.createLogger({
     transports: [

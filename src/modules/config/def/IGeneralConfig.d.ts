@@ -4,13 +4,13 @@ export interface IGeneralConfig {
         token: string,
         inviteLink: string,
         status?: string,
-        archiveDuration: number
+        archiveDuration?: number
     },
-    log: {
-        timeLimit: number,
-        sizeLimit: number
+    log?: {
+        timeLimit?: number,
+        sizeLimit?: number
     },
     defaultLocale: string,
-    cooldown: number,
-    inactiveTimeout: number
+    cooldown?: number,
+    inactiveTimeout?: number
 }
