@@ -42,6 +42,9 @@ export function leave(guildId: string): void {
     // throw InvalidChannelError when connection not exists
     if (!connection) throw new InvalidChannelError("Can't find any voice connection to destroy.");
 
+    // delete cached player of current guild
+    playerCache.delete(guildId);
+
     // destroy the voice connection
     connection.destroy();
 }
