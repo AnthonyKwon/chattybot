@@ -115,7 +115,7 @@ export async function findVoice(overrides?: IFindVoiceOverrides): Promise<IVoice
     }
 
     // when user don't specify or match failed
-    const gender: string = overrides?.gender.toUpperCase() ?? config.tts.gender.toUpperCase();
+    const gender: string = (overrides?.gender ?? config.tts.gender ?? 'neutral').toUpperCase();
     
     // check for every voice type
     for (const type of types) {

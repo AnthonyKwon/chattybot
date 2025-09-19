@@ -1,6 +1,7 @@
 import { IMappedLocale } from '../../i18n/IMappedLocale';
 import { findLocale } from '../../i18n/MappedLocale';
 import { IRequestBuilderOptions } from './IRequestBuilderOptions';
+import config from '../../config/ConfigLoader';
 
 /** Builds Text-to-Speech request, to be used by provider. */
 export default abstract class RequestBuilder {
@@ -20,13 +21,11 @@ export default abstract class RequestBuilder {
             throw new Error('Abstract classes can\'t be instantiated.');
 
         // assign properties from user-provided options
-        if (options) {
-            this._gender = options.gender;
-            this._locale = options.locale ? findLocale(options.locale) : undefined;
-            this._volume = options.volume;
-            this._pitch = options.pitch;
-            this._speed = options.speed;
-        }
+        this._gender = options?.gender ?? config.tts.gender ?? 'neutral';
+        this._locale = options?.locale ? findLocale(options.locale) : undefined;
+        this._volume = options?.volume ?? config.tts.volume ?? 100;
+        this._pitch = options?.pitch ?? config.tts.pitch ?? 100;
+        this._speed = options?.speed ?? config.tts.speed ?? 100;
     }
 
     get locale(): IMappedLocale { return this._locale ?? findLocale('en-US'); }
