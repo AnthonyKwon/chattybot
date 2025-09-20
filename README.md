@@ -41,7 +41,7 @@ Chatty is a simple, open-source Text-to-Speech (TTS) bot for Discord, designed t
 
 3. **Configure the bot**
 
-    Please refer [Configuration](#️-configuration) section to do it.
+    Please refer [Configuration](#configuration) section to do it.
 
 4. **Build the application**
 
@@ -55,7 +55,7 @@ Chatty is a simple, open-source Text-to-Speech (TTS) bot for Discord, designed t
     npm run register
     ```
 
-## ⚙️ Configuration
+## <a name="configuration"></a>⚙️ Configuration
 
 Chatty is configured through three files in the `configs/` directory:
 
