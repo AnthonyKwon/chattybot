@@ -1,0 +1,14 @@
+services:
+  chattybot:
+    image: git.thonlog.com/anthonykwon/chattybot:4.0.0-beta.4.1
+    restart: unless-stopped
+    #environment:
+      # Uncomment this line to register or unregister command.
+      #- COMMAND_ACTION=register
+      # Uncomment this line to enable development mode.
+      #- DEV_MODE=true
+      # Uncomment this line if you use Workload Identity Federation.
+      #- GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/credentials
+    volumes:
+      - ./configs:/opt/app/configs:ro
+      - ./log:/opt/app/log

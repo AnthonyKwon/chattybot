@@ -4,5 +4,7 @@
 .vscode
 assets/docs
 configs/*.example
+compose.yaml
+Dockerfile
 LICENSE
 README

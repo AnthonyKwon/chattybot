@@ -1,6 +1,0 @@
-services:
-  chattybot:
-    restart: unless-stopped
-    volumes:
-      - ./configs:/opt/app/configs:ro
-      - ./log:/opt/app/log
