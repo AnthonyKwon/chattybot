@@ -29,7 +29,7 @@ Chatty is a simple, open-source Text-to-Speech (TTS) bot for Discord, designed t
 1. **Clone the repository**
 
     ```bash
-    git clone https://github.com/AnthonyKwon/chattybot.git -b 4.0.0-beta.4.1
+    git clone https://github.com/AnthonyKwon/chattybot.git -b 4.0.0
     cd chattybot
     ```
 
@@ -41,9 +41,7 @@ Chatty is a simple, open-source Text-to-Speech (TTS) bot for Discord, designed t
 
 3. **Configure the bot**
 
-    - Copy `configs/general.json.example` to `configs/general.json`.
-    - Copy `configs/tts.json.example` to `configs/tts.json`.
-    - Edit `general.json` and `tts.json` to your liking.
+    Please refer [Configuration](#️-configuration) section to do it.
 
 4. **Build the application**
 
@@ -87,22 +85,31 @@ You can authenticate with Google Cloud TTS in two ways:
 
 There are two ways to run Chatty:
 
-- **Production Mode**:
+- **Production Mode** (Recommended for most cases):
 
     ```bash
     npm start
     ```
 
   This will start the bot with minimal console logging.  
-  We also have [systemd unit file](assets/docs/systemd-service-units/chattybot.service) for automatic startup.
 
 - **Development Mode**:
+
+    You have to register command as development mode first, with:  
+
+    ```bash
+    npm run registerDev
+    ```
+
+    Then you can start as development mode with command below.  
 
     ```bash
     npm run dev
     ```
 
-  This will start the bot in development mode, with more verbose logging.
+  This will start the bot in development mode, with more verbose logging.  
+
+We also have [systemd unit file](assets/docs/systemd-service-units/chattybot.service) and [docker image](https://git.thonlog.com/AnthonyKwon/-/packages/container/chattybot) for automation.  
 
 ## 🙌 Contributing
 

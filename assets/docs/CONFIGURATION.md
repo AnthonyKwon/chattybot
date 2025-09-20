@@ -1,10 +1,11 @@
 # Configuration
 
-This documentation covers configurations files, and its entries.
+This documentation covers configurations files in `configs/` directory, and its entries.  
 
 ## 📄 general.json
 
-It serves every common configurations, or configurations which haven't assigned dedicated file.
+It serves every common configurations, or configurations which haven't assigned dedicated file.  
+Example file is located at `general.json.example`.  
 
 - `version`: Config Version Identifier
   - **Required**, must be `1`
@@ -35,7 +36,7 @@ It serves every common configurations, or configurations which haven't assigned 
 
 It serves every configuration relative to Text-to-Speech.  
 Some of the options can be overriden by guild settings.  
-Example file is located at `tts.json.example`.
+Example file is located at `tts.json.example`.  
 
 - `version`: Config Version Identifier
   - **Required**, must be `1`
@@ -78,6 +79,6 @@ Example file is located at `tts.json.example`.
 This is your Google Cloud Platform credentials file.  
 It is required if you're using Google Cloud Text-to-Speech as provider, and using Service Account Key to authenticate.  
 
-Follow this guide to [create service account key](https://cloud.google.com/iam/docs/keys-create-delete) or [download a created service account key](https://cloud.google.com/iam/docs/keys-list-get), rename it as `gcp-credentials.json`, and place it into `config/` directory.
+Follow this guide to [create service account key](https://cloud.google.com/iam/docs/keys-create-delete) or [download a created service account key](https://cloud.google.com/iam/docs/keys-list-get), rename it as `gcp-credentials.json`, and place it into `configs/` directory.
 
 Application will refuse to launch without it.
