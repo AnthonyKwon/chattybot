@@ -1,5 +1,4 @@
 import { Readable } from 'node:stream';
-import { IRequestBuilderOptions } from './IRequestBuilderOptions';
 
 /** Represents upstream Text-to-Speech provider service. */
 export default abstract class TTSProvider {
@@ -9,11 +8,6 @@ export default abstract class TTSProvider {
      */
     static get available() {
         return false;
-    }
-
-    /** Create new provider instance. */
-    static create(options?: IRequestBuilderOptions): Promise<TTSProvider> {
-        throw new Error('Method "create()" must be implemented.');
     }
 
     /**
