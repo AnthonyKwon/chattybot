@@ -15,6 +15,6 @@ export default async function getProvider(id: string, options?: IRequestBuilderO
     const provider = (await import(path.join(__dirname, providerPath, `${id}Provider.js`))).default.default;
 
     // return provider when available
-    if (provider && provider.available) return provider.create(options);
+    if (provider && provider.available) return new provider(options);
     else throw new InvalidProviderError();
 }
