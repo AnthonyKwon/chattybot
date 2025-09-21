@@ -1,8 +1,78 @@
-.vscode
+# Editor/IDE-generated files
+*.swo
+*.swp
+
+# OS-generated files
+.DS_Store
+
+# Actual configuration files
 configs/*.json
-configs/*.json5
-*_old
-_commands_preconvert
-logs
-node_modules
+
+# old or unneeded dummy files that should not exist?
 **/*.bak
+**/*_old
+**/*.test.js
+
+# transpiled javascript files from typescript
+build/**/*
+
+# Log files directory
+logs/
+
+# NPM packages
+node_modules
+
+
+# Chopped-down JetBrains gitignore for WebStorm
+# Check out https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore for original
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+# User-specific stuff
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# AWS User-specific
+.idea/**/aws.xml
+
+# Generated files
+.idea/**/contentModel.xml
+
+# Sensitive or high-churn files
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+
+# File-based project format
+*.iws
+
+# Editor-based HTTP Client
+.idea/httpRequests
+http-client.private.env.json
+
+
+# Chopped-down VSCode gitignore
+# Check out https://www.toptal.com/developers/gitignore/api/visualstudiocode for original
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+.ionide
