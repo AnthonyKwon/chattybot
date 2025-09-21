@@ -29,7 +29,7 @@ Chatty is a simple, open-source Text-to-Speech (TTS) bot for Discord, designed t
 1. **Clone the repository**
 
     ```bash
-    git clone https://github.com/AnthonyKwon/chattybot.git -b 3.2.1
+    git clone https://github.com/AnthonyKwon/chattybot.git -b legacy/3.2.1
     cd chattybot
     ```
 
