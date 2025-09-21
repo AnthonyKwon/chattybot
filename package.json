@@ -4,7 +4,7 @@
   "author": "Anthony Kwon",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AnthonyKwon/chattybot.git"
+    "url": "https://git.thonlog.com/AnthonyKwon/chattybot.git"
   },
   "main": "pre-check.js",
   "dependencies": {
