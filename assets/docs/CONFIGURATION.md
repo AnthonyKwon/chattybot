@@ -8,29 +8,41 @@ It serves every common configurations, or configurations which haven't assigned 
 Example file is located at `general.json.example`.  
 
 - `version`: Config Version Identifier
-  - **Required**, must be `1`
+  - **Required**
+  - Must be `1`
 - `discord.token`: Token of the bot
-  - **Required**, you can get token in [Discord Developer Portal](https://discord.com/developers/applications).
+  - **Required**
+  - You can get token in [Discord Developer Portal](https://discord.com/developers/applications).
 - `discord.inviteLink`: Invite link to the bot
-  - Optional, currently does nothing.
+  - Optional
+  - Currently, does nothing.
+- `status`: Status message of the bot
+  - Optional
+  - Disabled when not set.
 - `discord.archiveDuration`: Duration until thread gets archived
-  - Optional, defaults to 60 minutes.
+  - Optional
   - Unit: `Minute`
+  - Defaults to 60 minutes.
 - `log.timeLimit`: Time limit until log gets rotated.
-  - Optional, disabled when not set.
+  - Optional
   - Unit: `Hour`
+  - Disabled when not set.
 - `log.sizeLimit`: File size limit until log gets rotated.
-  - Optional, disabled when not set.
+  - Optional
   - Unit: `KB`
+  - Disabled when not set.
 - `defaultLocale`: Default locale to used by bot
-  - Required, used when failed to fetch locale from guild or user.
+  - **Required**
+  - Used when failed to fetch locale from guild or user.
   - List of available locales are in [this documentation](https://discord.com/developers/docs/reference#locales).
 - `cooldown`: Cooldown to set in thread
-  - Optional, disabled when not set.
+  - Optional
   - Unit: `second`
+  - Disabled when not set.
 - `inactiveTimeout`: Duration until bot disconnects from Voice due to inactivity
-  - Optional, disabled when not set.
+  - Optional
   - Unit: `second`
+  - Disabled when not set.
 
 ## 📄 tts.json
 
@@ -39,37 +51,46 @@ Some of the options can be overriden by guild settings.
 Example file is located at `tts.json.example`.  
 
 - `version`: Config Version Identifier
-  - **Required**, must be `1`
+  - **Required**
+  - Must be `1`
 - `gender`: Gender of the voice
-  - Optional, defaults to `neutral`
+  - Optional
   - Available values are:
     - `female`
     - `male`
     - `neutral`
+  - Defaults to `neutral`.
 - `pitch`: Pitch of the voice
-  - Optional, defaults to `100`.
+  - Optional
   - Any integer between 0 ~ 200 is available.
+  - Defaults to `100`.
   - Unit: `%`
 - `speed`: Speed of the voice
-  - Optional, defaults to `100`.
+  - Optional
   - Any integer between 0 ~ 200 is available.
+  - Defaults to `100`.
   - Unit: `%`
 - `volume`: Volume of the voice
-  - Optional, defaults to `100`.
+  - Optional
   - Any integer between 50 ~ 200 is available.
+  - Defaults to `100`.
   - Unit: `%`
 - `allowSSML`: Allow SSML to be used from chat
-  - Optional, defaults to `false`.
-  - Currently does nothing.
+  - Optional
+  - Defaults to `false`.
+  - Currently, does nothing.
 - `provider`: Text-to-Speech provider to use
-  - **Required**, must specify one of providers below.
+  - **Required**
+  - Must specify one of providers below.
   - `GoogleCloud` is the only available provider currently.
 - `providerOptions.GoogleCloud.preferredTypes`: Priority of the voice type to use
-  - Required, must be specified as the array.
+  - **Required**
+  - Must be specified as the array.
   - You can start by using one in example, and removing the type you don't want to use.
   - Additional Description: `Neural2` part of `en-US-Neural2-C`.
 - `providerOptions.GoogleCloud.defaultVariant`: Variant of the voice to priotize
-  - Optional, use first variant returned by API when not specified.
+  - Optional
+  - Uses first variant returned by API when not specified.
   - Additional Description: `C` part of `en-US-Neural2-C`.
 
 ## 📄 gcp-credentials.json

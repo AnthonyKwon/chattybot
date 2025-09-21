@@ -1,5 +1,5 @@
 [Unit]
-Description=Discord Voice Channel Text-To-Speech Bot
+Description=Simple Discord Text-to-Speech Bot for Voice Channel
 Wants=network-online.target
 After=network-online.target
 
