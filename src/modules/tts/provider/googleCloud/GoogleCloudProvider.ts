@@ -5,8 +5,6 @@ import {getClient} from "./CredentialsManager";
 import TTSProvider from '../TTSProvider';
 import {getString} from "../../../i18n/GetString";
 import GoogleCloudTTSRequestBuilder from "./RequestBuilder";
-import {findLocaleByProvider} from "../../../i18n/MappedLocale";
-import {IMappedLocale} from "../../../i18n/IMappedLocale";
 import SynthesizeSpeechRequest = google.cloud.texttospeech.v1.SynthesizeSpeechRequest;
 import {IRequestBuilderOptions} from "../IRequestBuilderOptions";
 

@@ -1,6 +1,4 @@
 import { Readable } from 'node:stream';
-import { IRequestBuilderOptions } from './IRequestBuilderOptions';
-import {TextToSpeechClient} from "@google-cloud/text-to-speech";
 
 /** Represents upstream Text-to-Speech provider service. */
 export default abstract class TTSProvider {
