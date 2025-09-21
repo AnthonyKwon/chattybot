@@ -39,6 +39,13 @@ function verify(interaction, channel) {
         return false;
     }
 
+    // check if bot can create Thread in this text channel
+    if (channel.type !== ChannelType.GuildText) {
+        logger.error({ topic: 'discord.js', message: 'Failed to join channel: thread not creatable in this text channel' });
+        interaction.editReply(i18n.get(interaction.guild.preferredLocale, 'error.discord.thread.no_permission'));
+        return false;
+    }
+
     // is this a voice channel?
     if (channel.type !== ChannelType.GuildVoice) {
         // NOPE: this is not a voice channel
