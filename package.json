@@ -1,7 +1,7 @@
 {
   "name": "chattybot",
-  "version": "3.2.1",
-  "description": "An Discord Text-To-Speech Bot",
+  "version": "3.2.1+fix.1",
+  "description": "Simple Discord Text-to-Speech Bot for Voice Channel.",
   "main": "pre-check.js",
   "scripts": {
     "start": "node .",
