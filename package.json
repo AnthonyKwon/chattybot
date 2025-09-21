@@ -20,7 +20,7 @@
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^5.0.0"
   },
-  "description": "An Discord Text-To-Speech Bot",
+  "description": "Simple Discord Text-to-Speech Bot for Voice Channel.",
   "license": "GPL-2.0-or-later",
   "scripts": {
     "build": "tsc",

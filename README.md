@@ -1,4 +1,4 @@
-# 💬 Chatty: A Discord Text-to-Speech Bot
+# 💬 Chatty: Simple Discord Text-to-Speech Bot
 
 Chatty is a simple, open-source Text-to-Speech (TTS) bot for Discord, designed to bring your server's voice channels to life. Built with Node.js, it's configurable and easy to set up.
 
